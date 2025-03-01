@@ -5,6 +5,9 @@ import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { IoLogoPinterest } from "react-icons/io";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import { useForm } from "react-hook-form";
+import { FaLocationDot } from "react-icons/fa6";
+import { FaPhoneAlt } from "react-icons/fa";
+import { MdOutlineEmail } from "react-icons/md";
 
 const ContactUs = () => {
   const {
@@ -24,49 +27,66 @@ const ContactUs = () => {
       address: "Chicago HQ Estica Cop. Macomb, MI 48042",
       phone: "(423) 733-8222",
       email: "example@email.com",
-      bg: "bg-blue-600 text-white",
+      bg: "bg-[#066ac9] text-white",
     },
     {
       title: "Contact Address",
       address: "2492 Centennial NW, Acworth, GA, 30102",
       phone: "+896-789-546",
       email: "example@email.com",
-      bg: "bg-gray-200 shadow-md",
+      bg: "bg-white shadow-md",
     },
     {
       title: "Main Office Address",
       address: "2002 Horton Ford Rd, Eidson, TN, 37731",
       phone: "(678) 324-1251",
       email: "example@email.com",
-      bg: "bg-gray-200 shadow-md",
+      bg: "bg-white shadow-md",
     },
   ];
   return (
-    <div className="flex flex-col my-8 justify-center items-center w-full space-y-8 px-4 md:px-10 lg:px-20 max-w-screen">
+    <div className="flex flex-col lg:my-8 justify-center items-center w-full space-y-8 px-4 md:px-10 lg:px-20 ">
       {/* Banner Section */}
-      {/* <div>
-        <div className=" relative ">
-          <img src={bgimg} alt="" className=" md:w-[90rem] " />
-          <div className="absolute  my-10 top-10 md:right-96 md:mr-29  ">
-            <h1 className="text-blue-500 md:text-md font-bold text-center ">
-              Contact Us
-            </h1>
-            <h3 className="text-2xl md:text-5xl font-bold text-center ">
-              We're here to help!
-            </h3>
-          </div>
-        </div>
-      </div> */}
-      <div>
-        <div className="relative">
-          <img src={bgimg} alt="Background" className="w-[90rem] mx-20" />
-          <div className="absolute top-10 left-1/2 transform -translate-x-1/2 md:top-20">
+      <div className="h-[750px] lg:h-full">
+        <div className="w-full relative overflow-hiddene">
+          <img
+            src={bgimg}
+            alt="Background"
+            className="w-full  md:w-[90rem] mx-2 md:mx-20"
+          />
+          <div className="absolute top-[50%] sm:top-72 md:top-20 left-1/2 transform -translate-x-1/2 w-full text-center">
             <h1 className="text-blue-500 text-lg md:text-xl font-bold text-center">
               Contact Us
             </h1>
             <h3 className="text-2xl md:text-5xl font-bold text-center">
               We're here to help!
             </h3>
+          </div>
+          <div className="flex gap-4 md:gap-8 flex-col md:flex-row justify-center items-center absolute md:top-52 w-full px-4">
+            {items.map((item, index) => (
+              <div
+                key={index}
+                className={`${item.bg} px-4 md:px-8 py-6 md:py-9 rounded-xl shadow-xl ring-2 ring-gray-100 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg`}
+              >
+                <div className="w-full flex flex-col space-y-4 justify-center items-center text-center">
+                  <h1 className="font-bold text-lg sm:text-xl md:text-2xl">
+                    {item.title}
+                  </h1>
+                  <div className="flex justify-center items-center space-x-2 text-xs sm:text-sm md:text-base">
+                    <FaLocationDot className="mx-1" />
+                    {item.address}
+                  </div>
+                  <h3 className="flex justify-center items-center space-x-2 text-xs sm:text-sm md:text-base">
+                    <FaPhoneAlt className="mx-1" />
+                    {item.phone}
+                  </h3>
+                  <h4 className="flex justify-center items-center space-x-2 text-xs sm:text-sm md:text-base">
+                    <MdOutlineEmail className="mx-1" />
+                    {item.email}
+                  </h4>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

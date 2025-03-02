@@ -47,8 +47,8 @@ const ContactUs = () => {
   return (
     <div className="flex flex-col lg:my-8 justify-center items-center w-full space-y-8 px-4 md:px-10 lg:px-20 ">
       {/* Banner Section */}
-      <div className="h-[750px] lg:h-full">
-        <div className="w-full relative overflow-hiddene">
+      <div className="h-[750px] md:h-[450px]  lg:h-[500px]   ">
+        <div className="w-full relative  ">
           <img
             src={bgimg}
             alt="Background"

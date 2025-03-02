@@ -8,12 +8,14 @@ import { FaChevronDown } from "react-icons/fa";
 import { FaUserCircle } from "react-icons/fa";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [toggle, settoggle] = useState(true);
   const changeToggle = () => {
     toggle == true ? settoggle(false) : settoggle(true);
   };
   const [toggleAccount, settoggleAccount] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="sticky top-0 z-100 bg-white ">
@@ -40,7 +42,7 @@ const Navbar = () => {
                   </span>
                 </span>
                 <ul className="absolute z-10 hidden group-hover:block bg-white text-blue-600  rounded-md">
-                  <li className=" hover:text-blue-900 text-blue-700 px-4 py-2">
+                  <li className=" hover:text-blue-900 text-blue-700 px-4 py-2 cursor-pointer" onClick={() => navigate("/login")}>
                     Student
                   </li>
                   <li className="hover:text-blue-900 text-blue-700 px-4 py-2">

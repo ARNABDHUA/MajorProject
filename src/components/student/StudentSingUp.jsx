@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaRegCircleQuestion } from "react-icons/fa6";
 import os from "/images/os.gif";
+import Swal from "sweetalert2";
 
 const StudentSignup = () => {
   const navigate = useNavigate();
@@ -50,6 +52,15 @@ const StudentSignup = () => {
 
   const nextStep = () => validateStep() && setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
+  //password  Query =>
+  const passwordQuery = () => {
+    console.log("hi");
+    Swal.fire({
+      title: "password",
+      text: "The password must be at least 8 characters long and include at least one special character.",
+      icon: "question",
+    });
+  };
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -169,7 +180,12 @@ const StudentSignup = () => {
                 <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
               )}
 
-              <label className="block text-gray-700">Password</label>
+              <div className="flex gap-3 items-center justify-start">
+                <label className="block text-gray-700">Password</label>
+                <span>
+                  <FaRegCircleQuestion onClick={passwordQuery} />
+                </span>
+              </div>
               <input
                 type="password"
                 name="password"

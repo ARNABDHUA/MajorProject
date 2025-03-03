@@ -17,8 +17,8 @@ const DisplaySetup = () => {
           <Route path="*" element={<Error404 />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<StudentLogIn/>} />
-          <Route path="/signup" element={<StudentSingUp/>} />
+          <Route path="/login" element={<StudentLogIn />} />
+          <Route path="/signup" element={<StudentSingUp />} />
           <Route path="/courseModules" element={<CoursesModules />} />
         </Routes>
         <Footer />

@@ -129,7 +129,7 @@ const StudentSignup = () => {
           />
         </div>
 
-        <div className="w-full md:w-1/2 p-6 flex flex-col space-y-10">
+        <div className="w-full md:w-1/2 p-6 flex flex-col mid-h-125">
           <h2 className="text-2xl font-bold text-gray-900 text-center">
             Sign Up
           </h2>
@@ -138,159 +138,233 @@ const StudentSignup = () => {
           </h3>
 
           {step === 1 && (
-            <div className="flex flex-col space-y-10">
-              <div>
-                <ProgressBar completed={33} />
-                <label className="block text-gray-700">Name</label>
+            <div className="flex flex-col space-y-6 p-6 bg-white rounded-lg">
+              <ProgressBar completed={33} />
+
+              {/* Name Field */}
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-semibold mb-1">Name</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Enter name"
-                  className="w-full p-3 border rounded-lg mb-2"
+                  placeholder="Enter your name"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   required
                 />
                 {errors.name && (
-                  <p className="text-red-500 text-sm">{errors.name}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                 )}
               </div>
 
-              <div>
-                <label className="block text-gray-700">Email</label>
+              {/* Email Field */}
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-semibold mb-1">
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter email"
-                  className="w-full p-3 border rounded-lg mb-2"
+                  placeholder="Enter your email"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   required
                 />
                 {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
                 )}
               </div>
 
-              <button
-                onClick={nextStep}
-                className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
-              >
-                Next
-              </button>
+              {/* Next Button & Login Redirect */}
+              <div className="text-center">
+                <button
+                  onClick={nextStep}
+                  className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition shadow-md"
+                >
+                  Next
+                </button>
+                <p className="text-gray-600 mt-4">
+                  Already have an account?{" "}
+                  <span
+                    className="text-green-600 font-bold cursor-pointer hover:text-green-400"
+                    onClick={() => navigate("/login")}
+                  >
+                    Log in here
+                  </span>
+                </p>
+              </div>
             </div>
           )}
 
           {step === 2 && (
-            <div>
+            <div className="flex flex-col space-y- p-6 bg-white  rounded-lg">
               <ProgressBar completed={66} />
-              <label className="block text-gray-700">Phone Number</label>
-              <input
-                type="text"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                placeholder="Enter phone number"
-                className="w-full p-3 border rounded-lg mb-2"
-                required
-              />
-              {errors.phoneNumber && (
-                <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
-              )}
-              <div className="flex gap-3 items-center justify-start">
-                <label className="block text-gray-700">Password</label>
-                <span>
-                  <FaRegCircleQuestion onClick={passwordQuery} />
-                </span>
+
+              {/* Phone Number Field */}
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-semibold mb-1">
+                  Phone Number
+                </label>
+                <input
+                  type="text"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="Enter phone number"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  required
+                />
+                {errors.phoneNumber && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.phoneNumber}
+                  </p>
+                )}
               </div>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter password"
-                className="w-full p-3 border rounded-lg mb-2"
-                required
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password}</p>
-              )}
-              <label className="block text-gray-700">Confirm Password</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm password"
-                className="w-full p-3 border rounded-lg mb-2"
-                required
-              />
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
-              )}
+
+              {/* Password Field */}
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <label className="text-gray-700 font-semibold">
+                    Password
+                  </label>
+                  <FaRegCircleQuestion
+                    className="text-gray-500 cursor-pointer hover:text-gray-700"
+                    onClick={passwordQuery}
+                  />
+                </div>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter password"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  required
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
+              </div>
+
+              {/* Confirm Password Field */}
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-semibold mb-1">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm password"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  required
+                />
+                {errors.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+
+              {/* Navigation Buttons */}
               <div className="flex justify-between">
                 <button
                   onClick={prevStep}
-                  className="bg-gray-300 py-2 px-4 rounded-lg hover:bg-gray-400"
+                  className="bg-gray-300 py-2 px-4 rounded-lg hover:bg-gray-400 transition shadow-md"
                 >
                   Back
                 </button>
                 <button
                   onClick={nextStep}
-                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition shadow-md"
                 >
                   Next
                 </button>
               </div>
+
+              {/* Login Redirect */}
+              <p className="text-center text-gray-600 mt-4">
+                Already have an account?{" "}
+                <span
+                  className="text-green-600 font-bold cursor-pointer hover:text-green-400"
+                  onClick={() => navigate("/login")}
+                >
+                  Log in here
+                </span>
+              </p>
             </div>
           )}
 
           {step === 3 && (
-            <div className="flex flex-col space-y-10">
+            <div className="flex flex-col space-y-6 p-6 bg-white  rounded-lg">
               <ProgressBar completed={99} />
-              <div>
-                <label className="block text-gray-700">Address</label>
+
+              {/* Address Field */}
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-semibold mb-1">
+                  Address
+                </label>
                 <input
                   type="text"
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
                   placeholder="Enter address"
-                  className="w-full p-3 border rounded-lg mb-2"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   required
                 />
                 {errors.address && (
-                  <p className="text-red-500 text-sm">{errors.address}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.address}</p>
                 )}
               </div>
-              <div>
-                <label className="block text-gray-700">Pincode</label>
+
+              {/* Pincode Field */}
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-semibold mb-1">
+                  Pincode
+                </label>
                 <input
                   type="text"
                   name="pincode"
                   value={formData.pincode}
                   onChange={handleChange}
                   placeholder="Enter pincode"
-                  className="w-full p-3 border rounded-lg mb-2"
+                  className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   required
                 />
                 {errors.pincode && (
-                  <p className="text-red-500 text-sm">{errors.pincode}</p>
+                  <p className="text-red-500 text-sm mt-1">{errors.pincode}</p>
                 )}
               </div>
+
+              {/* Navigation Buttons */}
               <div className="flex justify-between">
                 <button
                   onClick={prevStep}
-                  className="bg-gray-300 py-2 px-4 rounded-lg hover:bg-gray-400"
+                  className="bg-gray-300 py-2 px-4 rounded-lg hover:bg-gray-400 transition shadow-md"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+                  className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition shadow-md"
                 >
-                  Submit
+                  Register
                 </button>
               </div>
+
+              {/* Login Redirect */}
+              <p className="text-center text-gray-600 mt-4">
+                Already have an account?{" "}
+                <span
+                  className="text-green-600 font-bold cursor-pointer hover:text-green-400"
+                  onClick={() => navigate("/login")}
+                >
+                  Log in here
+                </span>
+              </p>
             </div>
           )}
         </div>

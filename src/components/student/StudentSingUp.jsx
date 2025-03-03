@@ -4,6 +4,7 @@ import axios from "axios";
 import { FaRegCircleQuestion } from "react-icons/fa6";
 import os from "/images/os.gif";
 import Swal from "sweetalert2";
+import ProgressBar from "@ramonak/react-progress-bar";
 
 const StudentSignup = () => {
   const navigate = useNavigate();
@@ -34,16 +35,29 @@ const StudentSignup = () => {
         newErrors.name = "Name must be at least 3 characters long";
       if (!/^\S+@gmail\.com$/.test(email))
         newErrors.email = "Email must be a valid @gmail.com address";
+      if (!formData.name || !formData.email) {
+        showPopup("Please fill in all fields!", "error");
+        return;
+      }
     } else if (step === 2) {
       if (!/^[56789]\d{9}$/.test(phoneNumber))
         newErrors.phoneNumber = "Invalid phone number";
       if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}/.test(password))
         newErrors.password = "Weak password";
       if (password !== confirmPassword)
-        newErrors.confirmPassword = "Passwords do not match";
+        newErrors.confirmPassword =
+          "Password must contain at least 8 characters, including one uppercase letter and one special character.";
+      if (!formData.phoneNumber || !formData.password) {
+        showPopup("Please fill in all fields!", "error");
+        return;
+      }
     } else if (step === 3) {
       if (!address.trim()) newErrors.address = "Address is required";
       if (!/^\d{6}$/.test(pincode)) newErrors.pincode = "Invalid pincode";
+      if (!formData.address || !formData.pincode) {
+        showPopup("Please fill in all fields!", "error");
+        return;
+      }
     }
 
     setErrors(newErrors);
@@ -54,11 +68,10 @@ const StudentSignup = () => {
   const prevStep = () => setStep((prev) => prev - 1);
   //password  Query =>
   const passwordQuery = () => {
-    console.log("hi");
     Swal.fire({
-      title: "password",
-      text: "The password must be at least 8 characters long and include at least one special character.",
-      icon: "question",
+      title: "Password Guidelines",
+      text: "Your password must be at least 8 characters long and include at least one uppercase letter and one special character.",
+      icon: "info",
     });
   };
 
@@ -127,6 +140,7 @@ const StudentSignup = () => {
           {step === 1 && (
             <div className="flex flex-col space-y-10">
               <div>
+                <ProgressBar completed={33} />
                 <label className="block text-gray-700">Name</label>
                 <input
                   type="text"
@@ -135,6 +149,7 @@ const StudentSignup = () => {
                   onChange={handleChange}
                   placeholder="Enter name"
                   className="w-full p-3 border rounded-lg mb-2"
+                  required
                 />
                 {errors.name && (
                   <p className="text-red-500 text-sm">{errors.name}</p>
@@ -150,6 +165,7 @@ const StudentSignup = () => {
                   onChange={handleChange}
                   placeholder="Enter email"
                   className="w-full p-3 border rounded-lg mb-2"
+                  required
                 />
                 {errors.email && (
                   <p className="text-red-500 text-sm">{errors.email}</p>
@@ -167,6 +183,7 @@ const StudentSignup = () => {
 
           {step === 2 && (
             <div>
+              <ProgressBar completed={66} />
               <label className="block text-gray-700">Phone Number</label>
               <input
                 type="text"
@@ -175,11 +192,11 @@ const StudentSignup = () => {
                 onChange={handleChange}
                 placeholder="Enter phone number"
                 className="w-full p-3 border rounded-lg mb-2"
+                required
               />
               {errors.phoneNumber && (
                 <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
               )}
-
               <div className="flex gap-3 items-center justify-start">
                 <label className="block text-gray-700">Password</label>
                 <span>
@@ -193,11 +210,11 @@ const StudentSignup = () => {
                 onChange={handleChange}
                 placeholder="Enter password"
                 className="w-full p-3 border rounded-lg mb-2"
+                required
               />
               {errors.password && (
                 <p className="text-red-500 text-sm">{errors.password}</p>
               )}
-
               <label className="block text-gray-700">Confirm Password</label>
               <input
                 type="password"
@@ -205,11 +222,11 @@ const StudentSignup = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm password"
                 className="w-full p-3 border rounded-lg mb-2"
+                required
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
               )}
-
               <div className="flex justify-between">
                 <button
                   onClick={prevStep}
@@ -229,6 +246,7 @@ const StudentSignup = () => {
 
           {step === 3 && (
             <div className="flex flex-col space-y-10">
+              <ProgressBar completed={99} />
               <div>
                 <label className="block text-gray-700">Address</label>
                 <input
@@ -238,12 +256,12 @@ const StudentSignup = () => {
                   onChange={handleChange}
                   placeholder="Enter address"
                   className="w-full p-3 border rounded-lg mb-2"
+                  required
                 />
                 {errors.address && (
                   <p className="text-red-500 text-sm">{errors.address}</p>
                 )}
               </div>
-
               <div>
                 <label className="block text-gray-700">Pincode</label>
                 <input
@@ -253,6 +271,7 @@ const StudentSignup = () => {
                   onChange={handleChange}
                   placeholder="Enter pincode"
                   className="w-full p-3 border rounded-lg mb-2"
+                  required
                 />
                 {errors.pincode && (
                   <p className="text-red-500 text-sm">{errors.pincode}</p>

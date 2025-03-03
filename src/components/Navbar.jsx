@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [toggle, settoggle] = useState(true);
   const changeToggle = () => {
-    toggle == true ? settoggle(false) : settoggle(true);
+    toggle === true ? settoggle(false) : settoggle(true);
   };
   const [toggleAccount, settoggleAccount] = useState(false);
   const navigate = useNavigate();
@@ -42,7 +42,10 @@ const Navbar = () => {
                   </span>
                 </span>
                 <ul className="absolute z-10 hidden group-hover:block bg-white text-blue-600  rounded-md">
-                  <li className=" hover:text-blue-900 text-blue-700 px-4 py-2 cursor-pointer" onClick={() => navigate("/login")}>
+                  <li
+                    className=" hover:text-blue-900 text-blue-700 px-4 py-2 cursor-pointer"
+                    onClick={() => navigate("/login")}
+                  >
                     Student
                   </li>
                   <li className="hover:text-blue-900 text-blue-700 px-4 py-2">
@@ -95,7 +98,7 @@ const Navbar = () => {
                 </li>
 
                 <li className="hover:text-blue-500">Notice</li>
-                <li>
+                <div>
                   <li className="flex justify-between pr-3">
                     <span>Accounts</span>
                     <span>
@@ -106,18 +109,15 @@ const Navbar = () => {
                       />
                     </span>
                   </li>
-                  <li
-                    className={
-                      !toggleAccount
-                        ? `flex flex-col space-y-4 py-2 ml-5 text-black bg-white m-3 p-2 `
-                        : `hidden flex-col space-y-4 py-2 ml-5 text-black bg-white m-3 p-2`
-                    }
-                  >
-                    <li className="">Student</li>
-                    <li>Teacher </li>
-                    <li> Admin</li>
-                  </li>
-                </li>
+
+                  {toggleAccount && (
+                    <ul className="flex flex-col space-y-4 py-2 ml-5 text-black bg-white m-3 p-2">
+                      <li onClick={() => navigate("/login")}>Student</li>
+                      <li>Teacher</li>
+                      <li>Admin</li>
+                    </ul>
+                  )}
+                </div>
 
                 <li className="hover:text-blue-500">
                   <NavLink to="/contact-us">Contact us</NavLink>

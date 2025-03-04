@@ -8,6 +8,7 @@ import ContactUs from "./components/ContactUs";
 import CoursesModules from "./components/Courses/CoursesModules";
 import StudentLogIn from "./components/student/StudentLogIn";
 import StudentSingUp from "./components/student/StudentSingUp";
+import About from "./components/About";
 const DisplaySetup = () => {
   return (
     <div>
@@ -20,6 +21,7 @@ const DisplaySetup = () => {
           <Route path="/login" element={<StudentLogIn />} />
           <Route path="/signup" element={<StudentSingUp />} />
           <Route path="/courseModules" element={<CoursesModules />} />
+          <Route path="/about" element={<About />} />
         </Routes>
         <Footer />
       </Router>

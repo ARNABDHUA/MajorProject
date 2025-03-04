@@ -36,7 +36,7 @@ const Navbar = () => {
 
               <li className="relative group">
                 <span className="px-2 cursor-pointer space-x-2 flex justify-center items-center">
-                  <span>Accounts</span>
+                  <span className="text-blue-500">Accounts</span>
                   <span>
                     <FaChevronDown />
                   </span>
@@ -60,7 +60,9 @@ const Navbar = () => {
               <li className="hover:text-blue-500">
                 <NavLink to="/contact-us">Contact us</NavLink>
               </li>
-              <li className="hover:text-blue-500">About</li>
+              <li className="hover:text-blue-500">
+                <NavLink to="/about">About</NavLink>
+              </li>
             </ul>
           </div>
 
@@ -68,7 +70,7 @@ const Navbar = () => {
             <input
               type="text"
               placeholder="Search"
-              className="pl-2 pr-3 py-2 border rounded md:w-52 lg:w-64  outline-blue-500"
+              className="pl-2 pr-3 py-2 border rounded md:w-52 lg:w-64 border-gray-400 outline-blue-500"
             />
             <IoIosSearch className="absolute right-10 top-3 text-gray-500 text-xl hover:text-blue-500" />
             <div>
@@ -77,7 +79,7 @@ const Navbar = () => {
           </div>
           {/* toggle menu */}
 
-          <div className=" flex items-center space-x-4 md:hidden">
+          <div className=" flex items-center space-x-4 md:hidden justify-center">
             {toggle ? (
               <GiHamburgerMenu className="text-2xl" onClick={changeToggle} />
             ) : (
@@ -130,7 +132,7 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder="Search"
-                className="pl-2 pr-3 py-2 border rounded w-48  outline-blue-500"
+                className="pl-2 pr-3 py-2 border rounded w-48  outline-blue-500 border-gray-500"
               />
               <IoIosSearch className="absolute right-2 top-2 text-gray-500 text-xl hover:text-blue-500" />
             </div>

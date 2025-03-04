@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaRegCircleQuestion } from "react-icons/fa6";
+import { IoEyeOutline } from "react-icons/io5";
+import { IoEyeOffOutline } from "react-icons/io5";
 import os from "/images/os.gif";
 import Swal from "sweetalert2";
 import ProgressBar from "@ramonak/react-progress-bar";
@@ -17,6 +19,8 @@ const StudentSignup = () => {
     address: "",
     pincode: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
@@ -129,7 +133,7 @@ const StudentSignup = () => {
           />
         </div>
 
-        <div className="w-full md:w-1/2 p-6 flex flex-col mid-h-125">
+        <div className="w-full md:w-1/2 p-6 flex flex-col h-145 ">
           <h2 className="text-2xl font-bold text-gray-900 text-center">
             Sign Up
           </h2>
@@ -199,7 +203,7 @@ const StudentSignup = () => {
           )}
 
           {step === 2 && (
-            <div className="flex flex-col space-y- p-6 bg-white  rounded-lg">
+            <div className="flex flex-col space-y-6 p-6 bg-white  rounded-lg">
               <ProgressBar completed={66} />
 
               {/* Phone Number Field */}
@@ -224,7 +228,7 @@ const StudentSignup = () => {
               </div>
 
               {/* Password Field */}
-              <div className="flex flex-col">
+              <div className="flex flex-col relative">
                 <div className="flex items-center gap-2">
                   <label className="text-gray-700 font-semibold">
                     Password
@@ -235,7 +239,7 @@ const StudentSignup = () => {
                   />
                 </div>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
@@ -243,24 +247,50 @@ const StudentSignup = () => {
                   className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPassword(!showPassword);
+                  }}
+                  className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500"
+                >
+                  {showPassword ? (
+                    <IoEyeOffOutline className="text-black" />
+                  ) : (
+                    <IoEyeOutline className="text-black" />
+                  )}
+                </button>
                 {errors.password && (
                   <p className="text-red-500 text-sm mt-1">{errors.password}</p>
                 )}
               </div>
 
               {/* Confirm Password Field */}
-              <div className="flex flex-col">
+              <div className="flex flex-col relative">
                 <label className="text-gray-700 font-semibold mb-1">
                   Confirm Password
                 </label>
                 <input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm password"
                   className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowConfirmPassword(!showConfirmPassword);
+                  }}
+                  className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500"
+                >
+                  {showConfirmPassword ? (
+                    <IoEyeOffOutline className="text-black" />
+                  ) : (
+                    <IoEyeOutline className="text-black" />
+                  )}
+                </button>
                 {errors.confirmPassword && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.confirmPassword}
@@ -285,15 +315,6 @@ const StudentSignup = () => {
               </div>
 
               {/* Login Redirect */}
-              <p className="text-center text-gray-600 mt-4">
-                Already have an account?{" "}
-                <span
-                  className="text-green-600 font-bold cursor-pointer hover:text-green-400"
-                  onClick={() => navigate("/login")}
-                >
-                  Log in here
-                </span>
-              </p>
             </div>
           )}
 

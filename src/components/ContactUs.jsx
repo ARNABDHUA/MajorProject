@@ -207,6 +207,16 @@ const ContactUs = () => {
           </form>
         </div>
       </div>
+      {/* Google Maps*/}
+      <div className="my-8">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.07827328958!2d88.42445437475723!3d22.576175632840286!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a02751a9d9c9e85%3A0x7fe665c781b10383!2sTechno%20Main%20Salt%20Lake!5e0!3m2!1sen!2sin!4v1741097876757!5m2!1sen!2sin"
+          width="1300"
+          height="450"
+          loading="lazy"
+          className="bg-gray-800"
+        ></iframe>
+      </div>
     </div>
   );
 };

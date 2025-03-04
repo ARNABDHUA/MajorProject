@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import HashLoader from "react-spinners/HashLoader";
+import { IoEyeOutline } from "react-icons/io5";
+import { IoEyeOffOutline } from "react-icons/io5";
 import os from "/images/os.gif";
 
 const StudentLogin = () => {
+  const [showPassword, setShowPassword] = useState(true);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -82,7 +85,7 @@ const StudentLogin = () => {
     <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
       <div className="flex flex-col md:flex-row bg-white shadow-2xl rounded-2xl overflow-hidden w-full max-w-4xl">
         {/* Left Section (Form) */}
-        <div className="flex flex-col justify-center p-6 md:p-12 w-full md:w-1/2 mid-h-145">
+        <div className="flex flex-col justify-center p-6 md:p-12 w-full md:w-1/2 min-h-145">
           <h2 className="text-3xl font-bold text-gray-800 text-center mb-4">
             Welcome Student
           </h2>
@@ -114,19 +117,32 @@ const StudentLogin = () => {
               />
             </div>
 
-            <div className="mb-4">
+            <div className="mb-4 relative">
               <label className="block text-gray-700 text-sm mb-1">
                 Password
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className=" w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Enter your password"
                 required
               />
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+                className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? (
+                  <IoEyeOffOutline className="text-black" />
+                ) : (
+                  <IoEyeOutline className="text-black" />
+                )}
+              </button>
             </div>
 
             <div className="flex justify-between items-center mb-4">

@@ -49,8 +49,7 @@ const StudentSignup = () => {
       if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}/.test(password))
         newErrors.password = "Weak password";
       if (password !== confirmPassword)
-        newErrors.confirmPassword =
-          "Password must contain at least 8 characters, including one uppercase letter and one special character.";
+        newErrors.confirmPassword = "Password not matched";
       if (!formData.phoneNumber || !formData.password) {
         showPopup("Please fill in all fields!", "error");
         return;

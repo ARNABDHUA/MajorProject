@@ -19,6 +19,7 @@ import HowToBecomeTeacher from "./HowToBecomeTeacher";
 import SiteMap from "./components/SiteMap";
 import HowtoGuide from "./components/HowtoGuide";
 import Termsandcondion from "./Termsandcondion";
+import NoticeBoard from "./components/NoticeBoard";
 const DisplaySetup = () => {
   return (
     <div>
@@ -42,6 +43,7 @@ const DisplaySetup = () => {
           <Route path="/howtobecometeacher" element={<HowToBecomeTeacher />} />
           <Route path="/howtoguide" element={<HowtoGuide />} />
           <Route path="/termsandcondion" element={<Termsandcondion />} />
+          <Route path="/notice" element={<NoticeBoard />} />
         </Routes>
         <Footer />
       </Router>

@@ -32,7 +32,10 @@ const Navbar = () => {
                 <NavLink to="/">Home</NavLink>
               </li>
 
-              <li className="hover:text-blue-500">Notice</li>
+              <li className="hover:text-blue-500">
+                {" "}
+                <NavLink to="/notice">Notice</NavLink>
+              </li>
 
               <li className="relative group">
                 <span className="px-2 cursor-pointer space-x-2 flex justify-center items-center">
@@ -99,10 +102,14 @@ const Navbar = () => {
                   <NavLink to="/">Home</NavLink>
                 </li>
 
-                <li className="hover:text-blue-500">Notice</li>
+                <li className="hover:text-blue-500">
+                  <NavLink to="/notice">Notice</NavLink>
+                </li>
                 <div>
                   <li className="flex justify-between pr-3">
-                    <span>Accounts</span>
+                    <span>
+                      <NavLink to="/about">About</NavLink>
+                    </span>
                     <span>
                       <HiDotsHorizontal
                         onClick={() => {
@@ -124,7 +131,10 @@ const Navbar = () => {
                 <li className="hover:text-blue-500">
                   <NavLink to="/contact-us">Contact us</NavLink>
                 </li>
-                <li className="hover:text-blue-500">About</li>
+                <li className="hover:text-blue-500">
+                  {" "}
+                  <NavLink to="/about">About</NavLink>
+                </li>
               </ul>
             </div>
 

@@ -111,11 +111,11 @@ const StudentSignup = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gray-100 w-full">
+    <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gray-100 w-full relative">
       {/* Popup Notification - Centered */}
       {popup.show && (
         <div
-          className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 text-white text-center rounded-lg shadow-lg transition-opacity duration-300 ${
+          className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 text-white text-center rounded-lg shadow-lg transition-opacity duration-300 z-10 ${
             popup.type === "success" ? "bg-green-500" : "bg-red-500"
           }`}
         >
@@ -202,7 +202,7 @@ const StudentSignup = () => {
           )}
 
           {step === 2 && (
-            <div className="flex flex-col space-y-6 p-6 bg-white  rounded-lg">
+            <div className="flex flex-col space-y-5 p-6 bg-white  rounded-lg">
               <ProgressBar completed={66} />
 
               {/* Phone Number Field */}

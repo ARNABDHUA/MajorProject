@@ -9,6 +9,16 @@ import CoursesModules from "./components/Courses/CoursesModules";
 import StudentLogIn from "./components/student/StudentLogIn";
 import StudentSingUp from "./components/student/StudentSingUp";
 import About from "./components/About";
+import Carrers from "./components/Carrers";
+import Documentation from "./components/Documentation";
+import NewsBlog from "./components/NewsBlog";
+import Library from "./components/Library";
+import FAQ from "./FAQ";
+import Forum from "./Forum";
+import HowToBecomeTeacher from "./HowToBecomeTeacher";
+import SiteMap from "./components/SiteMap";
+import HowtoGuide from "./components/HowtoGuide";
+import Termsandcondion from "./Termsandcondion";
 const DisplaySetup = () => {
   return (
     <div>
@@ -22,6 +32,16 @@ const DisplaySetup = () => {
           <Route path="/signup" element={<StudentSingUp />} />
           <Route path="/courseModules" element={<CoursesModules />} />
           <Route path="/about" element={<About />} />
+          <Route path="/carrers" element={<Carrers />} />
+          <Route path="/documentation" element={<Documentation />} />
+          <Route path="/newsblog" element={<NewsBlog />} />
+          <Route path="/library" element={<Library />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/forum" element={<Forum />} />
+          <Route path="/sitemap" element={<SiteMap />} />
+          <Route path="/howtobecometeacher" element={<HowToBecomeTeacher />} />
+          <Route path="/howtoguide" element={<HowtoGuide />} />
+          <Route path="/termsandcondion" element={<Termsandcondion />} />
         </Routes>
         <Footer />
       </Router>

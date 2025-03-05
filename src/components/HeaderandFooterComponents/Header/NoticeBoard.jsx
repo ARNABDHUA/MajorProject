@@ -40,7 +40,7 @@ const NoticeBoard = () => {
       {/* Responsive Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Notice Board Section */}
-        <div className="bg-green-900 text-white p-6 rounded-lg shadow-lg">
+        <div className="bg-green-900 text-white p-6 rounded-lg shadow-lg selection:bg-red-500">
           <h2 className="text-2xl font-bold mb-4 border-b pb-2">
             📢 Notice Board
           </h2>

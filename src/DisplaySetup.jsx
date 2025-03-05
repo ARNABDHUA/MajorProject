@@ -1,25 +1,31 @@
+//import inbuilt package
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+//import landing page components
 import LandingPage from "./LandingPage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+//error file
 import Error404 from "./Error404";
-import ContactUs from "./components/ContactUs";
+//import CourseModules
 import CoursesModules from "./components/Courses/CoursesModules";
+// import student login/register
 import StudentLogIn from "./components/student/StudentLogIn";
 import StudentSingUp from "./components/student/StudentSingUp";
-import About from "./components/About";
-import Carrers from "./components/Carrers";
-import Documentation from "./components/Documentation";
-import NewsBlog from "./components/NewsBlog";
-import Library from "./components/Library";
-import FAQ from "./FAQ";
-import Forum from "./Forum";
-import HowToBecomeTeacher from "./HowToBecomeTeacher";
-import SiteMap from "./components/SiteMap";
-import HowtoGuide from "./components/HowtoGuide";
-import Termsandcondion from "./Termsandcondion";
-import NoticeBoard from "./components/NoticeBoard";
+//import header footer components
+import ContactUs from "./components/HeaderandFooterComponents/ContactUs";
+import About from "./components/HeaderandFooterComponents/About";
+import Carrers from "./components/HeaderandFooterComponents/Footer/Carrers";
+import Documentation from "./components/HeaderandFooterComponents/Footer/Documentation";
+import NewsBlog from "./components/HeaderandFooterComponents/Footer/NewsBlog";
+import Library from "./components/HeaderandFooterComponents/Footer/Library";
+import FAQ from "./components/HeaderandFooterComponents/Footer/FAQ";
+import Forum from "./components/HeaderandFooterComponents/Footer/Forum";
+import HowToBecomeTeacher from "./components/HeaderandFooterComponents/Footer/HowToBecomeTeacher";
+import SiteMap from "./components/HeaderandFooterComponents/Footer/SiteMap";
+import HowtoGuide from "./components/HeaderandFooterComponents/Footer/HowtoGuide";
+import Termsandcondion from "./components/HeaderandFooterComponents/Footer/Termsandcondion";
+import NoticeBoard from "./components/HeaderandFooterComponents/Header/NoticeBoard";
 const DisplaySetup = () => {
   return (
     <div>

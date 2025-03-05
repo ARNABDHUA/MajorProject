@@ -1,9 +1,8 @@
 import React from "react";
-
-import CoursesAndExam from "./components/CoursesAndExam";
-import TrendCourse from "./components/TrendCourse";
-import Feedback from "./components/Feedback";
-import HeroSection from "./components/HeroSection";
+import TrendCourse from "./components/LandingPage/TrendCourse";
+import Feedback from "./components/LandingPage/Feedback";
+import CoursesAndExam from "./components/LandingPage/CoursesAndExam";
+import HeroSection from "./components/LandingPage/HeroSection";
 
 const LandingPage = () => {
   return (
@@ -11,7 +10,6 @@ const LandingPage = () => {
       <HeroSection />
       <CoursesAndExam />
       <TrendCourse />
-
       <Feedback />
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Courses from "./Courses";
-import Exams from "./Exams";
+import Courses from "./CourseAndExams/Courses";
+import Exams from "./CourseAndExams/Exams";
 
 const CoursesAndExam = () => {
   // State to track the active tab

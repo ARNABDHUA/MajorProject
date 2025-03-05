@@ -1,8 +1,10 @@
 import React from "react";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { CiLinkedin } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
   return (
     <footer className=" py-10">
       <div className="container mx-auto grid gap-8 grid-cols-1 sm:grid-cols-12 px-6 lg:px-16">
@@ -26,11 +28,11 @@ const Footer = () => {
         <div className="sm:col-span-2">
           <h2 className="text-lg font-semibold mb-3">Company</h2>
           <ul className="text-gray-400 space-y-2">
-            <li className="hover:text-blue-500 cursor-pointer">About us</li>
-            <li className="hover:text-blue-500 cursor-pointer">Contact us</li>
-            <li className="hover:text-blue-500 cursor-pointer">News & Blogs</li>
-            <li className="hover:text-blue-500 cursor-pointer">Library</li>
-            <li className="hover:text-blue-500 cursor-pointer">Career</li>
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/about")}>About us</li>
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/contact-us")}>Contact us</li>
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/newsblog")}>News & Blogs</li>
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/library")}>Library</li>
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/carrers")}>Career</li>
           </ul>
         </div>
 
@@ -38,12 +40,12 @@ const Footer = () => {
         <div className="sm:col-span-2">
           <h2 className="text-lg font-semibold mb-3">Community</h2>
           <ul className="text-gray-400 space-y-2">
-            <li className="hover:text-blue-500 cursor-pointer">
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/documentation")}>
               Documentation
             </li>
-            <li className="hover:text-blue-500 cursor-pointer">FAQ</li>
-            <li className="hover:text-blue-500 cursor-pointer">Forum</li>
-            <li className="hover:text-blue-500 cursor-pointer">Sitemap</li>
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/faq")}>FAQ</li>
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/forum")}>Forum</li>
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/sitemap")}>Sitemap</li>
           </ul>
         </div>
 
@@ -51,11 +53,11 @@ const Footer = () => {
         <div className="sm:col-span-2">
           <h2 className="text-lg font-semibold mb-3">Teaching</h2>
           <ul className="text-gray-400 space-y-2">
-            <li className="hover:text-blue-500 cursor-pointer">
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/howtobecometeacher")}>
               Become a Teacher
             </li>
-            <li className="hover:text-blue-500 cursor-pointer">How to Guide</li>
-            <li className="hover:text-blue-500 cursor-pointer">
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/howtoguide")}>How to Guide</li>
+            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/termsandcondion")}>
               Terms & Conditions
             </li>
           </ul>
@@ -63,7 +65,7 @@ const Footer = () => {
 
         {/* Contact Section */}
         <div className="sm:col-span-3">
-          <h2 className="text-lg font-semibold mb-3">Contact</h2>
+          <h2 className="text-lg font-semibold mb-3"onClick={() => navigate("/contact-us")}>Contact</h2>
           <p className="text-gray-400">Toll-Free (9 AM - 8 PM IST)</p>
           <a
             href="tel:+911234567890"

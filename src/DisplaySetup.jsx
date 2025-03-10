@@ -40,6 +40,7 @@ const DisplaySetup = () => {
           <Route path="/login" element={<StudentLogIn />} />
           <Route path="/signup" element={<StudentSingUp />} />
           <Route path="/courseModules" element={<CoursesModules />} />
+          <Route path="/courseModules/:id" element={<CoursesModules />} />
           <Route path="/about" element={<About />} />
           <Route path="/carrers" element={<Carrers />} />
           <Route path="/documentation" element={<Documentation />} />
@@ -52,7 +53,7 @@ const DisplaySetup = () => {
           <Route path="/howtoguide" element={<HowtoGuide />} />
           <Route path="/termsandcondion" element={<Termsandcondion />} />
           <Route path="/notice" element={<NoticeBoard />} />
-          <Route path="/teacher-live" element={<HomePage/>} />
+          <Route path="/teacher-live" element={<HomePage />} />
           <Route path="/teacher-live/room/:roomId" element={<Room />} />
         </Routes>
         <Footer />

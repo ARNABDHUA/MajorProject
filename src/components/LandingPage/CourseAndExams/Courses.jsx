@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
 import { RiLiveFill } from "react-icons/ri";
@@ -10,10 +11,10 @@ import BBA from "/images/program.png";
 import MTECH from "/images/www.png";
 import BSCDS from "/images/training-program.png";
 import { FiClock } from "react-icons/fi";
-import { NavLink } from "react-router-dom";
 
 const courses = [
   {
+    id: 100,
     name: "Master of Computer Application",
     code: "MCA",
     description:
@@ -21,8 +22,16 @@ const courses = [
     imageUrl: MCA,
     bgColor: "bg-gradient-to-r from-blue-900 to-blue-600",
     duration: "2 years",
+    instructor: "Abby Caldarone",
+    students: 12433,
+    schedule: [
+      { day: "Monday", time: "10:00 AM - 12:00 PM", room: "Room 101" },
+      { day: "Wednesday", time: "2:00 PM - 4:00 PM", room: "Room 102" },
+      { day: "Friday", time: "3:00 PM - 5:00 PM", room: "Room 103" },
+    ],
   },
   {
+    id: 101,
     name: "Bachelor of Computer Application",
     code: "BCA",
     description:
@@ -30,8 +39,16 @@ const courses = [
     imageUrl: BCA,
     bgColor: "bg-gradient-to-r from-cyan-500 to-blue-400",
     duration: "3 years",
+    instructor: "John Smith",
+    students: 20433,
+    schedule: [
+      { day: "Tuesday", time: "9:00 AM - 11:00 AM", room: "Room 201" },
+      { day: "Thursday", time: "1:00 PM - 3:00 PM", room: "Room 202" },
+      { day: "Saturday", time: "10:00 AM - 12:00 PM", room: "Room 203" },
+    ],
   },
   {
+    id: 102,
     name: "Bachelor of Technology",
     code: "BTECH",
     description:
@@ -39,8 +56,16 @@ const courses = [
     imageUrl: BTECH,
     bgColor: "bg-gradient-to-r from-red-600 to-orange-400",
     duration: "4 years",
+    instructor: "Sudip Dasgupta",
+    students: 15433,
+    schedule: [
+      { day: "Monday", time: "11:00 AM - 1:00 PM", room: "Room 301" },
+      { day: "Wednesday", time: "3:00 PM - 5:00 PM", room: "Room 302" },
+      { day: "Friday", time: "9:00 AM - 11:00 AM", room: "Room 303" },
+    ],
   },
   {
+    id: 103,
     name: "Master of Business Administration",
     code: "MBA",
     description:
@@ -48,8 +73,16 @@ const courses = [
     imageUrl: MBA,
     bgColor: "bg-gradient-to-r from-yellow-500 to-amber-400",
     duration: "2 years",
+    instructor: "Subham Chopra",
+    students: 9000,
+    schedule: [
+      { day: "Tuesday", time: "10:00 AM - 12:00 PM", room: "Room 401" },
+      { day: "Thursday", time: "2:00 PM - 4:00 PM", room: "Room 402" },
+      { day: "Saturday", time: "3:00 PM - 5:00 PM", room: "Room 403" },
+    ],
   },
   {
+    id: 104,
     name: "Bachelor of Business Administration",
     code: "BBA",
     description:
@@ -57,8 +90,16 @@ const courses = [
     imageUrl: BBA,
     bgColor: "bg-gradient-to-r from-orange-500 to-red-400",
     duration: "3 years",
+    instructor: "Akash Yadav",
+    students: 12433,
+    schedule: [
+      { day: "Monday", time: "1:00 PM - 3:00 PM", room: "Room 501" },
+      { day: "Wednesday", time: "9:00 AM - 11:00 AM", room: "Room 502" },
+      { day: "Friday", time: "10:00 AM - 12:00 PM", room: "Room 503" },
+    ],
   },
   {
+    id: 105,
     name: "Master of Technology",
     code: "MTECH",
     description:
@@ -66,8 +107,16 @@ const courses = [
     imageUrl: MTECH,
     bgColor: "bg-gradient-to-r from-purple-700 to-pink-500",
     duration: "3 years",
+    instructor: "Manish Singh",
+    students: 2433,
+    schedule: [
+      { day: "Tuesday", time: "2:00 PM - 4:00 PM", room: "Room 601" },
+      { day: "Thursday", time: "9:00 AM - 11:00 AM", room: "Room 602" },
+      { day: "Saturday", time: "11:00 AM - 1:00 PM", room: "Room 603" },
+    ],
   },
   {
+    id: 106,
     name: "Bachelor of Science in Cyber Security",
     code: "BSC-CS",
     description:
@@ -75,6 +124,13 @@ const courses = [
     imageUrl: BSCDS,
     bgColor: "bg-gradient-to-r from-green-700 to-teal-500",
     duration: "3 years",
+    instructor: "Puja Jain",
+    students: 9433,
+    schedule: [
+      { day: "Monday", time: "9:00 AM - 11:00 AM", room: "Room 701" },
+      { day: "Wednesday", time: "10:00 AM - 12:00 PM", room: "Room 702" },
+      { day: "Friday", time: "2:00 PM - 4:00 PM", room: "Room 703" },
+    ],
   },
 ];
 
@@ -120,7 +176,7 @@ const Courses = () => {
             </div>
             <div className="flex px-4 pt-4 flex-col ">
               <div className=" border-gray-300  space-y-4 min-h-[170px] border-b ">
-                <NavLink>
+                <NavLink to={`/courseModules/${course.id}`}>
                   <h1 className=" text-md md:text-xl font-[500] h-1/3 hover:text-blue-900 ">
                     {course.name}
                   </h1>

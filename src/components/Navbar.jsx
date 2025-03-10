@@ -108,7 +108,7 @@ const Navbar = () => {
                 <div>
                   <li className="flex justify-between pr-3">
                     <span>
-                      <NavLink to="/about">About</NavLink>
+                      <NavLink >Accounts</NavLink>
                     </span>
                     <span>
                       <HiDotsHorizontal

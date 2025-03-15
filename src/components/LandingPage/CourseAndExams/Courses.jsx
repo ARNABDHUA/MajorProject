@@ -24,11 +24,6 @@ const courses = [
     duration: "2 years",
     instructor: "Abby Caldarone",
     students: 12433,
-    schedule: [
-      { day: "Monday", time: "10:00 AM - 12:00 PM", room: "Room 101" },
-      { day: "Wednesday", time: "2:00 PM - 4:00 PM", room: "Room 102" },
-      { day: "Friday", time: "3:00 PM - 5:00 PM", room: "Room 103" },
-    ],
   },
   {
     id: 101,
@@ -41,11 +36,6 @@ const courses = [
     duration: "3 years",
     instructor: "John Smith",
     students: 20433,
-    schedule: [
-      { day: "Tuesday", time: "9:00 AM - 11:00 AM", room: "Room 201" },
-      { day: "Thursday", time: "1:00 PM - 3:00 PM", room: "Room 202" },
-      { day: "Saturday", time: "10:00 AM - 12:00 PM", room: "Room 203" },
-    ],
   },
   {
     id: 102,
@@ -58,11 +48,6 @@ const courses = [
     duration: "4 years",
     instructor: "Sudip Dasgupta",
     students: 15433,
-    schedule: [
-      { day: "Monday", time: "11:00 AM - 1:00 PM", room: "Room 301" },
-      { day: "Wednesday", time: "3:00 PM - 5:00 PM", room: "Room 302" },
-      { day: "Friday", time: "9:00 AM - 11:00 AM", room: "Room 303" },
-    ],
   },
   {
     id: 103,
@@ -75,11 +60,6 @@ const courses = [
     duration: "2 years",
     instructor: "Subham Chopra",
     students: 9000,
-    schedule: [
-      { day: "Tuesday", time: "10:00 AM - 12:00 PM", room: "Room 401" },
-      { day: "Thursday", time: "2:00 PM - 4:00 PM", room: "Room 402" },
-      { day: "Saturday", time: "3:00 PM - 5:00 PM", room: "Room 403" },
-    ],
   },
   {
     id: 104,
@@ -92,11 +72,6 @@ const courses = [
     duration: "3 years",
     instructor: "Akash Yadav",
     students: 12433,
-    schedule: [
-      { day: "Monday", time: "1:00 PM - 3:00 PM", room: "Room 501" },
-      { day: "Wednesday", time: "9:00 AM - 11:00 AM", room: "Room 502" },
-      { day: "Friday", time: "10:00 AM - 12:00 PM", room: "Room 503" },
-    ],
   },
   {
     id: 105,
@@ -109,11 +84,6 @@ const courses = [
     duration: "3 years",
     instructor: "Manish Singh",
     students: 2433,
-    schedule: [
-      { day: "Tuesday", time: "2:00 PM - 4:00 PM", room: "Room 601" },
-      { day: "Thursday", time: "9:00 AM - 11:00 AM", room: "Room 602" },
-      { day: "Saturday", time: "11:00 AM - 1:00 PM", room: "Room 603" },
-    ],
   },
   {
     id: 106,
@@ -126,11 +96,6 @@ const courses = [
     duration: "3 years",
     instructor: "Puja Jain",
     students: 9433,
-    schedule: [
-      { day: "Monday", time: "9:00 AM - 11:00 AM", room: "Room 701" },
-      { day: "Wednesday", time: "10:00 AM - 12:00 PM", room: "Room 702" },
-      { day: "Friday", time: "2:00 PM - 4:00 PM", room: "Room 703" },
-    ],
   },
 ];
 

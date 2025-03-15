@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { FaUserGraduate } from "react-icons/fa";
 import CourseTab from "./CourseModulesTab/CourseTab";
-import RecordedClasses from "./CourseModulesTab/RecordedClasses";
+
 import { useParams } from "react-router-dom";
 //it is not good practice when we use dynamic data we have to change
 import MCA from "/images/artificial-intelligence.png";
@@ -16,6 +16,7 @@ import python from "/images/python.png";
 import java from "/images/java.png";
 import cpp from "/images/cpp.png";
 import dbms from "/images/dbms.png";
+import Routine from "./CourseModulesTab/Routine";
 //In backend we have to get every data
 const courses = [
   {
@@ -466,7 +467,7 @@ const CoursesModules = () => {
     } else if (activeTab === "Routine") {
       return (
         <div className="px-7 py-2">
-          <RecordedClasses />
+          <Routine />
         </div>
       );
     }

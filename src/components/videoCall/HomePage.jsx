@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function HomePage() {
   const [roomId, setRoomId] = useState("");
@@ -16,7 +16,9 @@ function HomePage() {
       alert("Please Generate Room Id First");
       return;
     }
-    navigate(`room/${roomId}?type=one-on-one`);
+    const absoluteUrl = `${window.location.origin}/room/${roomId}?type=one-on-one`;
+    window.open(absoluteUrl);
+    // navigate(`room/${roomId}?type=one-on-one`);
   };
 
   const handleGroupCall = () => {
@@ -24,7 +26,9 @@ function HomePage() {
       alert("Please Generate Room Id First");
       return;
     }
-    navigate(`room/${roomId}?type=group-call`);
+    const Url = `room/${roomId}?type=group-call`;
+    window.open(Url);
+    // navigate(`room/${roomId}?type=group-call`);
   };
 
   return (

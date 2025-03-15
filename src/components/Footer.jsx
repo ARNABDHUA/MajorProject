@@ -6,85 +6,193 @@ import { useNavigate } from "react-router-dom";
 const Footer = () => {
   const navigate = useNavigate();
   return (
-    <footer className=" py-10">
-      <div className="container mx-auto grid gap-8 grid-cols-1 sm:grid-cols-12 px-6 lg:px-16">
+    <footer className="py-12 bg-white">
+      <div className="container mx-auto grid gap-10 grid-cols-1 sm:grid-cols-12 px-6 lg:px-16">
         {/* Logo & About */}
         <div className="sm:col-span-3">
-          <h2 className="text-xl font-bold mb-3">Logo</h2>
-          <p className="text-gray-400 text-sm">
+          <h2 className="text-2xl font-bold mb-4 flex items-center text-black">
+            <span className="bg-blue-500 text-white p-2 rounded-lg mr-2">
+              E-college
+            </span>
+          </h2>
+          <p className="text-black text-sm leading-relaxed">
             Eduport education theme, built specifically for education centers,
             dedicated to teaching and engaging learners.
           </p>
           {/* Social Media Icons */}
-          <div className="flex gap-4 mt-4">
-            <FaFacebook className="text-2xl cursor-pointer hover:scale-110 transition-transform" />
-            <FaInstagram className="text-2xl cursor-pointer hover:scale-110 transition-transform" />
-            <FaTwitter className="text-2xl cursor-pointer hover:scale-110 transition-transform" />
-            <CiLinkedin className="text-2xl cursor-pointer hover:scale-110 transition-transform" />
+          <div className="flex gap-5 mt-6">
+            <div className="bg-gray-100 p-2 rounded-full hover:bg-blue-100 transition-all duration-300">
+              <FaFacebook className="text-xl text-blue-500 cursor-pointer" />
+            </div>
+            <div className="bg-gray-100 p-2 rounded-full hover:bg-blue-100 transition-all duration-300">
+              <FaInstagram className="text-xl text-blue-500 cursor-pointer" />
+            </div>
+            <div className="bg-gray-100 p-2 rounded-full hover:bg-blue-100 transition-all duration-300">
+              <FaTwitter className="text-xl text-blue-500 cursor-pointer" />
+            </div>
+            <div className="bg-gray-100 p-2 rounded-full hover:bg-blue-100 transition-all duration-300">
+              <CiLinkedin className="text-xl text-blue-500 cursor-pointer" />
+            </div>
           </div>
         </div>
 
         {/* Company Section */}
         <div className="sm:col-span-2">
-          <h2 className="text-lg font-semibold mb-3">Company</h2>
-          <ul className="text-gray-400 space-y-2">
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/about")}>About us</li>
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/contact-us")}>Contact us</li>
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/newsblog")}>News & Blogs</li>
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/library")}>Library</li>
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/carrers")}>Career</li>
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b border-gray-200 text-black">
+            Company
+          </h2>
+          <ul className="text-black space-y-3">
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/about")}
+            >
+              <span className="mr-2">•</span>About us
+            </li>
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/contact-us")}
+            >
+              <span className="mr-2">•</span>Contact us
+            </li>
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/newsblog")}
+            >
+              <span className="mr-2">•</span>News & Blogs
+            </li>
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/library")}
+            >
+              <span className="mr-2">•</span>Library
+            </li>
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/carrers")}
+            >
+              <span className="mr-2">•</span>Career
+            </li>
           </ul>
         </div>
 
         {/* Community Section */}
         <div className="sm:col-span-2">
-          <h2 className="text-lg font-semibold mb-3">Community</h2>
-          <ul className="text-gray-400 space-y-2">
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/documentation")}>
-              Documentation
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b border-gray-200 text-black">
+            Community
+          </h2>
+          <ul className="text-black space-y-3">
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/documentation")}
+            >
+              <span className="mr-2">•</span>Documentation
             </li>
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/faq")}>FAQ</li>
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/forum")}>Forum</li>
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/sitemap")}>Sitemap</li>
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/faq")}
+            >
+              <span className="mr-2">•</span>FAQ
+            </li>
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/forum")}
+            >
+              <span className="mr-2">•</span>Forum
+            </li>
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/sitemap")}
+            >
+              <span className="mr-2">•</span>Sitemap
+            </li>
           </ul>
         </div>
 
         {/* Teaching Section */}
         <div className="sm:col-span-2">
-          <h2 className="text-lg font-semibold mb-3">Teaching</h2>
-          <ul className="text-gray-400 space-y-2">
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/howtobecometeacher")}>
-              Become a Teacher
+          <h2 className="text-lg font-semibold mb-4 pb-2 border-b border-gray-200 text-black">
+            Teaching
+          </h2>
+          <ul className="text-black space-y-3">
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/howtobecometeacher")}
+            >
+              <span className="mr-2">•</span>Become a Teacher
             </li>
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/howtoguide")}>How to Guide</li>
-            <li className="hover:text-blue-500 cursor-pointer"onClick={() => navigate("/termsandcondion")}>
-              Terms & Conditions
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/howtoguide")}
+            >
+              <span className="mr-2">•</span>How to Guide
+            </li>
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => navigate("/termsandcondion")}
+            >
+              <span className="mr-2">•</span>Terms & Conditions
             </li>
           </ul>
         </div>
 
         {/* Contact Section */}
         <div className="sm:col-span-3">
-          <h2 className="text-lg font-semibold mb-3"onClick={() => navigate("/contact-us")}>Contact</h2>
-          <p className="text-gray-400">Toll-Free (9 AM - 8 PM IST)</p>
-          <a
-            href="tel:+911234567890"
-            className="block text-blue-400 font-semibold mt-1"
+          <h2
+            className="text-lg font-semibold mb-4 pb-2 border-b border-gray-200 text-black"
+            onClick={() => navigate("/contact-us")}
           >
-            +91 1234567890
-          </a>
-          <p className="text-gray-400">
-            Email:{" "}
-            <a href="mailto:example@gmail.com" className="text-blue-400">
-              example@gmail.com
+            Contact
+          </h2>
+          <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+            <p className="text-black text-sm">Toll-Free (9 AM - 8 PM IST)</p>
+            <a
+              href="tel:+911234567890"
+              className="block text-blue-500 font-semibold mt-2 text-lg hover:underline"
+            >
+              +91 1234567890
             </a>
-          </p>
+            <p className="text-black mt-3 text-sm">
+              Email:{" "}
+              <a
+                href="mailto:example@gmail.com"
+                className="text-blue-500 hover:underline"
+              >
+                example@gmail.com
+              </a>
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Copyright Section */}
-      <div className="text-center text-gray-500 text-sm mt-10 border-t border-gray-700 pt-4">
-        © {new Date().getFullYear()} Eduport. All rights reserved.
+      <div className="container mx-auto mt-12 border-t border-gray-200 pt-6">
+        <div className="flex flex-col md:flex-row justify-between items-center px-6 lg:px-16">
+          <div className="text-black text-sm mb-4 md:mb-0">
+            © {new Date().getFullYear()} Eduport. All rights reserved.
+          </div>
+          <div className="flex gap-4 text-black text-sm">
+            <a
+              href="#"
+              className="hover:text-blue-500 transition-colors duration-300"
+            >
+              Privacy Policy
+            </a>
+            <span>|</span>
+            <a
+              href="#"
+              className="hover:text-blue-500 transition-colors duration-300"
+            >
+              Terms of Service
+            </a>
+            <span>|</span>
+            <a
+              href="#"
+              className="hover:text-blue-500 transition-colors duration-300"
+            >
+              Cookie Settings
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   );

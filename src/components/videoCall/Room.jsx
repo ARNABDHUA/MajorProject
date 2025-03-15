@@ -11,13 +11,12 @@ function Room() {
   const videoContainerRef = useRef(null);
   const [joined, setJoined] = useState(false);
   const [callType, setCallType] = useState("");
-  const user=localStorage.getItem("user")
-  const buffer=JSON.parse(user)
+  const user = localStorage.getItem("user");
+  const buffer = JSON.parse(user);
   const name = buffer.name;
   const namedata = ["arnab dhua", "Parbat Bera"];
   const exists = namedata.includes(name);
   console.log(buffer.name);
-  
 
   const myMeeting = (type) => {
     const appID = APP_ID;
@@ -36,17 +35,19 @@ function Room() {
     zp.joinRoom({
       container: videoContainerRef.current,
       showPreJoinView: false,
-      sharedLinks: [
-        {
-          name: "Video Call Link",
-          url:
-            window.location.protocol +
-            "//" +
-            window.location.host +
-            window.location.pathname +
-            "?type=" + encodeURIComponent(type),
-        },
-      ],
+      // sharedLinks: [
+      //   {
+      //     name: "Video Call Link",
+      //     url:
+      //       window.location.protocol +
+      //       "//" +
+      //       window.location.host +
+      //       window.location.pathname +
+      //       "?type=" +
+      //       encodeURIComponent(type),
+      //   },
+      // ],
+
       scenario: {
         mode:
           type === "one-on-one"
@@ -61,6 +62,18 @@ function Room() {
         navigate("/");
       },
     });
+    const linkData = {
+      name: "Video Call Link",
+      url:
+        window.location.protocol +
+        "//" +
+        window.location.host +
+        window.location.pathname +
+        "?type=" +
+        encodeURIComponent(type),
+    };
+    // console.log(linkData.url);
+    localStorage.setItem("link", linkData);
   };
 
   useEffect(() => {
@@ -93,7 +106,9 @@ function Room() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-100 text-center">
         <h1 className="text-3xl font-bold text-red-600 mb-4">No User Found</h1>
-        <p className="text-lg mb-6">The user you are trying to join as does not exist.</p>
+        <p className="text-lg mb-6">
+          The user you are trying to join as does not exist.
+        </p>
         <button
           onClick={() => navigate("/")}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"

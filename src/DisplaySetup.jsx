@@ -24,10 +24,10 @@ import Forum from "./components/HeaderandFooterComponents/Footer/Forum";
 import HowToBecomeTeacher from "./components/HeaderandFooterComponents/Footer/HowToBecomeTeacher";
 import SiteMap from "./components/HeaderandFooterComponents/Footer/SiteMap";
 import HowtoGuide from "./components/HeaderandFooterComponents/Footer/HowtoGuide";
-import Termsandcondion from "./components/HeaderandFooterComponents/Footer/Termsandcondion";
 import NoticeBoard from "./components/HeaderandFooterComponents/Header/NoticeBoard";
 import HomePage from "./components/videoCall/HomePage";
 import Room from "./components/videoCall/Room";
+import TermsAndConditions from "./components/HeaderandFooterComponents/Footer/TermsAndConditions";
 const DisplaySetup = () => {
   return (
     <div>
@@ -51,10 +51,10 @@ const DisplaySetup = () => {
           <Route path="/sitemap" element={<SiteMap />} />
           <Route path="/howtobecometeacher" element={<HowToBecomeTeacher />} />
           <Route path="/howtoguide" element={<HowtoGuide />} />
-          <Route path="/termsandcondion" element={<Termsandcondion />} />
+          <Route path="/termsandcondion" element={<TermsAndConditions />} />
           <Route path="/notice" element={<NoticeBoard />} />
           <Route path="/teacher-live" element={<HomePage />} />
-          <Route path="/teacher-live/room/:roomId" element={<Room />} />
+          <Route path="/room/:roomId" element={<Room />} />
         </Routes>
         <Footer />
       </Router>

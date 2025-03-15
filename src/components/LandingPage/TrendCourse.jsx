@@ -131,7 +131,7 @@ const TrendCourse = () => {
 
   return (
     <div
-      className="py-12 px-6 md:px-20 relative"
+      className="py-12 px-6 md:px-20 relative z-10"
       onMouseEnter={() => setHovered(true)} // Show arrows on hover
       onMouseLeave={() => setHovered(false)} // Hide arrows when hover ends
     >

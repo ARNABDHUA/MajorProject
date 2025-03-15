@@ -18,7 +18,7 @@
 //   const navigate = useNavigate();
 
 //   return (
-//     <div className="sticky top-0 z-100 bg-white ">
+//     <div className="sticky top-0 z-100 bg-white  ">
 //       <div className="relative py-5 lg:p-5">
 //         {/* desktop view */}
 //         <div className="flex justify-between mx-2 items-center">
@@ -108,7 +108,7 @@
 //                 <div>
 //                   <li className="flex justify-between pr-3">
 //                     <span>
-//                       <NavLink >Accounts</NavLink>
+//                       <NavLink>Accounts</NavLink>
 //                     </span>
 //                     <span>
 //                       <HiDotsHorizontal
@@ -194,7 +194,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="sticky top-0 z-50 bg-white shadow-md">
+    <div className="sticky top-0 z-1000 bg-white shadow-md">
       <div className="relative py-4 px-4 lg:px-8">
         {/* Desktop view */}
         <div className="flex justify-between items-center">

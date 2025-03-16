@@ -146,18 +146,18 @@ const Footer = () => {
           <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
             <p className="text-black text-sm">Toll-Free (9 AM - 8 PM IST)</p>
             <a
-              href="tel:+911234567890"
+              href="tel:+917001559406"
               className="block text-blue-500 font-semibold mt-2 text-lg hover:underline"
             >
-              +91 1234567890
+              +91 70015 59406
             </a>
             <p className="text-black mt-3 text-sm">
               Email:{" "}
               <a
-                href="mailto:example@gmail.com"
+                href="mailto:arnabdhua74@gmail.com"
                 className="text-blue-500 hover:underline"
               >
-                example@gmail.com
+                arnabdhua74@gmail.com
               </a>
             </p>
           </div>

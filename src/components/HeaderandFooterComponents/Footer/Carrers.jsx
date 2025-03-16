@@ -7,6 +7,7 @@ import {
   FaLaptopCode,
   FaBookOpen,
   FaChalkboardTeacher,
+  FaSearch,
 } from "react-icons/fa";
 import { BsArrowRight, BsSearch } from "react-icons/bs";
 import { MdLocationOn } from "react-icons/md";

@@ -12,6 +12,7 @@ function Room() {
   const [joined, setJoined] = useState(false);
   const [callType, setCallType] = useState("");
   const [error, setError] = useState(null);
+  const initializingRef = useRef(false);
 
   // Get user info
   const user = localStorage.getItem("user");
@@ -22,10 +23,41 @@ function Room() {
   const allowedUsers = ["arnab dhua", "Parbat Bera"];
   const exists = name && allowedUsers.includes(name);
 
+  // Check permissions before initializing
+  async function checkPermissions() {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      return true;
+    } catch (err) {
+      console.error("Media permissions error:", err);
+      setError(
+        "Please allow camera and microphone access to join the meeting."
+      );
+      return false;
+    }
+  }
+
   const initMeeting = async (type) => {
+    // Prevent duplicate initialization
+    if (initializingRef.current || joined) {
+      console.log(
+        "Meeting initialization already in progress or already joined"
+      );
+      return;
+    }
+
+    initializingRef.current = true;
+
     try {
       if (!exists) {
         throw new Error("You are not authorized to join this room.");
+      }
+
+      // Check permissions first
+      const hasPermissions = await checkPermissions();
+      if (!hasPermissions) {
+        initializingRef.current = false;
+        return;
       }
 
       const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
@@ -36,8 +68,16 @@ function Room() {
         name
       );
 
+      // Clean up any previous instance
+      if (zpRef.current) {
+        zpRef.current.destroy();
+      }
+
       const zp = ZegoUIKitPrebuilt.create(kitToken);
       zpRef.current = zp;
+
+      // Add a small delay to ensure devices are ready
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       await zp.joinRoom({
         container: videoContainerRef.current,
@@ -56,19 +96,53 @@ function Room() {
         showMicrophoneStateButton: true,
         showCameraStateButton: true,
         showAudioVideoSettingsButton: true,
-        maxUsers: type === "one-on-one" ? 2 : 10,
+        maxUsers: type === "one-on-one" ? 2 : 80,
         turnOnMicrophoneWhenJoining: true,
         turnOnCameraWhenJoining: true,
-        onJoinRoom: () => setJoined(true),
-        onLeaveRoom: () => navigate("/teacher/live-class"),
+        useFrontFacingCamera: true,
+        videoResolutionList: [
+          ZegoUIKitPrebuilt.VideoResolution_360P,
+          ZegoUIKitPrebuilt.VideoResolution_180P,
+        ],
+        audioVideoConfig: {
+          video: {
+            bitrate: 800,
+            frameRate: 15,
+            codecType: 1,
+          },
+          audio: {
+            bitrate: 48,
+            codecType: 1,
+          },
+        },
+        onJoinRoom: () => {
+          setJoined(true);
+          initializingRef.current = false;
+        },
+        onLeaveRoom: () => {
+          setJoined(false);
+          navigate("/teacher/live-class");
+        },
+        onMicrophoneError: (err) => {
+          console.error("Microphone error:", err);
+          setError("Microphone error: " + err.message);
+          initializingRef.current = false;
+        },
+        onCameraError: (err) => {
+          console.error("Camera error:", err);
+          setError("Camera error: " + err.message);
+          initializingRef.current = false;
+        },
         onError: (err) => {
           console.error("ZegoCloud error:", err);
           setError("Failed to connect to room. Please try again.");
+          initializingRef.current = false;
         },
       });
     } catch (err) {
       console.error("Room Initialization Error:", err);
       setError(err.message);
+      initializingRef.current = false;
     }
   };
 
@@ -76,23 +150,31 @@ function Room() {
     const query = new URLSearchParams(location.search);
     const type = query.get("type");
 
-    setCallType(type);
+    // Only set call type if it's different
+    if (type !== callType) {
+      setCallType(type);
+    }
 
-    if (type && exists) {
+    // Only initialize if not already joined or initializing
+    if (type && exists && !joined && !initializingRef.current) {
       initMeeting(type);
     }
 
     return () => {
       if (zpRef.current) {
         zpRef.current.destroy();
+        zpRef.current = null;
       }
+      initializingRef.current = false;
     };
-  }, [callType, exists, roomId, navigate]);
+  }, [location.search, exists, roomId]);
 
   const handleExit = () => {
     if (zpRef.current) {
       zpRef.current.destroy();
+      zpRef.current = null;
     }
+    setJoined(false);
     navigate("/teacher/live-class");
   };
 

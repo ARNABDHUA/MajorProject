@@ -273,6 +273,7 @@ const Navbar = () => {
                       </motion.li>
                       <motion.li
                         className="px-4 py-3 hover:bg-blue-50 text-gray-700 cursor-pointer"
+                        onClick={() => navigate("/Teacher-Home")}
                         whileHover={{
                           backgroundColor: "#EFF6FF",
                           color: "#2563EB",
@@ -282,6 +283,7 @@ const Navbar = () => {
                       </motion.li>
                       <motion.li
                         className="px-4 py-3 hover:bg-blue-50 text-gray-700 cursor-pointer"
+                        onClick={() => navigate("admin")}
                         whileHover={{
                           backgroundColor: "#EFF6FF",
                           color: "#2563EB",
@@ -447,12 +449,14 @@ const Navbar = () => {
                           </motion.li>
                           <motion.li
                             className="text-gray-600 cursor-pointer"
+                            onClick={() => navigate("/Teacher-Home")}
                             whileHover={{ color: "#3B82F6" }}
                           >
                             Teacher
                           </motion.li>
                           <motion.li
                             className="text-gray-600 cursor-pointer"
+                            onClick={() => navigate("admin")}
                             whileHover={{ color: "#3B82F6" }}
                           >
                             Admin

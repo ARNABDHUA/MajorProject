@@ -101,6 +101,7 @@ function Room() {
         turnOnCameraWhenJoining: true,
         useFrontFacingCamera: true,
         videoResolutionList: [
+          ZegoUIKitPrebuilt.VideoResolution_720P,
           ZegoUIKitPrebuilt.VideoResolution_360P,
           ZegoUIKitPrebuilt.VideoResolution_180P,
         ],

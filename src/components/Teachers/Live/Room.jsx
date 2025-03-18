@@ -108,7 +108,7 @@ function Room() {
         audioVideoConfig: {
           video: {
             bitrate: 800,
-            frameRate: 15,
+            frameRate: 30,
             codecType: 1,
           },
           audio: {

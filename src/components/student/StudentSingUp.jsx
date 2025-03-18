@@ -85,7 +85,7 @@ const StudentSignup = () => {
     if (!validateStep()) return;
     try {
       const response = await axios.post(
-        "http://localhost:3000/v1/students/student-singup",
+        "https://e-college-data.onrender.com/v1/students/student-singup",
         formData
       );
       if (response.data) {

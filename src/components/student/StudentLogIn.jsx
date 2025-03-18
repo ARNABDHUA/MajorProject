@@ -47,7 +47,7 @@ const StudentLogin = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/v1/students/student-singin",
+        "https://e-college-data.onrender.com/v1/students/student-singin",
         formData
       );
       if (response.data) {

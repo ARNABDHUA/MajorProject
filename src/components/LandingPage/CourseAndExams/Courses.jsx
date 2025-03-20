@@ -14,7 +14,7 @@ import { FiClock } from "react-icons/fi";
 
 const courses = [
   {
-    id: 100,
+    id: 101,
     name: "Master of Computer Application",
     code: "MCA",
     description:
@@ -26,7 +26,7 @@ const courses = [
     students: 12433,
   },
   {
-    id: 101,
+    id: 201,
     name: "Bachelor of Computer Application",
     code: "BCA",
     description:

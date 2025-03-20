@@ -20,7 +20,7 @@ import Routine from "./CourseModulesTab/Routine";
 //In backend we have to get every data
 const courses = [
   {
-    id: 100,
+    id: 101,
     name: "Master of Computer Application",
     code: "MCA",
     description:
@@ -80,7 +80,7 @@ const courses = [
     ],
   },
   {
-    id: 101,
+    id: 102,
     name: "Bachelor of Computer Application",
     code: "BCA",
     description:
@@ -140,7 +140,7 @@ const courses = [
     ],
   },
   {
-    id: 102,
+    id: 103,
     name: "Bachelor of Technology",
     code: "BTECH",
     description:

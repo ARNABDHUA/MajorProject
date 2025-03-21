@@ -458,22 +458,22 @@ const CoursesModules = () => {
   const renderContent = () => {
     if (activeTab === "Course") {
       return (
-        <div className="px-7 py-2">
+        <div className="px-4 md:px-7 py-2">
           <CourseTab course={course} />
         </div>
       );
     } else if (activeTab === "Recorded Classes") {
-      return <div className="px-7 py-2">notes</div>;
+      return <div className="px-4 md:px-7 py-2">notes</div>;
     } else if (activeTab === "Routine") {
       return (
-        <div className="px-7 py-2">
+        <div className="px-4 md:px-7 py-2">
           <Routine />
         </div>
       );
     }
   };
   return (
-    <div className="">
+    <div className="relative">
       <div className="bg-[#1d3b53] text-white  flex flex-col md:flex-row justify-between gap-9 py-30 px-4  md:p-30 selection:text-red-500">
         {/* Left Section */}
         <div className="md:w-2/3">
@@ -501,27 +501,28 @@ const CoursesModules = () => {
           </button>
         </div>
       </div>
-      {/* _____________________________________________________________________________ */}
+
       {/* Tab section */}
-      {/* _____________________________________________________________________________ */}
-      <div className="h-screen   relative">
-        <div className="mx-2 bg-white md:mx-28 rounded-md shadow-xl flex flex-col gap-4 flex-wrap border absolute -top-20 md:w-[85%] md:-top-15 z-10 ">
-          <div className="border-b-2 border-slate-300">
-            {tabSection.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-6 px-7   ${
-                  activeTab === tab
-                    ? "text-blue-700 hover:text-blue-600 border-b-4 border-blue-700 font-medium "
-                    : "text-black hover:text-blue-600 font-medium"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+      <div className="relative min-h-screen pb-20">
+        <div className="mx-2 bg-white sm:mx-4 md:mx-10 lg:mx-28 rounded-md shadow-xl flex flex-col gap-4 border absolute -top-10 sm:-top-15 md:-top-20 left-0 right-0 z-10">
+          <div className="border-b-2 border-slate-300 overflow-x-auto">
+            <div className="flex min-w-max">
+              {tabSection.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`py-4 sm:py-5 md:py-6 px-4 sm:px-5 md:px-7 whitespace-nowrap ${
+                    activeTab === tab
+                      ? "text-blue-700 hover:text-blue-600 border-b-4 border-blue-700 font-medium"
+                      : "text-black hover:text-blue-600 font-medium"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           </div>
-          <div>{renderContent()}</div>
+          <div className="pb-6">{renderContent()}</div>
         </div>
       </div>
     </div>

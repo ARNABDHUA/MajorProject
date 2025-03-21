@@ -310,13 +310,13 @@ const CourseTab = () => {
                                     to={classData.isLive}
                                     className="flex justify-center items-center space-x-2"
                                   >
-                                    Live
+                                    <span>Live</span>
                                     <CiStreamOn className="ml-1 text-lg sm:text-xl text-red-600" />
                                   </Link>
                                 </span>
                               ) : (
                                 <span className="text-green-600 cursor-pointer font-medium ml-1 sm:ml-0">
-                                  Recorded
+                                  {" "}
                                 </span>
                               )}
                             </div>

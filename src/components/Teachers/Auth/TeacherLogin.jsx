@@ -1,14 +1,38 @@
 import React, { useState } from "react";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import image from "/images/robot.gif";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function TeacherLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    registerNumber: "",
+    c_roll: "",
     password: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [popup, setPopup] = useState({ message: "", type: "", visible: false });
+  const navigate = useNavigate();
+
+  // Validate form inputs (password strength)
+  const validateForm = () => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+    if (!passwordRegex.test(formData.password)) {
+      showPopup(
+        "Password must be at least 8 characters long, contain at least 1 uppercase letter, 1 number, and 1 special character.",
+        "error"
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -17,10 +41,57 @@ export default function TeacherLogin() {
     });
   };
 
-  const handleSubmit = (e) => {
+  // Show popup message
+  const showPopup = (message, type) => {
+    setPopup({ message, type, visible: true });
+    setTimeout(() => setPopup({ message: "", type: "", visible: false }), 3000);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempt with:", formData);
-    // Add your authentication logic here
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(
+        "https://e-college-data.onrender.com/v1/teachers/teachers-login",
+        formData
+      );
+
+      if (response.data) {
+        const { token, user } = response.data;
+        localStorage.setItem("item", token);
+        localStorage.setItem("teacherdata", JSON.stringify(user));
+
+        showPopup("Signin Successful! Redirecting...", "success");
+        setTimeout(() => navigate("/teacher-home"), 3000);
+      } else {
+        showPopup("Invalid email or password.", "error");
+      }
+    } catch (error) {
+      console.error("Signin Error:", error);
+
+      if (error.response && error.response.status === 400) {
+        showPopup(
+          error.response.data.message || "Signin Failed. Try again!",
+          "error"
+        );
+      } else if (error.response && error.response.status === 404) {
+        showPopup(
+          error.response.data.message || "Signin Failed. Try again!",
+          "error"
+        );
+      } else {
+        showPopup("Something went wrong. Please try again later!", "error");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -48,7 +119,19 @@ export default function TeacherLogin() {
             </p>
           </div>
 
+          {/* POPUP MESSAGE */}
+          {popup.visible && (
+            <div
+              className={`transition-all duration-300 ease-in-out text-center text-white p-3 rounded-lg mb-4 ${
+                popup.type === "success" ? "bg-green-500" : "bg-red-500"
+              }`}
+            >
+              {popup.message}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Register Number */}
             <div className="space-y-2">
               <label
                 htmlFor="registerNumber"
@@ -63,8 +146,8 @@ export default function TeacherLogin() {
                 <input
                   type="text"
                   id="registerNumber"
-                  name="registerNumber"
-                  value={formData.registerNumber}
+                  name="c_roll"
+                  value={formData.c_roll}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your register number"
@@ -73,6 +156,7 @@ export default function TeacherLogin() {
               </div>
             </div>
 
+            {/* Password */}
             <div className="space-y-2">
               <div className="flex justify-between">
                 <label
@@ -114,14 +198,17 @@ export default function TeacherLogin() {
               </div>
             </div>
 
+            {/* Sign in Button */}
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150"
+              disabled={isLoading}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 disabled:opacity-50"
             >
-              Sign in
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
+          {/* Footer */}
           <div className="text-center mt-8">
             <p className="text-sm text-gray-500">
               Don't have an account?{" "}

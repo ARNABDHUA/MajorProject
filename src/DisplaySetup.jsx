@@ -32,7 +32,6 @@ import NoticeBoard from "./components/HeaderandFooterComponents/Header/NoticeBoa
 // import HomePage from "./components/videoCall/HomePage";
 // import Room from "./components/videoCall/Room";
 import TermsAndConditions from "./components/HeaderandFooterComponents/Footer/TermsAndConditions";
-import TeacherHome from "./components/Teachers/TeacherHome";
 import Layout from "./components/Teachers/Layout/Layout";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";

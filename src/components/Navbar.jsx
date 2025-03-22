@@ -263,7 +263,10 @@ const Navbar = () => {
                     >
                       <motion.li
                         className="px-4 py-3 hover:bg-blue-50 text-gray-700 cursor-pointer"
-                        onClick={() => navigate("/login")}
+                        onClick={() => {
+                          navigate("/login");
+                          toggleAccounts();
+                        }}
                         whileHover={{
                           backgroundColor: "#EFF6FF",
                           color: "#2563EB",
@@ -273,7 +276,10 @@ const Navbar = () => {
                       </motion.li>
                       <motion.li
                         className="px-4 py-3 hover:bg-blue-50 text-gray-700 cursor-pointer"
-                        onClick={() => navigate("/teacher-login")}
+                        onClick={() => {
+                          navigate("/teacher-login");
+                          toggleAccounts();
+                        }}
                         whileHover={{
                           backgroundColor: "#EFF6FF",
                           color: "#2563EB",
@@ -283,7 +289,10 @@ const Navbar = () => {
                       </motion.li>
                       <motion.li
                         className="px-4 py-3 hover:bg-blue-50 text-gray-700 cursor-pointer"
-                        onClick={() => navigate("admin")}
+                        onClick={() => {
+                          navigate("admin");
+                          toggleAccounts();
+                        }}
                         whileHover={{
                           backgroundColor: "#EFF6FF",
                           color: "#2563EB",
@@ -384,6 +393,9 @@ const Navbar = () => {
                   <motion.li
                     whileHover={{ x: 5, color: "#3B82F6" }}
                     transition={{ duration: 0.2 }}
+                    onClick={() => {
+                      toggleMenu();
+                    }}
                   >
                     <NavLink
                       to="/"
@@ -398,6 +410,9 @@ const Navbar = () => {
                   <motion.li
                     whileHover={{ x: 5, color: "#3B82F6" }}
                     transition={{ duration: 0.2 }}
+                    onClick={() => {
+                      toggleMenu();
+                    }}
                   >
                     <NavLink
                       to="/notice"
@@ -443,20 +458,32 @@ const Navbar = () => {
                           <motion.li
                             className="text-gray-600 cursor-pointer"
                             whileHover={{ color: "#3B82F6" }}
-                            onClick={() => navigate("/login")}
+                            onClick={() => {
+                              toggleAccounts();
+                              toggleMenu();
+                              navigate("/login");
+                            }}
                           >
                             Student
                           </motion.li>
                           <motion.li
                             className="text-gray-600 cursor-pointer"
-                            onClick={() => navigate("/teacher-login")}
+                            onClick={() => {
+                              toggleAccounts();
+                              toggleMenu();
+                              navigate("/teacher-login");
+                            }}
                             whileHover={{ color: "#3B82F6" }}
                           >
                             Teacher
                           </motion.li>
                           <motion.li
                             className="text-gray-600 cursor-pointer"
-                            onClick={() => navigate("admin")}
+                            onClick={() => {
+                              toggleAccounts();
+                              toggleMenu();
+                              navigate("/admin");
+                            }}
                             whileHover={{ color: "#3B82F6" }}
                           >
                             Admin
@@ -469,6 +496,9 @@ const Navbar = () => {
                   <motion.li
                     whileHover={{ x: 5, color: "#3B82F6" }}
                     transition={{ duration: 0.2 }}
+                    onClick={() => {
+                      toggleMenu();
+                    }}
                   >
                     <NavLink
                       to="/contact-us"
@@ -483,6 +513,9 @@ const Navbar = () => {
                   <motion.li
                     whileHover={{ x: 5, color: "#3B82F6" }}
                     transition={{ duration: 0.2 }}
+                    onClick={() => {
+                      toggleMenu();
+                    }}
                   >
                     <NavLink
                       to="/about"

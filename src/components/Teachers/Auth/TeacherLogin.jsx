@@ -101,9 +101,7 @@ export default function TeacherLogin() {
       <div className="hidden lg:flex lg:w-1/2 bg-blue-50 justify-center items-center p-8">
         <div className="flex flex-col items-center">
           <img src={image} alt="Robot Animation" className="w-full max-w-md" />
-          <h2 className="text-2xl font-bold text-blue-800 mt-6">
-            Smart School System
-          </h2>
+          <h2 className="text-2xl font-bold text-blue-800 mt-6">E-Collge</h2>
           <p className="text-blue-600 text-center mt-2">
             Empowering educators with advanced technology
           </p>
@@ -150,6 +148,7 @@ export default function TeacherLogin() {
                   name="c_roll"
                   value={formData.c_roll}
                   onChange={handleChange}
+                  autoComplete="off"
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your register number"
                   required
@@ -163,6 +162,7 @@ export default function TeacherLogin() {
                 <label
                   htmlFor="password"
                   className="text-sm font-medium text-gray-700"
+                  autoComplete="off"
                 >
                   Password
                 </label>

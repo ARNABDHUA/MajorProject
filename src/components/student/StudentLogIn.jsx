@@ -111,6 +111,7 @@ const StudentLogin = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                autoComplete="off"
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Enter your email"
                 required
@@ -126,6 +127,7 @@ const StudentLogin = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                autoComplete="off"
                 className=" w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Enter your password"
                 required

@@ -36,7 +36,7 @@ const TeacherProfile = () => {
 
   useEffect(() => {
     // Retrieve data from localStorage
-    const localData = localStorage.getItem("teacherdata");
+    const localData = localStorage.getItem("user");
 
     if (localData) {
       try {

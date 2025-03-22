@@ -19,7 +19,8 @@ export default function TeacherLogin() {
 
   // Validate form inputs (password strength)
   const validateForm = () => {
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
     if (!passwordRegex.test(formData.password)) {
       showPopup(
@@ -66,7 +67,7 @@ export default function TeacherLogin() {
       if (response.data) {
         const { token, user } = response.data;
         localStorage.setItem("item", token);
-        localStorage.setItem("teacherdata", JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify(user));
 
         showPopup("Signin Successful! Redirecting...", "success");
         setTimeout(() => navigate("/teacher-home"), 3000);

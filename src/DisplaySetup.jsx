@@ -46,6 +46,7 @@ import Reports from "./components/Teachers/Pages/Reports";
 import Settings from "./components/Teachers/Pages/Settings";
 import Admin from "./components/Admin/Admin";
 import TeacherLogin from "./components/Teachers/Auth/TeacherLogin";
+import TeacherProfile from "./components/Teachers/TeacherProfile";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -65,7 +66,7 @@ const DisplaySetup = () => {
         <Routes>
           {/* Teacher dashboard routes - NO navbar/footer */}
           <Route element={<Layout />}>
-            <Route path="/teacher-home" element={<TeacherHome />} />
+            <Route path="/teacher-home" element={<TeacherProfile />} />
             <Route path="/live-teacher" element={<Teacherlive />} />
 
             <Route path="/teacher-students" element={<Student />} />

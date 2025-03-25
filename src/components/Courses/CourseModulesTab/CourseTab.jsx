@@ -23,17 +23,9 @@ const CourseTab = () => {
     const fetchSchedule = async () => {
       try {
         setLoading(true);
-        // Replace this URL with your actual API endpoint
         const response = await axios.post(
           `https://e-college-data.onrender.com/v1/adminroutine/routine-all/${id}/1`
         );
-
-        // Transform the API response into the format expected by the component
-        console.log(
-          "Url of class links if it is live",
-          response.data.data[0].days.day5
-        );
-        console.log("gay", response.data.data[0].days);
 
         const routineData = response.data.data[0];
         const days = routineData.days;
@@ -59,6 +51,7 @@ const CourseTab = () => {
               time: classItem.time,
               isLive: classItem.is_live || false,
               image: classItem.image,
+              date: classItem.date,
             }));
 
             weekData.days.push({
@@ -112,6 +105,11 @@ const CourseTab = () => {
     }
   }, [expandedDay]);
 
+  // Helper function to get current day number (0-6)
+  const getCurrentDayNumber = () => {
+    return new Date().getDay(); // 0 (Sunday) to 6 (Saturday)
+  };
+
   // Function to check if time is in range - FIXED
   function isCurrentTimeInRange(timeRange) {
     if (!timeRange) return false;
@@ -152,7 +150,6 @@ const CourseTab = () => {
 
     try {
       // More flexible regex for time format: handles formats like "1:00 P.M" and "1:00 P.M."
-      // This regex captures: hours, optional minutes, and period (AM/PM with various formats)
       const timeRegex = /(\d+)(?::(\d+))?\s*([AP]\.?M\.?)/i;
       const match = timeStr.match(timeRegex);
 
@@ -162,7 +159,6 @@ const CourseTab = () => {
       }
 
       let hours = parseInt(match[1], 10);
-      // If minutes are not provided, default to 0
       const minutes = match[2] ? parseInt(match[2], 10) : 0;
       const period = match[3];
 
@@ -181,12 +177,6 @@ const CourseTab = () => {
       return null;
     }
   }
-
-  // Current day helper
-  const getCurrentDay = () => {
-    const today = new Date();
-    return today.toLocaleDateString("en-US", { weekday: "long" });
-  };
 
   if (loading)
     return (
@@ -249,85 +239,91 @@ const CourseTab = () => {
 
           {/* Days Inside a Week */}
           {expandedWeek === weekIndex &&
-            weekData.days.map((dayData, dayIndex) => (
-              <div key={dayIndex} data-day-index={dayIndex} className="mt-3">
-                <div
-                  className="my-2 flex justify-between border border-slate-300 p-2 sm:p-3 rounded-md select-none cursor-pointer sticky top-16 bg-white z-10 shadow-sm transition-all hover:bg-gray-50"
-                  onClick={() => handleDayExpand(dayIndex)}
-                >
-                  <div className="p-1 sm:p-2 flex flex-col sm:flex-row sm:items-center sm:space-x-2">
-                    <span className="font-bold text-sm sm:text-md text-gray-800">
-                      {dayData.day}
-                      {dayData.date ? " -" : ""}
-                    </span>
-                    <span className="text-slate-700 text-xs sm:text-sm">
-                      {dayData.date}
-                    </span>
-                  </div>
-                  <div className="p-1 sm:p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
-                    {expandedDay === dayIndex ? (
-                      <FaMinus className="text-xs text-gray-700" />
-                    ) : (
-                      <FaPlus className="text-xs text-gray-700" />
-                    )}
-                  </div>
-                </div>
+            weekData.days.map((dayData, dayIndex) => {
+              // Only render if the day matches the current day
+              const isCurrentDay = dayIndex + 1 === getCurrentDayNumber();
 
-                {/* Classes Inside a Day */}
-                {expandedDay === dayIndex && (
-                  <div className="max-h-[calc(100vh-250px)] sm:max-h-[calc(100vh-230px)] md:max-h-[calc(100vh-200px)] overflow-y-auto pr-2 rounded-md bg-gray-50 p-2">
-                    {dayData.classes.map((classData, classIndex) => {
-                      // Check if class is currently live
-                      const isLive =
-                        classData.isLive &&
-                        isCurrentTimeInRange(classData.time);
+              return (
+                <div key={dayIndex} data-day-index={dayIndex} className="mt-3">
+                  <div
+                    className="my-2 flex justify-between border border-slate-300 p-2 sm:p-3 rounded-md select-none cursor-pointer sticky top-16 bg-white z-10 shadow-sm transition-all hover:bg-gray-50"
+                    onClick={() => handleDayExpand(dayIndex)}
+                  >
+                    <div className="p-1 sm:p-2 flex flex-col sm:flex-row sm:items-center sm:space-x-2">
+                      <span className="font-bold text-sm sm:text-md text-gray-800">
+                        {dayData.day}
+                        {dayData.date ? " -" : ""}
+                      </span>
+                      <span className="text-slate-700 text-xs sm:text-sm">
+                        {dayData.date}
+                      </span>
+                    </div>
+                    <div className="p-1 sm:p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                      {expandedDay === dayIndex ? (
+                        <FaMinus className="text-xs text-gray-700" />
+                      ) : (
+                        <FaPlus className="text-xs text-gray-700" />
+                      )}
+                    </div>
+                  </div>
 
-                      return (
-                        <div
-                          key={classIndex}
-                          className="m-2 sm:m-3 my-3 sm:my-4 flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-100"
-                        >
-                          <div className="flex-shrink-0 bg-gray-50 p-1 rounded-md">
-                            <img
-                              src={classData.image || python} // Default to Python if no image
-                              className="w-8 h-8 sm:w-12 sm:h-12 object-contain pointer-events-none"
-                              alt={classData.subject}
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h1 className="font-medium text-sm sm:text-base md:text-lg truncate text-gray-800">
-                              {classData.subject}
-                              {classData.topic ? " - " + classData.topic : ""}
-                            </h1>
-                            <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-600 mt-1">
-                              <span className="font-light truncate">
-                                {classData.time}
-                              </span>
-                              <LuDot className="hidden sm:block mx-1" />
-                              {isLive ? (
-                                <span className="flex items-center text-red-600 cursor-pointer font-medium ml-1 sm:ml-0">
-                                  <Link
-                                    to={classData.isLive}
-                                    className="flex justify-center items-center space-x-2"
-                                  >
-                                    {isLive && <span>Live</span>}
-                                    <CiStreamOn className="ml-1 text-lg sm:text-xl text-red-600" />
-                                  </Link>
+                  {/* Classes Inside a Day */}
+                  {expandedDay === dayIndex && (
+                    <div className="max-h-[calc(100vh-250px)] sm:max-h-[calc(100vh-230px)] md:max-h-[calc(100vh-200px)] overflow-y-auto pr-2 rounded-md bg-gray-50 p-2">
+                      {dayData.classes.map((classData, classIndex) => {
+                        // Modify live check to ensure it's only for current day and current time
+                        const isLive =
+                          isCurrentDay &&
+                          classData.isLive &&
+                          isCurrentTimeInRange(classData.time);
+
+                        return (
+                          <div
+                            key={classIndex}
+                            className="m-2 sm:m-3 my-3 sm:my-4 flex items-center space-x-3 p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-100"
+                          >
+                            <div className="flex-shrink-0 bg-gray-50 p-1 rounded-md">
+                              <img
+                                src={classData.image || python} // Default to Python if no image
+                                className="w-8 h-8 sm:w-12 sm:h-12 object-contain pointer-events-none"
+                                alt={classData.subject}
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h1 className="font-medium text-sm sm:text-base md:text-lg truncate text-gray-800">
+                                {classData.subject}
+                                {classData.topic ? " - " + classData.topic : ""}
+                              </h1>
+                              <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-600 mt-1">
+                                <span className="font-light truncate">
+                                  {classData.time}
                                 </span>
-                              ) : (
-                                <span className="text-green-600 cursor-pointer font-medium ml-1 sm:ml-0">
-                                  {" "}
-                                </span>
-                              )}
+                                <LuDot className="hidden sm:block mx-1" />
+                                {isLive ? (
+                                  <span className="flex items-center text-red-600 cursor-pointer font-medium ml-1 sm:ml-0">
+                                    <Link
+                                      to={classData.isLive}
+                                      className="flex justify-center items-center space-x-2"
+                                    >
+                                      <span>Live</span>
+                                      <CiStreamOn className="ml-1 text-lg sm:text-xl text-red-600" />
+                                    </Link>
+                                  </span>
+                                ) : (
+                                  <span className="text-green-600 cursor-pointer font-medium ml-1 sm:ml-0">
+                                    {" "}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            ))}
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </div>
       ))}
     </div>

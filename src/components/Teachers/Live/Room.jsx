@@ -37,6 +37,8 @@ function Room() {
     "sourin dhua",
     "farhan akhtar",
     "shreya manna",
+    "teacher x",
+    "teacher y",
   ];
   const exists = name && allowedUsers.includes(lowerCase_name);
 

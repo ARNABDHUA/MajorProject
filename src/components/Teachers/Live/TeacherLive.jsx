@@ -52,14 +52,23 @@ const LiveClassScheduler = () => {
     fetchCourses();
   }, []);
 
+  // Generate a random number between 1 and 10000
+  const generateRandomNumber = () => {
+    return Math.floor(Math.random() * 10000) + 1;
+  };
+
   const generateLiveClassURL = (courseId, sem, paperCode) => {
     try {
       // Use the current website's origin for more reliable URL generation
       const baseUrl = window.location.origin;
 
-      // Create a more structured room URL
-      const roomCode = `${courseId}-sem${sem}-${paperCode}`;
-      const uniqueUrl = `${baseUrl}/room/${roomCode}?&timestamp=${Date.now()}&course=${courseId}&semester=${sem}&paperCode=${paperCode}}`;
+      // Create a more structured room URL with required parameters matching the older implementation
+      // Add random number to roomCode for uniqueness
+      const randomNum = generateRandomNumber();
+      const roomCode = `${courseId}-sem${sem}-${paperCode}-${randomNum}`;
+      
+      // Add type parameter to match the format in the second file (Teacherlive.js)
+      const uniqueUrl = `${baseUrl}/room/${roomCode}?type=group-call&subject=${encodeURIComponent(paperCode)}&timestamp=${Date.now()}&course=${courseId}&semester=${sem}&paperCode=${paperCode}&random=${randomNum}`;
 
       return uniqueUrl;
     } catch (error) {
@@ -91,6 +100,7 @@ const LiveClassScheduler = () => {
     is_live: "", // Live class URL
     topic: "",
     image: "", // String for image URL
+    random_id: generateRandomNumber(), // Store the random number in form data
   });
 
   // Error state
@@ -168,6 +178,22 @@ const LiveClassScheduler = () => {
     if (!validateForm()) return; // Stop if validation fails
 
     try {
+      // Store user data in localStorage to match Teacherlive.js pattern
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
+      
+      // Update localStorage with room information, now including the random ID
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...userData,
+          roomCode: `${formData.course_id}-sem${formData.sem}-${formData.paper_code}-${formData.random_id}`,
+          subject: formData.paper_code,
+          type: "group-call",
+          timestamp: Date.now(),
+          random_id: formData.random_id,
+        })
+      );
+
       const response = await axios.post(
         "https://e-college-data.onrender.com/v1/adminroutine/teacher-update-time-slot",
         formData
@@ -373,6 +399,25 @@ const LiveClassScheduler = () => {
             {errors.paper_code && (
               <p className="mt-1 text-xs text-red-500">{errors.paper_code}</p>
             )}
+          </div>
+
+          {/* Random ID (display only) */}
+          <div>
+            <label
+              htmlFor="random_id"
+              className="block text-sm font-medium mb-1 text-gray-700"
+            >
+              Room ID (Random)
+            </label>
+            <div
+              id="random_id"
+              className="w-full p-2 text-sm border border-gray-300 rounded-md bg-gray-100"
+            >
+              {formData.random_id}
+            </div>
+            <div className="mt-1 text-xs text-gray-500">
+              Unique identifier for this room (1-10000)
+            </div>
           </div>
 
           {/* Live URL */}

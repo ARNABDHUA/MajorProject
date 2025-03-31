@@ -522,11 +522,11 @@ function Room() {
 
       {/* URL expiration timer */}
       {timeUntilExpiration !== null && (
-        <div className="absolute top-4 right-4 bg-black bg-opacity-70 text-white p-2 rounded">
-          <div className="text-sm font-bold">
+        <div className="absolute top-9 right-18 bg-black bg-opacity-70 text-white p-2 rounded sm:top-4 sm:right-4">
+          <div className="text-sm font-light sm:font-bold ">
             Room Expires In: {formatTimeRemaining(timeUntilExpiration)}
           </div>
-          <div className="text-xs mt-1">URL valid for 1h 15m from creation</div>
+          <div className="text-xs mt-1"></div>
         </div>
       )}
 

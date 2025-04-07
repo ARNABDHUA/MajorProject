@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
 import { RiLiveFill } from "react-icons/ri";
+import axios from "axios";
 import MCA from "/images/artificial-intelligence.png";
 import BCA from "/images/computer-science.png";
 import BTECH from "/images/data-science.png";
@@ -12,95 +13,107 @@ import MTECH from "/images/www.png";
 import BSCDS from "/images/training-program.png";
 import { FiClock } from "react-icons/fi";
 
-const courses = [
-  {
-    id: 101,
-    name: "Master of Computer Application",
-    code: "MCA",
-    description:
-      "Dive into the world of cutting-edge technology with our comprehensive MCA program. From software engineering.",
-    imageUrl: MCA,
-    bgColor: "bg-gradient-to-r from-blue-900 to-blue-600",
-    duration: "2 years",
-    instructor: "Abby Caldarone",
-    students: 12433,
-  },
-  {
-    id: 201,
-    name: "Bachelor of Computer Application",
-    code: "BCA",
-    description:
-      "A foundational course that introduces students to the basics of computer applications, programming, and web technologies.",
-    imageUrl: BCA,
-    bgColor: "bg-gradient-to-r from-cyan-500 to-blue-400",
-    duration: "3 years",
-    instructor: "John Smith",
-    students: 20433,
-  },
-  {
-    id: 102,
-    name: "Bachelor of Technology",
-    code: "BTECH",
-    description:
-      "An intensive program focused on engineering principles and advanced technical skills to shape future innovators.",
-    imageUrl: BTECH,
-    bgColor: "bg-gradient-to-r from-red-600 to-orange-400",
-    duration: "4 years",
-    instructor: "Sudip Dasgupta",
-    students: 15433,
-  },
-  {
-    id: 103,
-    name: "Master of Business Administration",
-    code: "MBA",
-    description:
-      "A program designed to cultivate leadership and management skills with a focus on business strategy and innovation.",
-    imageUrl: MBA,
-    bgColor: "bg-gradient-to-r from-yellow-500 to-amber-400",
-    duration: "2 years",
-    instructor: "Subham Chopra",
-    students: 9000,
-  },
-  {
-    id: 104,
-    name: "Bachelor of Business Administration",
-    code: "BBA",
-    description:
-      "An undergraduate program emphasizing business principles, communication, and decision-making skills.",
-    imageUrl: BBA,
-    bgColor: "bg-gradient-to-r from-orange-500 to-red-400",
-    duration: "3 years",
-    instructor: "Akash Yadav",
-    students: 12433,
-  },
-  {
-    id: 105,
-    name: "Master of Technology",
-    code: "MTECH",
-    description:
-      "An advanced technical program focused on research, innovation, and specialized engineering concepts.",
-    imageUrl: MTECH,
-    bgColor: "bg-gradient-to-r from-purple-700 to-pink-500",
-    duration: "3 years",
-    instructor: "Manish Singh",
-    students: 2433,
-  },
-  {
-    id: 106,
-    name: "Bachelor of Science in Cyber Security",
-    code: "BSC-CS",
-    description:
-      "A program designed to equip students with skills in ethical hacking, network security, and digital forensics.",
-    imageUrl: BSCDS,
-    bgColor: "bg-gradient-to-r from-green-700 to-teal-500",
-    duration: "3 years",
-    instructor: "Puja Jain",
-    students: 9433,
-  },
-];
+// const courses = [
+//   {
+//     id: 101,
+//     name: "Master of Computer Application",
+//     code: "MCA",
+//     description:
+//       "Dive into the world of cutting-edge technology with our comprehensive MCA program. From software engineering.",
+//     imageUrl : MCA,
+//     bgColor: "bg-gradient-to-r from-blue-900 to-blue-600",
+//     duration: "2 years",
+//     instructor: "Abby Caldarone",
+//     students: 12433,
+//   },
+//   {
+//     id: 201,
+//     name: "Bachelor of Computer Application",
+//     code: "BCA",
+//     description:
+//       "A foundational course that introduces students to the basics of computer applications, programming, and web technologies.",
+//     imageUrl: BCA,
+//     bgColor: "bg-gradient-to-r from-cyan-500 to-blue-400",
+//     duration: "3 years",
+//     instructor: "John Smith",
+//     students: 20433,
+//   },
+//   {
+//     id: 102,
+//     name: "Bachelor of Technology",
+//     code: "BTECH",
+//     description:
+//       "An intensive program focused on engineering principles and advanced technical skills to shape future innovators.",
+//     imageUrl: BTECH,
+//     bgColor: "bg-gradient-to-r from-red-600 to-orange-400",
+//     duration: "4 years",
+//     instructor: "Sudip Dasgupta",
+//     students: 15433,
+//   },
+//   {
+//     id: 103,
+//     name: "Master of Business Administration",
+//     code: "MBA",
+//     description:
+//       "A program designed to cultivate leadership and management skills with a focus on business strategy and innovation.",
+//     imageUrl: MBA,
+//     bgColor: "bg-gradient-to-r from-yellow-500 to-amber-400",
+//     duration: "2 years",
+//     instructor: "Subham Chopra",
+//     students: 9000,
+//   },
+//   {
+//     id: 104,
+//     name: "Bachelor of Business Administration",
+//     code: "BBA",
+//     description:
+//       "An undergraduate program emphasizing business principles, communication, and decision-making skills.",
+//     imageUrl: BBA,
+//     bgColor: "bg-gradient-to-r from-orange-500 to-red-400",
+//     duration: "3 years",
+//     instructor: "Akash Yadav",
+//     students: 12433,
+//   },
+//   {
+//     id: 105,
+//     name: "Master of Technology",
+//     code: "MTECH",
+//     description:
+//       "An advanced technical program focused on research, innovation, and specialized engineering concepts.",
+//     imageUrl: MTECH,
+//     bgColor: "bg-gradient-to-r from-purple-700 to-pink-500",
+//     duration: "3 years",
+//     instructor: "Manish Singh",
+//     students: 2433,
+//   },
+//   {
+//     id: 106,
+//     name: "Bachelor of Science in Cyber Security",
+//     code: "BSC-CS",
+//     description:
+//       "A program designed to equip students with skills in ethical hacking, network security, and digital forensics.",
+//     imageUrl: BSCDS,
+//     bgColor: "bg-gradient-to-r from-green-700 to-teal-500",
+//     duration: "3 years",
+//     instructor: "Puja Jain",
+//     students: 9433,
+//   },
+// ];
 
 const Courses = () => {
   const [reactions, setReactions] = useState({}); // Track reactions for each course by index
+  const [courses, setCourses] = useState([]);
+  useEffect(() => {
+    axios
+      .post("https://e-college-data.onrender.com/v1/adminroutine/course-all")
+      .then((res) => {
+        console.log(res.data);
+        setCourses(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   const toggleReaction = (index) => {
     setReactions((prev) => ({

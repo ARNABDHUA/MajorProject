@@ -66,8 +66,17 @@ export default function TeacherLogin() {
 
       if (response.data) {
         const { token, user } = response.data;
+        // Option 1: Keep using "item" but be consistent
         localStorage.setItem("item", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        // Option 2: Change to "token" to match what TeacherProtectedRoute expects
+        // localStorage.setItem("token", token);
+
+        // Make sure the user object has a role property or enough data to infer role
+        const userData = {
+          ...user,
+          role: "teacher", // Explicitly set role to ensure consistency
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
 
         showPopup("Signin Successful! Redirecting...", "success");
         setTimeout(() => navigate("/teacher-home"), 3000);

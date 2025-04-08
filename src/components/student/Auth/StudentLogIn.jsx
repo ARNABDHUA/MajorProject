@@ -1,16 +1,13 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import HashLoader from "react-spinners/HashLoader";
-import { IoEyeOutline } from "react-icons/io5";
-import { IoEyeOffOutline } from "react-icons/io5";
-import os from "/images/os.gif";
+import axios from "axios";
+import os from "/images/os.gif"; // Ensure this path is correct for your project
 
-const StudentLogin = () => {
+const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [popup, setPopup] = useState({ message: "", type: "", visible: false });
   const navigate = useNavigate();
@@ -38,39 +35,68 @@ const StudentLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-    setSuccessMessage("");
 
     if (!validateForm()) return;
 
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "https://e-college-data.onrender.com/v1/students/student-singin",
-        formData
-      );
-      if (response.data) {
-        const { token, user } = response.data;
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+      // First try student login
+      try {
+        const studentResponse = await axios.post(
+          "https://e-college-data.onrender.com/v1/students/student-singin",
+          formData
+        );
 
-        showPopup("Signin Successful! Redirecting...", "success");
-        setTimeout(() => navigate("/student-profile"), 3000);
-      } else {
-        showPopup("Invalid email or password.", "error");
+        if (studentResponse.data) {
+          const { token, user } = studentResponse.data;
+          // Add role information to user object
+          const userData = { ...user, role: "student" };
+
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(userData));
+
+          showPopup("Student Login Successful! Redirecting...", "success");
+          setTimeout(() => navigate("/student-profile"), 3000);
+          return;
+        }
+      } catch (studentError) {
+        // If student login fails, try teacher login
+        console.log("Student login failed, trying teacher login");
+        try {
+          const teacherResponse = await axios.post(
+            "https://e-college-data.onrender.com/v1/teachers/teacher-signin",
+            formData
+          );
+
+          if (teacherResponse.data) {
+            const { token, user } = teacherResponse.data;
+            // Add role information to user object
+            const userData = { ...user, role: "teacher" };
+
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(userData));
+
+            showPopup("Teacher Login Successful! Redirecting...", "success");
+            setTimeout(() => navigate("/teacher-home"), 3000);
+            return;
+          }
+        } catch (teacherError) {
+          // Both logins failed
+          showPopup("Invalid email or password.", "error");
+        }
       }
     } catch (error) {
-      console.error("Signin Error:", error);
+      console.error("Login Error:", error);
 
       if (error.response && error.response.status === 400) {
         showPopup(
-          error.response.data.message || "Signin Failed. Try again!",
+          error.response.data.message || "Login Failed. Try again!",
           "error"
         );
       } else if (error.response && error.response.status === 404) {
         showPopup(
-          error.response.data.message || "Signin Failed. Try again!",
+          error.response.data.message || "Login Failed. Try again!",
           "error"
         );
       } else {
@@ -87,7 +113,7 @@ const StudentLogin = () => {
         {/* Left Section (Form) */}
         <div className="flex flex-col justify-center p-6 md:p-12 w-full md:w-1/2 min-h-145">
           <h2 className="text-3xl font-bold text-gray-800 text-center mb-4">
-            Welcome Student
+            Welcome to ECollege
           </h2>
           <p className="text-gray-500 text-center mb-6">
             Welcome back! Please enter your details.
@@ -128,7 +154,7 @@ const StudentLogin = () => {
                 value={formData.password}
                 onChange={handleChange}
                 autoComplete="off"
-                className=" w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Enter your password"
                 required
               />
@@ -175,7 +201,7 @@ const StudentLogin = () => {
         </div>
 
         {/* Right Section (Image) */}
-        <div className="hidden md:flex items-center justify-center w-1/2 bg-blue-100 ">
+        <div className="hidden md:flex items-center justify-center w-1/2 bg-blue-100">
           <img
             src={os}
             alt="Illustration"
@@ -187,4 +213,4 @@ const StudentLogin = () => {
   );
 };
 
-export default StudentLogin;
+export default Login;

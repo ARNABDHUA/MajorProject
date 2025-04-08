@@ -3,6 +3,8 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHome, FaUser } from "react-icons/fa";
 import { FaRegNoteSticky } from "react-icons/fa6";
+import { MdCoPresent } from "react-icons/md";
+
 import {
   FiBookOpen,
   FiCalendar,
@@ -65,6 +67,12 @@ const menuItems = [
     title: "Settings",
     icon: <FiSettings className="w-5 h-5" />,
     path: "/teacher-settings",
+  },
+  {
+    id: 9,
+    title: "Attendance",
+    icon: <MdCoPresent className="w-5 h-5" />,
+    path: "/teacher-attendance",
   },
 ];
 

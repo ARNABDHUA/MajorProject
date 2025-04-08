@@ -35,6 +35,7 @@ const Layout = () => {
     if (path === "/teacher-reports") return "Reports";
     if (path === "/teacher-settings") return "Settings";
     if (path === "/teacher-students") return "Students";
+    if (path === "/teacher-attendance") return "Attendance";
     return "Profile";
   };
 

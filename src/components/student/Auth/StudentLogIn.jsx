@@ -56,7 +56,7 @@ const StudentLogin = () => {
         localStorage.setItem("user", JSON.stringify(user));
 
         showPopup("Signin Successful! Redirecting...", "success");
-        setTimeout(() => navigate("/"), 3000);
+        setTimeout(() => navigate("/student-profile"), 3000);
       } else {
         showPopup("Invalid email or password.", "error");
       }

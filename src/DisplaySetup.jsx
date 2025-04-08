@@ -14,8 +14,7 @@ import Error404 from "./Error404";
 //import CourseModules
 import CoursesModules from "./components/Courses/CoursesModules";
 // import student login/register
-import StudentLogIn from "./components/student/StudentLogIn";
-import StudentSingUp from "./components/student/StudentSingUp";
+
 //import header footer components
 import ContactUs from "./components/HeaderandFooterComponents/ContactUs";
 import About from "./components/HeaderandFooterComponents/About";
@@ -46,6 +45,17 @@ import Settings from "./components/Teachers/Pages/Settings";
 import Admin from "./components/Admin/Admin";
 import TeacherLogin from "./components/Teachers/Auth/TeacherLogin";
 import TeacherProfile from "./components/Teachers/TeacherProfile";
+import StudentLayout from "./components/student/Layout/StudentLayout";
+import StudentProfile from "./components/student/StudentProfile";
+import MyCourses from "./components/student/Pages/MyCourses";
+import PaymentInfo from "./components/student/Pages/PaymentInfo";
+import StudentAttendence from "./components/student/Pages/StudentAttendence";
+import Quiz from "./components/student/Pages/Quiz";
+import EditProfile from "./components/student/Pages/EditProfile";
+import StudentLive from "./components/student/Pages/StudentLive";
+import StudentLogin from "./components/student/Auth/StudentLogIn";
+import StudentSignup from "./components/student/Auth/StudentSingUp";
+import ChatRoom from "./components/student/Pages/ChatRoom";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -77,6 +87,18 @@ const DisplaySetup = () => {
           </Route>
           {/* Admin */}
           <Route path="/admin" element={<Admin />} />
+          {/* Student */}
+          <Route element={<StudentLayout />}>
+            <Route path="/student-profile" element={<StudentProfile />} />
+            <Route path="/student-courses" element={<MyCourses />} />
+            <Route path="/student-payments" element={<PaymentInfo />} />
+            <Route path="/student-attendance" element={<StudentAttendence />} />
+            <Route path="/student-chat" element={<ChatRoom />} />
+            <Route path="/student-quiz" element={<Quiz />} />
+            <Route path="/student-edit-profile" element={<EditProfile />} />
+            <Route path="/student-live-class" element={<StudentLive />} />
+            <Route path="/teacher-settings" element={<Settings />} />
+          </Route>
           {/* Error404 */}
           <Route path="*" element={<Error404 />} />
 
@@ -85,8 +107,8 @@ const DisplaySetup = () => {
           <Route element={<MainLayout />}>
             <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<StudentLogIn />} />
-            <Route path="/signup" element={<StudentSingUp />} />
+            <Route path="/login" element={<StudentLogin />} />
+            <Route path="/signup" element={<StudentSignup />} />
             <Route path="/courseModules" element={<CoursesModules />} />
             <Route path="/courseModules/:id" element={<CoursesModules />} />
             <Route path="/about" element={<About />} />

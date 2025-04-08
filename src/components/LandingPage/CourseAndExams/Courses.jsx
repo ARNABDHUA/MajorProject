@@ -101,6 +101,16 @@ import { FiClock } from "react-icons/fi";
 // ];
 
 const Courses = () => {
+  const imageMap = {
+    MCA: MCA,
+    BCA: BCA,
+    BTECH: BTECH,
+    MBA: MBA,
+    BBA: BBA,
+    MTECH: MTECH,
+    "BSC-CS": BSCDS,
+  };
+
   const [reactions, setReactions] = useState({}); // Track reactions for each course by index
   const [courses, setCourses] = useState([]);
   useEffect(() => {
@@ -131,7 +141,7 @@ const Courses = () => {
             className="flex flex-col  w-72  rounded-xl shadow-lg shadow-gray-300"
           >
             <img
-              src={course.imageUrl}
+              src={imageMap[course.code]}
               alt={course.name}
               className={`w-72 rounded-t-lg   ${course.bgColor} opacity-85 p-8  h-55`}
             />
@@ -154,7 +164,7 @@ const Courses = () => {
             </div>
             <div className="flex px-4 pt-4 flex-col ">
               <div className=" border-gray-300  space-y-4 min-h-[170px] border-b ">
-                <NavLink to={`/courseModules/${course.id}`}>
+                <NavLink to={`/courseModules/${course.course_id}`}>
                   <h1 className=" text-md md:text-xl font-[500] h-1/3 hover:text-blue-900 ">
                     {course.name}
                   </h1>

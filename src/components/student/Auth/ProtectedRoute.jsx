@@ -41,8 +41,6 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
       // Logic to determine if user is student or teacher based on available fields
       if (userData.studentId || userData.enrollmentDate) {
         return "student";
-      } else if (userData.teacherId || userData.subjects) {
-        return "teacher";
       }
       return null; // Role cannot be determined
     };

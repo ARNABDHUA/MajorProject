@@ -89,34 +89,53 @@ const StudentSignUp = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async () => {
-    if (!validateStep()) return;
-    try {
-      const response = await axios.post(
-        "https://e-college-data.onrender.com/v1/students/student-singup",
-        formData
-      );
-      if (response.data) {
-        const { token, user } = response.data;
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
-
-        showPopup("Signup Successful! Redirecting...", "success");
-        setTimeout(() => navigate("/login"), 3000);
-      }
-    } catch (error) {
-      console.error("Signup Error:", error);
-
-      if (error.response && error.response.status === 400) {
-        showPopup(
-          error.response.data.message || "Signup Failed. Try again!",
-          "error"
+    const handleSubmit = async () => {
+      if (!validateStep()) return;
+      try {
+        const response = await axios.post(
+          "https://e-college-data.onrender.com/v1/students/student-singup",
+          formData
         );
-      } else {
-        showPopup("Something went wrong. Please try again later!", "error");
+        
+        if (response.data) {
+          const { token, user } = response.data;
+          const userData = { ...user, role: "student" };
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(userData));
+          
+          showPopup("Signup Successful! Redirecting...", "success");
+          
+          // Inner API call only happens after successful outer API call
+          try {
+            const chatUser = await axios.post(
+              "http://localhost:3000/v1/chat/chat-user-add",
+              { name: formData.name, email: formData.email } 
+            );
+            console.log("Chat user added successfully:");
+            if(chatUser.data){
+              localStorage.setItem("userInfo", JSON.stringify(chatUser.data));
+            }
+          } catch (chatError) {
+            console.error("Chat user registration error:", chatError);
+            // Optionally show a warning that chat registration failed but account was created
+            showPopup("Account created but chat registration failed", "warning");
+          }
+          
+          setTimeout(() => navigate("/"), 5000);
+        }
+      } catch (error) {
+        console.error("Signup Error:", error);
+    
+        if (error.response && error.response.status === 400) {
+          showPopup(
+            error.response.data.message || "Signup Failed. Try again!",
+            "error"
+          );
+        } else {
+          showPopup("Something went wrong. Please try again later!", "error");
+        }
       }
-    }
-  };
+    };
 
   // Progress bar with animation for each step
   const ProgressIndicator = () => {

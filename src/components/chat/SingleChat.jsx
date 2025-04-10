@@ -11,7 +11,7 @@ import { ChatState } from "../../context/ChatProvider";
 import { getSender, getSenderFull } from "./config/ChatLogics";
 import { XCircle } from "lucide-react"; // 👈 Add this for close icon
 
-const ENDPOINT = "http://localhost:3000";
+const ENDPOINT = "https://e-college-data.onrender.com";
 let socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {

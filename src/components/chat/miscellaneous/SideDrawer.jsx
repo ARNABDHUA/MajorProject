@@ -70,7 +70,7 @@ function SideDrawer() {
       const useId = userInfo._id;
 
       const { data } = await axios.post(
-        `http://localhost:3000/v1/chat/chat-user-all?search=${search}`,
+        `https://e-college-data.onrender.com/v1/chat/chat-user-all?search=${search}`,
         { useId }
       );
 
@@ -88,7 +88,7 @@ function SideDrawer() {
       const ownId = userInfo._id;
 
       const { data } = await axios.post(
-        `http://localhost:3000/v1/chat/chat-create`,
+        `https://e-college-data.onrender.com/v1/chat/chat-create`,
         { userId, ownId }
       );
 

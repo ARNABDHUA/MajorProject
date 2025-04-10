@@ -44,7 +44,7 @@ const GroupChatModal = ({ children }) => {
     try {
       setLoading(true);
       const { data } = await axios.post(
-        `http://localhost:3000/v1/chat/chat-user-all?search=${query}`,
+        `https://e-college-data.onrender.com/v1/chat/chat-user-all?search=${query}`,
         { _id: user._id }
       );
       setSearchResult(data);
@@ -66,7 +66,7 @@ const GroupChatModal = ({ children }) => {
     }
 
     try {
-      const { data } = await axios.post(`http://localhost:3000/v1/chat/chat-group`, {
+      const { data } = await axios.post(`https://e-college-data.onrender.com/v1/chat/chat-group`, {
         ownId: user._id,
         name: groupChatName,
         user: JSON.stringify(selectedUsers.map((u) => u._id)),

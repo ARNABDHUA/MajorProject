@@ -26,7 +26,7 @@ const MyChats = ({ fetchAgain }) => {
       const ownId = userInfo._id;
 
       const  data  = await axios.post(
-        "http://localhost:3000/v1/chat/chat-fatch",
+        "https://e-college-data.onrender.com/v1/chat/chat-fatch",
         { ownId:ownId }
       );
       console.log(data.data)

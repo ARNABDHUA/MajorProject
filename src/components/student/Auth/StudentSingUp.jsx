@@ -108,7 +108,7 @@ const StudentSignUp = () => {
           // Inner API call only happens after successful outer API call
           try {
             const chatUser = await axios.post(
-              "http://localhost:3000/v1/chat/chat-user-add",
+              "https://e-college-data.onrender.com/v1/chat/chat-user-add",
               { name: formData.name, email: formData.email } 
             );
             console.log("Chat user added successfully:");

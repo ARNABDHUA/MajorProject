@@ -47,7 +47,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       setLoading(true);
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const { data } = await axios.post(
-        `http://localhost:3000/v1/chat/chat-user-all?search=${query}`,
+        `https://e-college-data.onrender.com/v1/chat/chat-user-all?search=${query}`,
         { useId: userInfo._id }
       );
       setSearchResult(data);
@@ -62,7 +62,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     if (!groupChatName) return;
     try {
       setRenameLoading(true);
-      const { data } = await axios.post(`http://localhost:3000/v1/chat/chat-group-rename`, {
+      const { data } = await axios.post(`https://e-college-data.onrender.com/v1/chat/chat-group-rename`, {
         chatId: selectedChat._id,
         chatName: groupChatName,
       });
@@ -90,7 +90,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
     try {
       setLoading(true);
-      const { data } = await axios.post(`http://localhost:3000/v1/chat/chat-group-add`, {
+      const { data } = await axios.post(`https://e-college-data.onrender.com/v1/chat/chat-group-add`, {
         chatId: selectedChat._id,
         userId: user1._id,
       });
@@ -112,7 +112,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
     try {
       setLoading(true);
-      const { data } = await axios.post(`http://localhost:3000/v1/chat/chat-group-remove`, {
+      const { data } = await axios.post(`https://e-college-data.onrender.com/v1/chat/chat-group-remove`, {
         chatId: selectedChat._id,
         userId: user1._id,
       });

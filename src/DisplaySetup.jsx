@@ -60,6 +60,8 @@ import ChatRoom from "./components/student/Pages/ChatRoom";
 import Attendance from "./components/Teachers/Pages/Attendance";
 import TeacherProtectedRoute from "./components/Teachers/Auth/TeacherProtectedRoute";
 import ProtectedRoute from "./components/student/Auth/ProtectedRoute";
+import ChatProvider from "./context/ChatProvider";
+import Chatpage from "./components/chat/pages/Chatpage";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -76,6 +78,7 @@ const DisplaySetup = () => {
   return (
     <div>
       <Router>
+        <ChatProvider>
         <Routes>
           {/* Teacher dashboard routes - NO navbar/footer */}
           <Route element={<Layout />}>
@@ -236,6 +239,7 @@ const DisplaySetup = () => {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<StudentLogin />} />
             <Route path="/signup" element={<StudentSignup />} />
+            <Route path="/chats" element={<Chatpage />} />
             <Route path="/courseModules" element={<CoursesModules />} />
             <Route path="/courseModules/:id" element={<CoursesModules />} />
             <Route path="/about" element={<About />} />
@@ -256,6 +260,7 @@ const DisplaySetup = () => {
             <Route path="/teacher-login" element={<TeacherLogin />} />
           </Route>
         </Routes>
+        </ChatProvider>
       </Router>
     </div>
   );

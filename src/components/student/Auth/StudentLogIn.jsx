@@ -9,6 +9,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [popup, setPopup] = useState({ message: "", type: "", visible: false });
   const navigate = useNavigate();
 
@@ -35,68 +37,58 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
 
     if (!validateForm()) return;
 
     setIsLoading(true);
 
     try {
-      // First try student login
-      try {
-        const studentResponse = await axios.post(
-          "https://e-college-data.onrender.com/v1/students/student-singin",
-          formData
-        );
+      const response = await axios.post(
+        "https://e-college-data.onrender.com/v1/students/student-singin",
+        formData
+      );
+      if (response.data) {
+        const { token, user } = response.data;
+        const userData = { ...user, role: "student" };
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(userData));
+        // const userInfo = JSON.parse(localStorage.getItem("user"));
+        // console.log(userInfo)
 
-        if (studentResponse.data) {
-          const { token, user } = studentResponse.data;
-          // Add role information to user object
-          const userData = { ...user, role: "student" };
+        showPopup("Signin Successful! Redirecting...", "success");
 
-          localStorage.setItem("token", token);
-          localStorage.setItem("user", JSON.stringify(userData));
-
-          showPopup("Student Login Successful! Redirecting...", "success");
-          setTimeout(() => navigate("/student-profile"), 3000);
-          return;
-        }
-      } catch (studentError) {
-        // If student login fails, try teacher login
-        console.log("Student login failed, trying teacher login");
-        try {
-          const teacherResponse = await axios.post(
-            "https://e-college-data.onrender.com/v1/teachers/teacher-signin",
-            formData
-          );
-
-          if (teacherResponse.data) {
-            const { token, user } = teacherResponse.data;
-            // Add role information to user object
-            const userData = { ...user, role: "teacher" };
-
-            localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(userData));
-
-            showPopup("Teacher Login Successful! Redirecting...", "success");
-            setTimeout(() => navigate("/teacher-home"), 3000);
-            return;
+          // Inner API call only happens after successful outer API call
+          try {
+            const chatUser = await axios.post(
+              "https://e-college-data.onrender.com/v1/chat/chat-user-data",
+              { email: formData.email } 
+            );
+            console.log("Chat user added successfully:");
+            if(chatUser.data){
+              localStorage.setItem("userInfo", JSON.stringify(chatUser.data.user));
+            }
+          } catch (chatError) {
+            console.error("Chat user registration error:", chatError);
+            // Optionally show a warning that chat registration failed but account was created
+            showPopup("Account created but chat registration failed", "warning");
           }
-        } catch (teacherError) {
-          // Both logins failed
-          showPopup("Invalid email or password.", "error");
-        }
+        setTimeout(() => navigate("/"), 3000);
+      } else {
+        showPopup("Invalid email or password.", "error");
       }
     } catch (error) {
-      console.error("Login Error:", error);
+      console.error("Signin Error:", error);
 
       if (error.response && error.response.status === 400) {
         showPopup(
-          error.response.data.message || "Login Failed. Try again!",
+          error.response.data.message || "Signin Failed. Try again!",
           "error"
         );
       } else if (error.response && error.response.status === 404) {
         showPopup(
-          error.response.data.message || "Login Failed. Try again!",
+          error.response.data.message || "Signin Failed. Try again!",
           "error"
         );
       } else {

@@ -5,6 +5,13 @@ import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
   const navigate = useNavigate();
+  
+  // Function to handle navigation and scroll to top
+  const handleNavigation = (path) => {
+    navigate(path);
+    window.scrollTo(0, 0); // This scrolls the window to the top
+  };
+  
   return (
     <footer className="py-12 bg-white">
       <div className="container mx-auto grid gap-10 grid-cols-1 sm:grid-cols-12 px-6 lg:px-16">
@@ -44,31 +51,31 @@ const Footer = () => {
           <ul className="text-black space-y-3">
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/about")}
+              onClick={() => handleNavigation("/about")}
             >
               <span className="mr-2">•</span>About us
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/contact-us")}
+              onClick={() => handleNavigation("/contact-us")}
             >
               <span className="mr-2">•</span>Contact us
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/newsblog")}
+              onClick={() => handleNavigation("/newsblog")}
             >
               <span className="mr-2">•</span>News & Blogs
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/library")}
+              onClick={() => handleNavigation("/library")}
             >
               <span className="mr-2">•</span>Library
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/carrers")}
+              onClick={() => handleNavigation("/carrers")}
             >
               <span className="mr-2">•</span>Career
             </li>
@@ -83,25 +90,25 @@ const Footer = () => {
           <ul className="text-black space-y-3">
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/documentation")}
+              onClick={() => handleNavigation("/documentation")}
             >
               <span className="mr-2">•</span>Documentation
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/faq")}
+              onClick={() => handleNavigation("/faq")}
             >
               <span className="mr-2">•</span>FAQ
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/forum")}
+              onClick={() => handleNavigation("/forum")}
             >
               <span className="mr-2">•</span>Forum
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/sitemap")}
+              onClick={() => handleNavigation("/sitemap")}
             >
               <span className="mr-2">•</span>Sitemap
             </li>
@@ -116,19 +123,19 @@ const Footer = () => {
           <ul className="text-black space-y-3">
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/howtobecometeacher")}
+              onClick={() => handleNavigation("/howtobecometeacher")}
             >
               <span className="mr-2">•</span>Become a Teacher
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/howtoguide")}
+              onClick={() => handleNavigation("/howtoguide")}
             >
               <span className="mr-2">•</span>How to Guide
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => navigate("/termsandcondion")}
+              onClick={() => handleNavigation("/termsandcondion")}
             >
               <span className="mr-2">•</span>Terms & Conditions
             </li>
@@ -139,7 +146,7 @@ const Footer = () => {
         <div className="sm:col-span-3">
           <h2
             className="text-lg font-semibold mb-4 pb-2 border-b border-gray-200 text-black"
-            onClick={() => navigate("/contact-us")}
+            onClick={() => handleNavigation("/contact-us")}
           >
             Contact
           </h2>
@@ -174,6 +181,10 @@ const Footer = () => {
             <a
               href="#"
               className="hover:text-blue-500 transition-colors duration-300"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/privacy-policy");
+              }}
             >
               Privacy Policy
             </a>
@@ -181,6 +192,10 @@ const Footer = () => {
             <a
               href="#"
               className="hover:text-blue-500 transition-colors duration-300"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/terms-of-service");
+              }}
             >
               Terms of Service
             </a>
@@ -188,13 +203,16 @@ const Footer = () => {
             <a
               href="#"
               className="hover:text-blue-500 transition-colors duration-300"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/cookie-settings");
+              }}
             >
               Cookie Settings
             </a>
           </div>
         </div>
       </div>
-      <div></div>
     </footer>
   );
 };

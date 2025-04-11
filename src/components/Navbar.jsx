@@ -355,7 +355,7 @@ const Navbar = () => {
               </motion.div>
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <FaUserCircle className="text-3xl text-blue-600 cursor-pointer" />
+              <FaUserCircle className="text-3xl text-blue-600 cursor-pointer" onClick={()=>navigate("/student-profile")} />
             </motion.div>
           </div>
 
@@ -373,7 +373,7 @@ const Navbar = () => {
               )}
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <FaUserCircle className="text-3xl text-blue-600" />
+              <FaUserCircle className="text-3xl text-blue-600" onClick={()=>navigate("/student-profile")} />
             </motion.div>
           </div>
         </div>

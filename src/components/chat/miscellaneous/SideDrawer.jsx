@@ -159,7 +159,7 @@ function SideDrawer() {
           </div>
 
           {/* Profile */}
-          <div className="relative" ref={profileRef}>
+          {/* <div className="relative" ref={profileRef}>
             <button
               className="flex items-center gap-2 bg-white border px-2 py-1 rounded hover:bg-gray-100"
               onClick={() => {
@@ -191,7 +191,7 @@ function SideDrawer() {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
 

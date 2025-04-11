@@ -88,7 +88,7 @@ const GroupChatModal = ({ children }) => {
 
       {toast && (
         <div
-          className={`fixed top-6 right-6 z-50 p-4 rounded-lg shadow-xl w-[90%] max-w-md bg-white border-l-4 ${
+          className={`fixed top-6 right-6 z-1000 p-4 rounded-lg shadow-xl w-[90%] max-w-md bg-white border-l-4 ${
             toast.status === "success"
               ? "border-green-500"
               : toast.status === "error"

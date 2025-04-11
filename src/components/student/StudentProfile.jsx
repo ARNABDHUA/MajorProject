@@ -24,7 +24,7 @@ const StudentProfile = () => {
       try {
         // Get user data from localStorage
         const userData = JSON.parse(localStorage.getItem("user"));
-        console.log("userdata", userData);
+        // console.log("userdata", userData);
         const token = localStorage.getItem("token");
 
         if (!userData || !token) {

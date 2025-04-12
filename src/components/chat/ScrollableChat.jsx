@@ -13,6 +13,7 @@ const ScrollableChat = ({ messages }) => {
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     setUser(userInfo);
+    // console.log(messages);
   }, []);
 
   const formatTimestamp = (isoString) => {
@@ -60,19 +61,26 @@ const ScrollableChat = ({ messages }) => {
   };
 
   return (
-    <ScrollableFeed className="px-2 sm:px-4">
+    <ScrollableFeed className="px-3 sm:px-4 md:px-6 lg:px-8">
       {messages &&
         messages.map((m, i) => {
           const isMine = m.sender._id === user?._id;
           const showSenderInfo = !isSameUser(messages, m, i, user?._id) && !isMine;
+          const isConsecutiveMessage = isSameUser(messages, m, i, user?._id);
 
           return (
-            <div className="flex flex-col" key={m._id}>
-              <div className={`flex items-start gap-2 ${isMine ? "justify-end" : "justify-start"}`}>
-                {!isMine && showSenderInfo && (
-                  <div className="flex flex-col items-center mt-1">
+            <div className="flex flex-col w-full" key={m._id}>
+              <div
+                className={`flex ${
+                  isMine ? "justify-end" : "justify-start"
+                } w-full ${
+                  isConsecutiveMessage ? "mt-1" : "mt-3"
+                }`}
+              >
+                {!isMine && (
+                  <div className={`flex-shrink-0 ${showSenderInfo ? "visible" : "invisible"}`}>
                     <img
-                      className="h-8 w-8 rounded-full shadow-md"
+                      className="h-8 w-8 rounded-full object-cover mt-1 mr-2"
                       src={
                         m.sender.pic ||
                         `https://ui-avatars.com/api/?name=${encodeURIComponent(m.sender.name)}`
@@ -83,40 +91,43 @@ const ScrollableChat = ({ messages }) => {
                 )}
 
                 <div
-                  className={`relative flex flex-col max-w-[85%] sm:max-w-[70%] md:max-w-[60%] px-4 py-2 rounded-2xl shadow-md text-sm ${
+                  className={`flex flex-col max-w-[75%] sm:max-w-[70%] md:max-w-[60%] lg:max-w-[50%] shadow-md ${
                     isMine
-                      ? "bg-blue-100 text-gray-800 self-end"
-                      : "bg-green-100 text-gray-800"
-                  }`}
-                  style={{
-                    marginLeft: isSameSenderMargin(messages, m, i, user?._id),
-                    marginTop: isSameUser(messages, m, i, user?._id)
-                      ? "3px"
-                      : "10px",
-                  }}
+                      ? "bg-blue-100 text-gray-800 rounded-t-2xl rounded-bl-2xl rounded-br-md"
+                      : "bg-green-100 text-gray-800 rounded-t-2xl rounded-br-2xl rounded-bl-md"
+                  } ${showSenderInfo ? "" : isMine ? "rounded-tr-md" : "rounded-tl-md"}`}
                 >
                   {!isMine && showSenderInfo && (
-                    <span className="text-xs sm:text-sm font-semibold text-purple-800 mb-1 flex items-center gap-1">
-                      {m.sender.name}
-                    </span>
+                    <div className="px-3 pt-2 pb-1 border-b border-green-200">
+                      <span className="block text-xs md:text-sm font-semibold text-purple-800">
+                        {m.sender.name}
+                      </span>
+                      <span className="block md:text-xs text-[6px] text-gray-500">
+                        {m.sender.email}
+                      </span>
+                    </div>
                   )}
-                  <span className="break-words max-h-[250px] overflow-auto custom-scroll pr-1">
-                    {isValidUrl(m.content) ? (
-                      <a
-                        href={m.content}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline break-all hover:text-blue-800"
-                      >
-                        {m.content}
-                      </a>
-                    ) : (
-                      m.content
-                    )}
-                  </span>
-                  <span className="text-[10px] text-gray-500 text-right mt-1">
-                    {formatTimestamp(m.createdAt)}
-                  </span>
+
+                  <div className="px-3 py-2 text-xs md:text-sm">
+                    <span className="break-words block max-h-[250px] overflow-auto custom-scroll">
+                      {isValidUrl(m.content) ? (
+                        <a
+                          href={m.content}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600  underline break-all hover:text-blue-800"
+                        >
+                          {m.content}
+                        </a>
+                      ) : (
+                        m.content
+                      )}
+                    </span>
+                   
+                    <span className="text-[10px] text-gray-500 block text-right mt-1">
+                      {formatTimestamp(m.createdAt)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

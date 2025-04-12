@@ -29,7 +29,7 @@ const Courses = () => {
   const [reactions, setReactions] = useState({}); // Track reactions for each course by index
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Add loading state
-  
+
   useEffect(() => {
     setIsLoading(true); // Set loading to true when starting the API call
     axios
@@ -71,7 +71,9 @@ const Courses = () => {
   if (!isLoading && courses.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <p className="text-gray-600 text-lg">No courses available at the moment.</p>
+        <p className="text-gray-600 text-lg">
+          No courses available at the moment.
+        </p>
       </div>
     );
   }
@@ -108,7 +110,7 @@ const Courses = () => {
             </div>
             <div className="flex px-4 pt-4 flex-col">
               <div className="border-gray-300 space-y-4 min-h-[170px] border-b">
-                <div 
+                <div
                   onClick={() => handleCourseClick(course.course_id)}
                   className="cursor-pointer"
                 >

@@ -79,187 +79,187 @@ const DisplaySetup = () => {
     <div>
       <Router>
         <ChatProvider>
-        <Routes>
-          {/* Teacher dashboard routes - NO navbar/footer */}
-          <Route element={<Layout />}>
-            <Route
-              path="/teacher-home"
-              element={
-                <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                  <TeacherProfile />
-                </TeacherProtectedRoute>
-              }
-            />
-            <Route
-              path="/live-teacher"
-              element={
-                <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                  <Teacherlive />
-                </TeacherProtectedRoute>
-              }
-            />
-            <Route
-              path="/teacher-students"
-              element={
-                <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                  <Student />
-                </TeacherProtectedRoute>
-              }
-            />
-            <Route
-              path="/teacher-examination"
-              element={
-                <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                  <Examination />
-                </TeacherProtectedRoute>
-              }
-            />
-            <Route
-              path="/teacher-courses"
-              element={
-                <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                  <Courses />
-                </TeacherProtectedRoute>
-              }
-            />
-            <Route
-              path="/teacher-schedule"
-              element={
-                <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                  <Schedule />
-                </TeacherProtectedRoute>
-              }
-            />
-            <Route
-              path="/teacher-reports"
-              element={
-                <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                  <Reports />
-                </TeacherProtectedRoute>
-              }
-            />
-            <Route
-              path="/teacher-settings"
-              element={
-                <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                  <Settings />
-                </TeacherProtectedRoute>
-              }
-            />
+          <Routes>
+            {/* Teacher dashboard routes - NO navbar/footer */}
+            <Route element={<Layout />}>
+              <Route
+                path="/teacher-home"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <TeacherProfile />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/live-teacher"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <Teacherlive />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/teacher-students"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <Student />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/teacher-examination"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <Examination />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/teacher-courses"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <Courses />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/teacher-schedule"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <Schedule />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/teacher-reports"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <Reports />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/teacher-settings"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <Settings />
+                  </TeacherProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/teacher-attendance"
-              element={
-                <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                  <Attendance />
-                </TeacherProtectedRoute>
-              }
-            />
-          </Route>
-          {/* Admin */}
-          <Route path="/admin" element={<Admin />} />
+              <Route
+                path="/teacher-attendance"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <Attendance />
+                  </TeacherProtectedRoute>
+                }
+              />
+            </Route>
+            {/* Admin */}
+            <Route path="/admin" element={<Admin />} />
 
-          {/* Student Dashboard Routes */}
-          <Route element={<StudentLayout />}>
-            <Route
-              path="student-profile"
-              element={
-                <ProtectedRoute allowedRoles={["student"]}>
-                  <StudentProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="student-courses"
-              element={
-                <ProtectedRoute allowedRoles={["student"]}>
-                  <MyCourses />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="student-payments"
-              element={
-                <ProtectedRoute allowedRoles={["student"]}>
-                  <PaymentInfo />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="student-attendance"
-              element={
-                <ProtectedRoute allowedRoles={["student"]}>
-                  <StudentAttendence />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="student-chat"
-              element={
-                <ProtectedRoute allowedRoles={["student"]}>
-                  <ChatRoom />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="student-quiz"
-              element={
-                <ProtectedRoute allowedRoles={["student"]}>
-                  <Quiz />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="student-edit-profile"
-              element={
-                <ProtectedRoute allowedRoles={["student"]}>
-                  <EditProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="student-live-class"
-              element={
-                <ProtectedRoute allowedRoles={["student"]}>
-                  <StudentLive />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
+            {/* Student Dashboard Routes */}
+            <Route element={<StudentLayout />}>
+              <Route
+                path="student-profile"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <StudentProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="student-courses"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <MyCourses />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="student-payments"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <PaymentInfo />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="student-attendance"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <StudentAttendence />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="student-chat"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <Chatpage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="student-quiz"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <Quiz />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="student-edit-profile"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <EditProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="student-live-class"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <StudentLive />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
 
-          {/* Error404 */}
-          <Route path="*" element={<Error404 />} />
+            {/* Error404 */}
+            <Route path="*" element={<Error404 />} />
 
-          <Route path="/room/:roomId" element={<Room />} />
+            <Route path="/room/:roomId" element={<Room />} />
 
-          {/* Regular routes WITH navbar/footer */}
-          <Route element={<MainLayout />}>
-            <Route path="/contact-us" element={<ContactUs />} />
+            {/* Regular routes WITH navbar/footer */}
+            <Route element={<MainLayout />}>
+              <Route path="/contact-us" element={<ContactUs />} />
 
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<StudentLogin />} />
-            <Route path="/signup" element={<StudentSignup />} />
-            <Route path="/chats" element={<Chatpage />} />
-            <Route path="/courseModules" element={<CoursesModules />} />
-            <Route path="/courseModules/:id" element={<CoursesModules />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/carrers" element={<Carrers />} />
-            <Route path="/documentation" element={<Documentation />} />
-            <Route path="/newsblog" element={<NewsBlog />} />
-            <Route path="/library" element={<Library />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/forum" element={<Forum />} />
-            <Route path="/sitemap" element={<SiteMap />} />
-            <Route
-              path="/howtobecometeacher"
-              element={<HowToBecomeTeacher />}
-            />
-            <Route path="/howtoguide" element={<HowtoGuide />} />
-            <Route path="/termsandcondion" element={<TermsAndConditions />} />
-            <Route path="/notice" element={<NoticeBoard />} />
-            <Route path="/teacher-login" element={<TeacherLogin />} />
-          </Route>
-        </Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<StudentLogin />} />
+              <Route path="/signup" element={<StudentSignup />} />
+              <Route path="/chats" element={<Chatpage />} />
+              <Route path="/courseModules" element={<CoursesModules />} />
+              <Route path="/courseModules/:id" element={<CoursesModules />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/carrers" element={<Carrers />} />
+              <Route path="/documentation" element={<Documentation />} />
+              <Route path="/newsblog" element={<NewsBlog />} />
+              <Route path="/library" element={<Library />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/forum" element={<Forum />} />
+              <Route path="/sitemap" element={<SiteMap />} />
+              <Route
+                path="/howtobecometeacher"
+                element={<HowToBecomeTeacher />}
+              />
+              <Route path="/howtoguide" element={<HowtoGuide />} />
+              <Route path="/termsandcondion" element={<TermsAndConditions />} />
+              <Route path="/notice" element={<NoticeBoard />} />
+              <Route path="/teacher-login" element={<TeacherLogin />} />
+            </Route>
+          </Routes>
         </ChatProvider>
       </Router>
     </div>

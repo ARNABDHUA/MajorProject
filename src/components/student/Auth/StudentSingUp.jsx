@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -16,15 +16,58 @@ import { MdOutlineNavigateNext, MdOutlineNavigateBefore } from "react-icons/md";
 import os from "/images/os.gif";
 import Swal from "sweetalert2";
 
+// Cities data organized by state
+const citiesByState = {
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Kadapa", "Tirupati", "Rajahmundry", "Kakinada"],
+  "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat", "Tawang", "Ziro", "Bomdila", "Aalo", "Tezu"],
+  "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia", "Tezpur", "Karimganj"],
+  "Bihar": ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Purnia", "Arrah", "Begusarai"],
+  "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Raigarh", "Jagdalpur", "Ambikapur", "Durg"],
+  "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa", "Ponda", "Bicholim", "Curchorem", "Canacona"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar", "Junagadh"],
+  "Haryana": ["Faridabad", "Gurgaon", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal"],
+  "Himachal Pradesh": ["Shimla", "Dharamshala", "Mandi", "Solan", "Nahan", "Bilaspur", "Hamirpur", "Kullu"],
+  "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Hazaribagh", "Deoghar", "Giridih", "Ramgarh"],
+  "Karnataka": ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum", "Gulbarga", "Davanagere", "Shimoga"],
+  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur", "Kollam", "Palakkad", "Alappuzha", "Kannur"],
+  "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Solapur", "Amravati"],
+  "Manipur": ["Imphal", "Thoubal", "Bishnupur", "Churachandpur", "Ukhrul", "Chandel", "Senapati", "Tamenglong"],
+  "Meghalaya": ["Shillong", "Tura", "Jowai", "Nongstoin", "Williamnagar", "Baghmara", "Resubelpara", "Ampati"],
+  "Mizoram": ["Aizawl", "Lunglei", "Champhai", "Serchhip", "Kolasib", "Lawngtlai", "Mamit", "Saiha"],
+  "Nagaland": ["Kohima", "Dimapur", "Mokokchung", "Tuensang", "Wokha", "Zunheboto", "Mon", "Phek"],
+  "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore", "Bhadrak"],
+  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Pathankot", "Hoshiarpur"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer", "Bikaner", "Alwar", "Bhilwara"],
+  "Sikkim": ["Gangtok", "Namchi", "Gyalshing", "Mangan", "Ravangla", "Singtam", "Rangpo", "Jorethang"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Erode", "Vellore"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam", "Ramagundam", "Mahbubnagar", "Nalgonda"],
+  "Tripura": ["Agartala", "Udaipur", "Dharmanagar", "Kailashahar", "Belonia", "Ambassa", "Khowai", "Teliamura"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Agra", "Varanasi", "Meerut", "Allahabad", "Ghaziabad", "Noida"],
+  "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Kashipur", "Rishikesh", "Nainital"],
+  "West Bengal": ["Bankura","Purulia","Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri", "Bardhaman", "Baharampur", "Malda"],
+  "Andaman and Nicobar Islands": ["Port Blair", "Car Nicobar", "Havelock Island", "Neil Island", "Mayabunder", "Diglipur", "Rangat", "Little Andaman"],
+  "Chandigarh": ["Chandigarh"],
+  "Dadra and Nagar Haveli and Daman and Diu": ["Silvassa", "Daman", "Diu", "Amli", "Naroli", "Vapi", "Dunetha"],
+  "Delhi": ["New Delhi", "Delhi", "Noida", "Gurgaon", "Faridabad", "Ghaziabad", "Greater Noida"],
+  "Jammu and Kashmir": ["Srinagar", "Jammu", "Anantnag", "Baramulla", "Kathua", "Udhampur", "Sopore", "Poonch"],
+  "Ladakh": ["Leh", "Kargil", "Diskit", "Zanskar", "Nubra", "Khaltse", "Drass"],
+  "Lakshadweep": ["Kavaratti", "Agatti", "Amini", "Andrott", "Minicoy", "Kiltan", "Kadmat", "Kalpeni"],
+  "Puducherry": ["Puducherry", "Karaikal", "Mahe", "Yanam", "Villianur", "Ozhukarai", "Thirubhuvanai"]
+};
+
 const StudentSignUp = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    gender: "",
     phoneNumber: "",
     password: "",
     address: "",
+    state: "",
+    city: "",
     pincode: "",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -32,42 +75,114 @@ const StudentSignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [popup, setPopup] = useState({ show: false, message: "", type: "" });
+  const [availableCities, setAvailableCities] = useState([]);
+
+  // Update available cities when state changes
+  useEffect(() => {
+    if (formData.state) {
+      setAvailableCities(citiesByState[formData.state] || []);
+      // Reset city when state changes
+      if (formData.city && !citiesByState[formData.state]?.includes(formData.city)) {
+        setFormData(prev => ({ ...prev, city: "" }));
+      }
+    } else {
+      setAvailableCities([]);
+    }
+  }, [formData.state]);
 
   const showPopup = (message, type) => {
     setPopup({ show: true, message, type });
     setTimeout(() => setPopup({ show: false, message: "", type: "" }), 3000);
   };
 
+  const isValidPhoneNumber = (phoneNumber) => {
+    const basicPattern = /^[5-9]\d{9}$/;
+  
+    if (!basicPattern.test(phoneNumber)) return false;
+  
+    // Disallow fully increasing or decreasing sequences
+    const isSequentialInc = '1234567890';
+    const isSequentialDec = '9876543210';
+    if (isSequentialInc.includes(phoneNumber) || isSequentialDec.includes(phoneNumber)) {
+      return false;
+    }
+  
+    // Disallow same digit repeated after first digit (e.g., 7000000000)
+    const firstDigit = phoneNumber[0];
+    const rest = phoneNumber.slice(1);
+    const allSame = rest.split('').every(d => d === rest[0]);
+    if (allSame) return false;
+  
+    return true;
+  };
+  
   const validateStep = () => {
     let newErrors = {};
-    const { name, email, phoneNumber, password, address, pincode } = formData;
+    const { name, email, gender, phoneNumber, password, address, state, city, pincode } = formData;
 
     if (step === 1) {
-      if (!/^[A-Za-z ]{3,}$/.test(name))
-        newErrors.name = "Name must be at least 3 characters long";
-      if (!/^\S+@gmail\.com$/.test(email))
+      if (!name.trim()) {
+        newErrors.name = "Name is required";
+      } else if (!/^[A-Za-z ]{3,}$/.test(name)) {
+        newErrors.name = "Name must be at least 3 characters long and contain only letters";
+      }
+      
+      if (!email.trim()) {
+        newErrors.email = "Email is required";
+      } else if (!/^\S+@gmail\.com$/.test(email)) {
         newErrors.email = "Email must be a valid @gmail.com address";
-      if (!formData.name || !formData.email) {
-        showPopup("Please fill in all fields!", "error");
-        return;
+      }
+      
+      if (!gender) {
+        newErrors.gender = "Gender is required";
+      }
+
+      if (Object.keys(newErrors).length > 0) {
+        showPopup("Please correct the errors and fill all required fields", "error");
       }
     } else if (step === 2) {
-      if (!/^[56789]\d{9}$/.test(phoneNumber))
-        newErrors.phoneNumber = "Invalid phone number";
-      if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}/.test(password))
-        newErrors.password = "Weak password";
-      if (password !== confirmPassword)
-        newErrors.confirmPassword = "Password not matched";
-      if (!formData.phoneNumber || !formData.password) {
-        showPopup("Please fill in all fields!", "error");
-        return;
+      if (!phoneNumber.trim()) {
+        newErrors.phoneNumber = "Phone number is required";
+      } else if (!isValidPhoneNumber(phoneNumber)) {
+        newErrors.phoneNumber = "Invalid phone number format. Please enter a 10-digit valid Indian mobile number";
+      }
+      
+      if (!password) {
+        newErrors.password = "Password is required";
+      } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}/.test(password)) {
+        newErrors.password = "Password must have at least 8 characters with 1 uppercase letter and 1 special character";
+      }
+      
+      if (!confirmPassword) {
+        newErrors.confirmPassword = "Please confirm your password";
+      } else if (password !== confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match";
+      }
+
+      if (Object.keys(newErrors).length > 0) {
+        showPopup("Please correct the errors and fill all required fields", "error");
       }
     } else if (step === 3) {
-      if (!address.trim()) newErrors.address = "Address is required";
-      if (!/^\d{6}$/.test(pincode)) newErrors.pincode = "Invalid pincode";
-      if (!formData.address || !formData.pincode) {
-        showPopup("Please fill in all fields!", "error");
-        return;
+      if (!address.trim()) {
+        newErrors.address = "Address is required";
+      }
+      
+      if (!state) {
+        newErrors.state = "State is required";
+      }
+      
+      if (!city) {
+        newErrors.city = "City is required";
+      }
+      
+      if (!pincode.trim()) {
+        newErrors.pincode = "Pincode is required";
+      } else if (!/^\d{6}$/.test(pincode)) {
+        newErrors.pincode = "Invalid pincode. Please enter a 6-digit pincode";
+      }
+
+      if (Object.keys(newErrors).length > 0) {
+        showPopup("Please correct the errors and fill all required fields", "error");
       }
     }
 
@@ -75,7 +190,12 @@ const StudentSignUp = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const nextStep = () => validateStep() && setStep((prev) => prev + 1);
+  const nextStep = () => {
+    if (validateStep()) {
+      setStep((prev) => prev + 1);
+    }
+  };
+  
   const prevStep = () => setStep((prev) => prev - 1);
 
   const passwordQuery = () => {
@@ -86,56 +206,63 @@ const StudentSignUp = () => {
     });
   };
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-    const handleSubmit = async () => {
-      if (!validateStep()) return;
-      try {
-        const response = await axios.post(
-          "https://e-college-data.onrender.com/v1/students/student-singup",
-          formData
-        );
-        
-        if (response.data) {
-          const { token, user } = response.data;
-          const userData = { ...user, role: "student" };
-          localStorage.setItem("token", token);
-          localStorage.setItem("user", JSON.stringify(userData));
-          
-          showPopup("Signup Successful! Redirecting...", "success");
-          
-          // Inner API call only happens after successful outer API call
-          try {
-            const chatUser = await axios.post(
-              "https://e-college-data.onrender.com/v1/chat/chat-user-add",
-              { name: formData.name, email: formData.email } 
-            );
-            console.log("Chat user added successfully:");
-            if(chatUser.data){
-              localStorage.setItem("userInfo", JSON.stringify(chatUser.data));
-            }
-          } catch (chatError) {
-            console.error("Chat user registration error:", chatError);
-            // Optionally show a warning that chat registration failed but account was created
-            showPopup("Account created but chat registration failed", "warning");
-          }
-          
-          setTimeout(() => navigate("/"), 5000);
-        }
-      } catch (error) {
-        console.error("Signup Error:", error);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
     
-        if (error.response && error.response.status === 400) {
-          showPopup(
-            error.response.data.message || "Signup Failed. Try again!",
-            "error"
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!validateStep()) return;
+    try {
+      const response = await axios.post(
+        "https://e-college-data.onrender.com/v1/students/student-singup",
+        formData
+      );
+      
+      if (response.data) {
+        const { token, user } = response.data;
+        const userData = { ...user, role: "student" };
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(userData));
+        
+        showPopup("Signup Successful! Redirecting...", "success");
+        
+        // Inner API call only happens after successful outer API call
+        try {
+          const chatUser = await axios.post(
+            "https://e-college-data.onrender.com/v1/chat/chat-user-add",
+            { name: formData.name, email: formData.email } 
           );
-        } else {
-          showPopup("Something went wrong. Please try again later!", "error");
+          console.log("Chat user added successfully:");
+          if(chatUser.data){
+            localStorage.setItem("userInfo", JSON.stringify(chatUser.data));
+          }
+        } catch (chatError) {
+          console.error("Chat user registration error:", chatError);
+          // Optionally show a warning that chat registration failed but account was created
+          showPopup("Account created but chat registration failed", "warning");
         }
+        
+        setTimeout(() => navigate("/"), 5000);
       }
-    };
+    } catch (error) {
+      console.error("Signup Error:", error);
+  
+      if (error.response && error.response.status === 400) {
+        showPopup(
+          error.response.data.message || "Signup Failed. Try again!",
+          "error"
+        );
+      } else {
+        showPopup("Something went wrong. Please try again later!", "error");
+      }
+    }
+  };
 
   // Progress bar with animation for each step
   const ProgressIndicator = () => {
@@ -292,7 +419,7 @@ const StudentSignUp = () => {
                 {/* Name Field */}
                 <motion.div variants={itemVariants} className="space-y-2">
                   <label className="block text-gray-700 font-medium">
-                    Full Name
+                    Full Name <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -304,7 +431,10 @@ const StudentSignUp = () => {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Enter your full name"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                        errors.name ? "border-red-500" : "border-gray-300"
+                      }`}
+                      required
                     />
                   </div>
                   {errors.name && (
@@ -317,11 +447,10 @@ const StudentSignUp = () => {
                     </motion.p>
                   )}
                 </motion.div>
-
                 {/* Email Field */}
                 <motion.div variants={itemVariants} className="space-y-2">
                   <label className="block text-gray-700 font-medium">
-                    Email Address
+                    Email Address <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -333,7 +462,10 @@ const StudentSignUp = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="Enter your email address"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                        errors.email ? "border-red-500" : "border-gray-300"
+                      }`}
+                      required
                     />
                   </div>
                   {errors.email && (
@@ -346,7 +478,37 @@ const StudentSignUp = () => {
                     </motion.p>
                   )}
                 </motion.div>
-
+                {/* Gender */}
+                <motion.div variants={itemVariants} className="space-y-2">
+                  <label className="block text-gray-700 font-medium">
+                    Gender <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="gender"
+                      value={formData.gender}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        errors.gender ? "border-red-500" : "border-gray-300"
+                      }`}
+                      required
+                      onChange={handleChange}
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  {errors.gender && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-red-500 text-sm mt-1"
+                    >
+                      {errors.gender}
+                    </motion.p>
+                  )}
+                </motion.div>
                 {/* Next Button */}
                 <motion.div variants={itemVariants} className="pt-4">
                   <motion.button
@@ -386,7 +548,7 @@ const StudentSignUp = () => {
                 {/* Phone Number Field */}
                 <motion.div variants={itemVariants} className="space-y-2">
                   <label className="block text-gray-700 font-medium">
-                    Phone Number
+                    Phone Number <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -398,7 +560,10 @@ const StudentSignUp = () => {
                       value={formData.phoneNumber}
                       onChange={handleChange}
                       placeholder="Enter your phone number"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                        errors.phoneNumber ? "border-red-500" : "border-gray-300"
+                      }`}
+                      required
                     />
                   </div>
                   {errors.phoneNumber && (
@@ -416,7 +581,7 @@ const StudentSignUp = () => {
                 <motion.div variants={itemVariants} className="space-y-2">
                   <div className="flex items-center gap-2">
                     <label className="text-gray-700 font-medium">
-                      Password
+                      Password <span className="text-red-500">*</span>
                     </label>
                     <motion.div
                       whileHover={{ scale: 1.2, rotate: 15 }}
@@ -436,7 +601,10 @@ const StudentSignUp = () => {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Create a strong password"
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                        errors.password ? "border-red-500" : "border-gray-300"
+                      }`}
+                      required
                     />
                     <motion.button
                       type="button"
@@ -454,204 +622,259 @@ const StudentSignUp = () => {
                   </div>
                   {errors.password && (
                     <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-red-500 text-sm mt-1"
-                    >
-                      {errors.password}
-                    </motion.p>
-                  )}
-                </motion.div>
-
-                {/* Confirm Password Field */}
-                <motion.div variants={itemVariants} className="space-y-2">
-                  <label className="block text-gray-700 font-medium">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <IoKeyOutline className="text-gray-400 text-lg" />
-                    </div>
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm your password"
-                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    />
-                    <motion.button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >
-                      {showConfirmPassword ? (
-                        <IoEyeOffOutline className="text-gray-600 text-xl" />
-                      ) : (
-                        <IoEyeOutline className="text-gray-600 text-xl" />
-                      )}
-                    </motion.button>
-                  </div>
-                  {errors.confirmPassword && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-red-500 text-sm mt-1"
-                    >
-                      {errors.confirmPassword}
-                    </motion.p>
-                  )}
-                </motion.div>
-
-                {/* Navigation Buttons */}
-                <motion.div
-                  variants={itemVariants}
-                  className="flex justify-between pt-4 gap-4"
-                >
-                  <motion.button
-                    onClick={prevStep}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 transition-all"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-red-500 text-sm mt-1"
                   >
-                    <MdOutlineNavigateBefore className="text-xl" /> Back
-                  </motion.button>
-                  <motion.button
-                    onClick={nextStep}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 shadow-lg shadow-blue-400/20 hover:shadow-blue-500/30 transition-all"
-                  >
-                    Continue <MdOutlineNavigateNext className="text-xl" />
-                  </motion.button>
-                </motion.div>
+                    {errors.password}
+                  </motion.p>
+                )}
               </motion.div>
-            )}
-
-            {step === 3 && (
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="space-y-6"
-              >
-                {/* Address Field */}
-                <motion.div variants={itemVariants} className="space-y-2">
-                  <label className="block text-gray-700 font-medium">
-                    Address
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <IoLocationOutline className="text-gray-400 text-lg" />
-                    </div>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      placeholder="Enter your full address"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    />
+              
+              {/* Confirm Password Field */}
+              <motion.div variants={itemVariants} className="space-y-2">
+                <label className="block text-gray-700 font-medium">
+                  Confirm Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <IoKeyOutline className="text-gray-400 text-lg" />
                   </div>
-                  {errors.address && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-red-500 text-sm mt-1"
-                    >
-                      {errors.address}
-                    </motion.p>
-                  )}
-                </motion.div>
-
-                {/* Pincode Field */}
-                <motion.div variants={itemVariants} className="space-y-2">
-                  <label className="block text-gray-700 font-medium">
-                    Pincode
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <IoLocationOutline className="text-gray-400 text-lg" />
-                    </div>
-                    <input
-                      type="text"
-                      name="pincode"
-                      value={formData.pincode}
-                      onChange={handleChange}
-                      placeholder="Enter your pincode"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    />
-                  </div>
-                  {errors.pincode && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-red-500 text-sm mt-1"
-                    >
-                      {errors.pincode}
-                    </motion.p>
-                  )}
-                </motion.div>
-
-                {/* Navigation Buttons */}
-                <motion.div
-                  variants={itemVariants}
-                  className="flex justify-between pt-4 gap-4"
-                >
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                      errors.confirmPassword ? "border-red-500" : "border-gray-300"
+                    }`}
+                    required
+                  />
                   <motion.button
-                    onClick={prevStep}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 transition-all"
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                   >
-                    <MdOutlineNavigateBefore className="text-xl" /> Back
+                    {showConfirmPassword ? (
+                      <IoEyeOffOutline className="text-gray-600 text-xl" />
+                    ) : (
+                      <IoEyeOutline className="text-gray-600 text-xl" />
+                    )}
                   </motion.button>
-                  <motion.button
-                    onClick={handleSubmit}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 shadow-lg shadow-green-400/20 hover:shadow-green-500/30 transition-all"
+                </div>
+                {errors.confirmPassword && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-red-500 text-sm mt-1"
                   >
-                    Complete Registration
-                  </motion.button>
-                </motion.div>
-
-                {/* Login Redirect */}
-                <motion.p
-                  variants={itemVariants}
-                  className="text-center text-gray-600 mt-6"
-                >
-                  Already have an account?{" "}
-                  <motion.span
-                    className="text-blue-600 font-semibold cursor-pointer hover:underline"
-                    onClick={() => navigate("/login")}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    Log in here
-                  </motion.span>
-                </motion.p>
+                    {errors.confirmPassword}
+                  </motion.p>
+                )}
               </motion.div>
-            )}
-          </div>
-        </div>
-
-        {/* Mobile only banner */}
-        <motion.div
-          className="mt-6 text-center text-gray-600 md:hidden"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <FaGraduationCap className="text-blue-500 text-3xl mx-auto mb-2" />
-          <p className="font-medium">E-College - Empowering Education</p>
-        </motion.div>
-      </motion.div>
-    </div>
-  );
-};
-
-export default StudentSignUp;
+              
+              {/* Navigation Buttons */}
+              <motion.div variants={itemVariants} className="pt-4 flex gap-4">
+                <motion.button
+                  onClick={prevStep}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-1/2 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 transition-all"
+                >
+                  <MdOutlineNavigateBefore className="text-xl" /> Back
+                </motion.button>
+                <motion.button
+                  onClick={nextStep}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-1/2 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 shadow-lg shadow-blue-400/20 hover:shadow-blue-500/30 transition-all"
+                >
+                  Continue <MdOutlineNavigateNext className="text-xl" />
+                </motion.button>
+              </motion.div>
+              </motion.div>
+                          )}
+              
+                          {step === 3 && (
+                            <motion.div
+                              variants={containerVariants}
+                              initial="hidden"
+                              animate="visible"
+                              exit="exit"
+                              className="space-y-6"
+                            >
+                              {/* Address Field */}
+                              <motion.div variants={itemVariants} className="space-y-2">
+                                <label className="block text-gray-700 font-medium">
+                                  Address <span className="text-red-500">*</span>
+                                </label>
+                                <div className="relative">
+                                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <IoLocationOutline className="text-gray-400 text-lg" />
+                                  </div>
+                                  <textarea
+                                    name="address"
+                                    value={formData.address}
+                                    onChange={handleChange}
+                                    placeholder="Enter your address"
+                                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all h-24 resize-none ${
+                                      errors.address ? "border-red-500" : "border-gray-300"
+                                    }`}
+                                    required
+                                  />
+                                </div>
+                                {errors.address && (
+                                  <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="text-red-500 text-sm mt-1"
+                                  >
+                                    {errors.address}
+                                  </motion.p>
+                                )}
+                              </motion.div>
+              
+                              {/* State Field */}
+                              <motion.div variants={itemVariants} className="space-y-2">
+                                <label className="block text-gray-700 font-medium">
+                                  State <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  name="state"
+                                  value={formData.state}
+                                  onChange={handleChange}
+                                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                    errors.state ? "border-red-500" : "border-gray-300"
+                                  }`}
+                                  required
+                                >
+                                  <option value="">Select State</option>
+                                  {Object.keys(citiesByState).sort().map((state) => (
+                                    <option key={state} value={state}>
+                                      {state}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.state && (
+                                  <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="text-red-500 text-sm mt-1"
+                                  >
+                                    {errors.state}
+                                  </motion.p>
+                                )}
+                              </motion.div>
+              
+                              {/* City Field */}
+                              <motion.div variants={itemVariants} className="space-y-2">
+                                <label className="block text-gray-700 font-medium">
+                                  City <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  name="city"
+                                  value={formData.city}
+                                  onChange={handleChange}
+                                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                    errors.city ? "border-red-500" : "border-gray-300"
+                                  }`}
+                                  required
+                                  disabled={!formData.state}
+                                >
+                                  <option value="">Select City</option>
+                                  {availableCities.map((city) => (
+                                    <option key={city} value={city}>
+                                      {city}
+                                    </option>
+                                  ))}
+                                </select>
+                                {errors.city && (
+                                  <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="text-red-500 text-sm mt-1"
+                                  >
+                                    {errors.city}
+                                  </motion.p>
+                                )}
+                              </motion.div>
+              
+                              {/* Pincode Field */}
+                              <motion.div variants={itemVariants} className="space-y-2">
+                                <label className="block text-gray-700 font-medium">
+                                  Pincode <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  name="pincode"
+                                  value={formData.pincode}
+                                  onChange={handleChange}
+                                  placeholder="Enter 6-digit pincode"
+                                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                    errors.pincode ? "border-red-500" : "border-gray-300"
+                                  }`}
+                                  required
+                                  maxLength={6}
+                                />
+                                {errors.pincode && (
+                                  <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="text-red-500 text-sm mt-1"
+                                  >
+                                    {errors.pincode}
+                                  </motion.p>
+                                )}
+                              </motion.div>
+              
+                              {/* Navigation Buttons */}
+                              <motion.div variants={itemVariants} className="pt-4 flex gap-4">
+                                <motion.button
+                                  onClick={prevStep}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  className="w-1/2 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 transition-all"
+                                >
+                                  <MdOutlineNavigateBefore className="text-xl" /> Back
+                                </motion.button>
+                                <motion.button
+                                  onClick={handleSubmit}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  className="w-1/2 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-medium flex items-center justify-center gap-2 shadow-lg shadow-blue-400/20 hover:shadow-blue-500/30 transition-all"
+                                >
+                                  Sign Up
+                                </motion.button>
+                              </motion.div>
+                            </motion.div>
+                          )}
+              
+                          {/* Terms and Policy Notice - Only on final step */}
+                          {step === 3 && (
+                            <motion.p
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.3 }}
+                              className="text-xs text-gray-500 text-center mt-6"
+                            >
+                              By signing up, you agree to our{" "}
+                              <span className="text-blue-600 cursor-pointer hover:underline">
+                                Terms of Service
+                              </span>{" "}
+                              and{" "}
+                              <span className="text-blue-600 cursor-pointer hover:underline">
+                                Privacy Policy
+                              </span>
+                            </motion.p>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                );
+              };
+              
+              export default StudentSignUp;

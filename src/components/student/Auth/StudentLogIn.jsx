@@ -35,6 +35,12 @@ const Login = () => {
     setTimeout(() => setPopup({ message: "", type: "", visible: false }), 3000);
   };
 
+  // Function to navigate and scroll to top
+  const navigateAndScrollToTop = (path) => {
+    window.scrollTo(0, 0); // Scroll to top first
+    navigate(path);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -54,27 +60,28 @@ const Login = () => {
         const userData = { ...user, role: "student" };
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(userData));
-        // const userInfo = JSON.parse(localStorage.getItem("user"));
-        // console.log(userInfo)
 
         showPopup("Signin Successful! Redirecting...", "success");
 
-          // Inner API call only happens after successful outer API call
-          try {
-            const chatUser = await axios.post(
-              "https://e-college-data.onrender.com/v1/chat/chat-user-data",
-              { email: formData.email } 
-            );
-            console.log("Chat user added successfully:");
-            if(chatUser.data){
-              localStorage.setItem("userInfo", JSON.stringify(chatUser.data.user));
-            }
-          } catch (chatError) {
-            console.error("Chat user registration error:", chatError);
-            // Optionally show a warning that chat registration failed but account was created
-            showPopup("Account created but chat registration failed", "warning");
+        // Inner API call only happens after successful outer API call
+        try {
+          const chatUser = await axios.post(
+            "https://e-college-data.onrender.com/v1/chat/chat-user-data",
+            { email: formData.email }
+          );
+          console.log("Chat user added successfully:");
+          if (chatUser.data) {
+            localStorage.setItem("userInfo", JSON.stringify(chatUser.data.user));
           }
-        setTimeout(() => navigate("/"), 3000);
+        } catch (chatError) {
+          console.error("Chat user registration error:", chatError);
+          // Optionally show a warning that chat registration failed but account was created
+          showPopup("Account created but chat registration failed", "warning");
+        }
+        
+        // Scroll to top before navigating
+        window.scrollTo(0, 0);
+        setTimeout(() => navigateAndScrollToTop("/"), 3000);
       } else {
         showPopup("Invalid email or password.", "error");
       }
@@ -167,7 +174,10 @@ const Login = () => {
 
             <div className="flex justify-between items-center mb-4">
               <div></div>
-              <span className="text-sm font-bold text-blue-600 cursor-pointer">
+              <span 
+                className="text-sm font-bold text-blue-600 cursor-pointer"
+                onClick={() => navigateAndScrollToTop("/forgot-password")}
+              >
                 Forgot password?
               </span>
             </div>
@@ -185,7 +195,7 @@ const Login = () => {
             <span className="text-gray-600">Don't have an account? </span>
             <span
               className="text-blue-600 font-bold cursor-pointer hover:text-blue-800"
-              onClick={() => navigate("/signup")}
+              onClick={() => navigateAndScrollToTop("/signup")}
             >
               Sign up for free
             </span>

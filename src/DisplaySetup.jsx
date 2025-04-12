@@ -239,7 +239,7 @@ const DisplaySetup = () => {
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<StudentLogin />} />
               <Route path="/signup" element={<StudentSignup />} />
-              <Route path="/chats" element={<Chatpage />} />
+              {/* <Route path="/chats" element={<Chatpage />} /> */}
               <Route path="/courseModules" element={<CoursesModules />} />
               <Route path="/courseModules/:id" element={<CoursesModules />} />
               <Route path="/about" element={<About />} />

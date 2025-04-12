@@ -9,7 +9,8 @@ import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../../context/ChatProvider";
 import { getSender, getSenderFull } from "./config/ChatLogics";
-import { XCircle } from "lucide-react"; // 👈 Add this for close icon
+import { XCircle } from "lucide-react";
+import { FaArrowRight } from "react-icons/fa";
 
 const ENDPOINT = "https://e-college-data.onrender.com";
 let socket, selectedChatCompare;
@@ -137,8 +138,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       {selectedChat ? (
         <>
           {/* Header */}
-          <div className="flex justify-between items-center w-full px-2 pb-3 text-[22px] md:text-[26px] font-['Work_Sans']">
-            <div className="flex items-center gap-2">
+          <div className="flex justify-between items-center w-full px-2 pb-3 text-lg sm:text-xl md:text-2xl font-['Work_Sans']">
+            <div className="flex items-center gap-2 flex-wrap">
               {!selectedChat.isGroupChat ? (
                 <>
                   {getSender(user, selectedChat.users)}
@@ -156,22 +157,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               )}
             </div>
 
-            {/* ❌ Close Chat Button */}
             <button
               onClick={() => setSelectedChat("")}
               className="text-gray-500 hover:text-red-500 transition duration-200"
               title="Close Chat"
             >
-              <XCircle className="w-7 h-7 md:w-8 md:h-8" />
+              <XCircle className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
             </button>
           </div>
 
           {/* Chat Box */}
-          <div className="flex flex-col justify-end p-3 bg-[#E8E8E8] w-full h-full rounded-lg overflow-y-hidden">
+          <div className="flex flex-col justify-end p-2 sm:p-3 bg-[#E8E8E8] w-full h-full min-h-[300px] rounded-lg overflow-y-hidden">
             {loading ? (
-              <div className="w-20 h-20 border-4 border-gray-300 border-t-teal-500 rounded-full animate-spin self-center m-auto" />
+              <div className="w-16 h-16 border-4 border-gray-300 border-t-teal-500 rounded-full animate-spin self-center m-auto" />
             ) : (
-              <div className="messages">
+              <div className="messages overflow-y-auto max-h-[70vh] px-1 sm:px-2">
                 <ScrollableChat messages={messages} />
               </div>
             )}
@@ -179,25 +179,37 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             {/* Typing animation */}
             {istyping && (
               <div className="mb-4 ml-0">
-                <Lottie options={defaultOptions} width={70} style={{ marginBottom: 15, marginLeft: 0 }} />
+                <Lottie options={defaultOptions} width={60} style={{ marginBottom: 15, marginLeft: 0 }} />
               </div>
             )}
 
-            {/* Input */}
-            <input
-              type="text"
-              className="w-full p-2 rounded-md bg-[#E0E0E0] focus:outline-none mt-3"
-              placeholder="Enter a message..."
-              value={newMessage}
-              onChange={typingHandler}
-              onKeyDown={sendMessage}
-            />
+            {/* Input + Send Button */}
+            <div className="flex items-center gap-2 mt-3">
+              <input
+                type="text"
+                className="flex-grow p-2 text-sm sm:text-base rounded-md bg-[#E0E0E0] focus:outline-none"
+                placeholder="Enter a message..."
+                value={newMessage}
+                onChange={typingHandler}
+                onKeyDown={sendMessage}
+              />
+              <button
+                onClick={() => {
+                  if (newMessage.trim()) {
+                    sendMessage({ key: "Enter", preventDefault: () => {} });
+                  }
+                }}
+                className="p-2 sm:p-2.5 bg-green-500 rounded-md hover:bg-green-600 transition duration-200"
+                title="Send Message"
+              >
+                <FaArrowRight className="text-white text-lg sm:text-xl" />
+              </button>
+            </div>
           </div>
         </>
       ) : (
-        // Default view when no chat is selected
-        <div className="flex items-center justify-center h-full">
-          <p className="text-3xl pb-3 font-['Work_Sans'] text-gray-500 text-center">
+        <div className="flex items-center justify-center h-full text-center px-3">
+          <p className="text-lg sm:text-xl md:text-2xl font-['Work_Sans'] text-gray-500">
             Click on a user to start chatting
           </p>
         </div>

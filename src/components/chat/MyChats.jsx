@@ -29,7 +29,7 @@ const MyChats = ({ fetchAgain }) => {
         "https://e-college-data.onrender.com/v1/chat/chat-fatch",
         { ownId:ownId }
       );
-      console.log(data.data)
+      // console.log(data.data)
       setChats(data.data);
     } catch (error) {
       toast.error("Failed to Load the chats", {

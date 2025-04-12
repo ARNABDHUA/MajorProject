@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
@@ -10,6 +9,8 @@ const ChatProvider = ({ children }) => {
   const [token, setToken] = useState();
   const [notification, setNotification] = useState([]);
   const [chats, setChats] = useState();
+  const [courseCode, setCourseCode] = useState();
+  const [email, setEmail] = useState();
 
   const history = useNavigate();
   // useEffect(() => {
@@ -22,7 +23,6 @@ const ChatProvider = ({ children }) => {
   //   if (!userInfo) history("/login");
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [history]);
-
 
   return (
     <ChatContext.Provider
@@ -37,6 +37,10 @@ const ChatProvider = ({ children }) => {
         setNotification,
         chats,
         setChats,
+        courseCode,
+        setCourseCode,
+        email,
+        setEmail,
       }}
     >
       {children}

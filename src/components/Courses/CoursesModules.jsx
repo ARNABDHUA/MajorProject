@@ -3,7 +3,7 @@ import { FaStar } from "react-icons/fa";
 import { FaUserGraduate } from "react-icons/fa";
 import CourseTab from "./CourseModulesTab/CourseTab";
 
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 //it is not good practice when we use dynamic data we have to change
 import MCA from "/images/artificial-intelligence.png";
 import BCA from "/images/computer-science.png";
@@ -24,12 +24,12 @@ const courses = [
     name: "Master of Computer Application",
     code: "MCA",
     description:
-      "Dive into the world of cutting-edge technology with our comprehensive MCA program. From software engineering.",
+      "Dive into the world of cutting-edge technology with our comprehensive MCA program. From software engineeringu.",
     imageUrl: MCA,
     bgColor: "bg-gradient-to-r from-blue-900 to-blue-600",
     duration: "2 years",
     instructor: "Abby Caldarone",
-    students: 12433,
+    students: 99999,
     schedule: [
       {
         week: "Week 1",
@@ -497,7 +497,7 @@ const CoursesModules = () => {
             {course.students} already enrolled
           </h1>
           <button className="bg-yellow-500 text-black font-semibold w-full rounded-lg h-12 mt-4 hover:bg-yellow-600 transition">
-            Enroll Course
+            <Link to="Enrollment-course">Enroll Course</Link>
           </button>
         </div>
       </div>

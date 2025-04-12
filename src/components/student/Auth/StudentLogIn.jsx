@@ -60,7 +60,7 @@ const Login = () => {
         const userData = { ...user, role: "student" };
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(userData));
-
+        console.log("User Data:", userData);
         showPopup("Signin Successful! Redirecting...", "success");
 
         // Inner API call only happens after successful outer API call
@@ -71,14 +71,17 @@ const Login = () => {
           );
           console.log("Chat user added successfully:");
           if (chatUser.data) {
-            localStorage.setItem("userInfo", JSON.stringify(chatUser.data.user));
+            localStorage.setItem(
+              "userInfo",
+              JSON.stringify(chatUser.data.user)
+            );
           }
         } catch (chatError) {
           console.error("Chat user registration error:", chatError);
           // Optionally show a warning that chat registration failed but account was created
           showPopup("Account created but chat registration failed", "warning");
         }
-        
+
         // Scroll to top before navigating
         window.scrollTo(0, 0);
         setTimeout(() => navigateAndScrollToTop("/"), 3000);
@@ -174,7 +177,7 @@ const Login = () => {
 
             <div className="flex justify-between items-center mb-4">
               <div></div>
-              <span 
+              <span
                 className="text-sm font-bold text-blue-600 cursor-pointer"
                 onClick={() => navigateAndScrollToTop("/forgot-password")}
               >

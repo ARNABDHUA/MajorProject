@@ -517,7 +517,7 @@ const CoursesModules = () => {
             </div>
           ) : (
             <button className="bg-yellow-500 text-black font-semibold w-full rounded-lg h-12 mt-4 hover:bg-yellow-600 transition">
-              <Link to="Enrollment-course">Enroll Coursera</Link>
+              <Link to="Enrollment-course">Enroll Course</Link>
             </button>
           )}
         </div>

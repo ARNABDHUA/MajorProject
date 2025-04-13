@@ -3,6 +3,7 @@ import axios from "axios";
 import { load } from "@cashfreepayments/cashfree-js";
 import { ChatState } from "../context/ChatProvider";
 import { Navigate, useNavigate } from "react-router-dom";
+
 const Payment = () => {
   const navigate = useNavigate();
   const [orderId, setOrderId] = useState("");
@@ -16,7 +17,16 @@ const Payment = () => {
   const generateUniqueId = () => {
     return "101" + Date.now() + "9" + Math.floor(Math.random() * 10000);
   };
+
   useEffect(() => {
+    // Check if payment is already done
+    const user = JSON.parse(localStorage.getItem("user"));
+    console.log("Payment status", user.payment);
+    if (user.payment === true) {
+      navigate("/student-profile");
+      return;
+    }
+
     // Get user data from localStorage safely
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const userEmail = storedUser.email;
@@ -66,14 +76,11 @@ const Payment = () => {
       );
       if (res.data) {
         const newData = res.data;
-        // console.log(newData);
-        // const data = JSON.parse(localStorage.getItem("user"));
-        // console.log(res);
-        // const user = res.data;
-        // const userData = { ...user, c_roll: newData };
-        // localStorage.setItem("user", JSON.stringify(userData));
-        // console.log("User Data:", userData);
-        setTimeout(navigate("/student-profile"), 3000);
+        const userData = { ...newData, role: "student" };
+        localStorage.setItem("user", JSON.stringify(userData));
+        // Set payment status to true in local storage
+        localStorage.setItem("payment", JSON.stringify(true));
+        setTimeout(() => navigate("/student-profile"), 1500);
       }
     } catch (error) {
       setMessage("Error generating Roll Number");
@@ -83,6 +90,7 @@ const Payment = () => {
       setIsLoading(false);
     }
   };
+
   const getOrderDetails = async () => {
     setIsLoading(true);
     setMessage("Creating order...");
@@ -179,7 +187,7 @@ const Payment = () => {
             }, 2000);
             setTimeout(() => {
               rollNumberGenerate();
-            }, 5000);
+            }, 2000);
           }
         })
         .catch(function (error) {
@@ -195,9 +203,22 @@ const Payment = () => {
   };
 
   return (
-    <div className="container text-center max-w-[600px] p-14 mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Cashfree Payment Gateway</h1>
-
+    <div className="container text-center max-w-[600px] p-14 mx-auto ">
+      <h1 className="text-2xl font-bold mb-4"> Payment Page</h1>
+      <div>
+        <div className="max-w-sm mx-auto p-6 bg-blue-950 text-white rounded-2xl shadow-md space-y-4 flex flex-col items-start">
+          <h2 className="text-xl font-semibold ">User Information</h2>
+          <div className="">
+            <span className="font-medium ">Name:</span> {name}
+          </div>
+          <div className="">
+            <span className="font-medium ">Phone Number:</span> {phone}
+          </div>
+          <div className="">
+            <span className="font-medium">Email Address:</span> {email}
+          </div>
+        </div>
+      </div>
       {message && (
         <div
           className={`my-5 p-4 rounded text-sm ${

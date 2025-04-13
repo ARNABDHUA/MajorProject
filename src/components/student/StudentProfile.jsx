@@ -1,23 +1,19 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import {
-  FaUser,
-  FaEnvelope,
-  FaBook,
-  FaCalendarAlt,
-  FaIdCard,
-  FaPhoneAlt,
-  FaGraduationCap,
-} from "react-icons/fa";
-import { MdSchool, MdSubject } from "react-icons/md";
-import HashLoader from "react-spinners/HashLoader";
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Clock,
+  BookOpen,
+  CheckCircle,
+} from "lucide-react";
 
 const StudentProfile = () => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -60,361 +56,174 @@ const StudentProfile = () => {
     fetchProfileData();
   }, []);
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.5 },
-    },
-  };
-
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <HashLoader color="#3B82F6" size={60} />
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-          <h2 className="text-2xl font-bold text-red-500 mb-4">Error</h2>
-          <p className="text-gray-700">{error}</p>
-          <button
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            onClick={() => (window.location.href = "/login")}
-          >
-            Back to Login
-          </button>
-        </div>
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4 mx-auto max-w-3xl">
+        <strong className="font-bold">Error:</strong>
+        <span className="block sm:inline"> {error}</span>
       </div>
     );
   }
 
-  // Mock data for courses and grades (replace with actual data from API)
-  const courses = [
-    { id: 1, name: "Mathematics", instructor: "Dr. Smith", progress: 85 },
-    {
-      id: 2,
-      name: "Computer Science",
-      instructor: "Prof. Johnson",
-      progress: 72,
-    },
-    { id: 3, name: "Physics", instructor: "Dr. Williams", progress: 90 },
-  ];
-
-  const grades = [
-    { subject: "Mathematics", midterm: 85, final: 88, grade: "A" },
-    { subject: "Computer Science", midterm: 78, final: 82, grade: "B+" },
-    { subject: "Physics", midterm: 92, final: 94, grade: "A+" },
-  ];
+  if (!profileData) {
+    return <div className="text-center p-4">No profile data available</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-6xl mx-auto"
-      >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-blue-700 rounded-t-lg p-6 md:p-8 text-white shadow-lg">
-          <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="w-32 h-32 rounded-full bg-white p-1 shadow-lg">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                className="w-full h-full rounded-full bg-gray-300 flex justify-center items-center"
-              >
-                <FaUser className="text-blue-700 text-5xl" />
-              </motion.div>
-            </div>
-            <div className="text-center md:text-left">
-              <h1 className="text-3xl md:text-4xl font-bold">
-                {profileData?.name || "Student Name"}
-              </h1>
-              <p className="text-blue-100 mt-2">
-                ID: {profileData?.studentId || profileData?._id || "STU12345"}
-              </p>
-              <p className="text-blue-100">
-                {profileData?.department || "Computer Science"} Department
-              </p>
+    <div className="bg-gray-100 min-h-screen py-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+        {/* Header with background */}
+        <div className="bg-blue-600 h-32 relative"></div>
+
+        {/* Profile picture section */}
+        <div className="relative px-6">
+          <div className="absolute -top-16 flex justify-center items-center">
+            <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-white bg-white shadow-lg">
+              <img
+                src={
+                  profileData.pic ||
+                  "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+                }
+                alt="Profile"
+                className="h-full w-full object-cover"
+              />
             </div>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="bg-white border-b shadow-sm">
-          <div className="flex overflow-x-auto">
-            <button
-              onClick={() => setActiveTab("profile")}
-              className={`px-6 py-4 font-medium text-sm ${
-                activeTab === "profile"
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Profile
-            </button>
-            <button
-              onClick={() => setActiveTab("courses")}
-              className={`px-6 py-4 font-medium text-sm ${
-                activeTab === "courses"
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Courses
-            </button>
-            <button
-              onClick={() => setActiveTab("grades")}
-              className={`px-6 py-4 font-medium text-sm ${
-                activeTab === "grades"
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Grades
-            </button>
+        {/* Profile information */}
+        <div className="pt-20 px-6 pb-8">
+          <h1 className="text-2xl font-bold text-gray-800">
+            {profileData.name}
+          </h1>
+          <div className="flex items-center mt-1">
+            <BookOpen className="h-4 w-4 text-blue-600 mr-2" />
+            <span className="text-gray-600">
+              Student ID: {profileData.c_roll}
+            </span>
+          </div>
+
+          {profileData.e_roll && (
+            <div className="flex items-center mt-1">
+              <Clock className="h-4 w-4 text-blue-600 mr-2" />
+              <span className="text-gray-600">
+                Exam Roll: {profileData.e_roll}
+              </span>
+            </div>
+          )}
+
+          {profileData.course_code && (
+            <div className="flex items-center mt-1">
+              <BookOpen className="h-4 w-4 text-blue-600 mr-2" />
+              <span className="text-gray-600">
+                Course Code: {profileData.course_code}
+              </span>
+            </div>
+          )}
+
+          <div className="flex items-center mt-1">
+            <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+            <span className="text-gray-600">
+              Payment Status: {profileData.payment ? "Paid" : "Pending"}
+            </span>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h2 className="text-lg font-semibold text-gray-700 mb-3">
+                Personal Information
+              </h2>
+
+              <div className="space-y-3">
+                <div className="flex items-start">
+                  <User className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Full Name</p>
+                    <p className="text-gray-800">{profileData.name}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <User className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Gender</p>
+                    <p className="text-gray-800">
+                      {profileData.gender
+                        ? profileData.gender.charAt(0).toUpperCase() +
+                          profileData.gender.slice(1)
+                        : "Not specified"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Mail className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="text-gray-800">{profileData.email}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Phone className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="text-gray-800">{profileData.phoneNumber}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h2 className="text-lg font-semibold text-gray-700 mb-3">
+                Address
+              </h2>
+
+              <div className="space-y-3">
+                <div className="flex items-start">
+                  <MapPin className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Street Address</p>
+                    <p className="text-gray-800">{profileData.address}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <MapPin className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">City</p>
+                    <p className="text-gray-800">{profileData.city}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <MapPin className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">State</p>
+                    <p className="text-gray-800">{profileData.state}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <MapPin className="h-5 w-5 text-blue-600 mr-3 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Pincode</p>
+                    <p className="text-gray-800">{profileData.pincode}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Content Area */}
-        <div className="bg-white rounded-b-lg shadow-lg p-6">
-          {activeTab === "profile" && (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="space-y-6"
-            >
-              <motion.div
-                variants={itemVariants}
-                className="grid md:grid-cols-2 gap-6"
-              >
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <FaIdCard className="text-blue-500 mr-2" />
-                    <span className="text-gray-500 font-medium">
-                      Student ID
-                    </span>
-                  </div>
-                  <p className="text-gray-800 font-semibold pl-6">
-                    {profileData?.studentId || profileData?._id || "STU12345"}
-                  </p>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <FaEnvelope className="text-blue-500 mr-2" />
-                    <span className="text-gray-500 font-medium">Email</span>
-                  </div>
-                  <p className="text-gray-800 font-semibold pl-6">
-                    {profileData?.email || "student@gmail.com"}
-                  </p>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <MdSchool className="text-blue-500 mr-2" />
-                    <span className="text-gray-500 font-medium">
-                      Department
-                    </span>
-                  </div>
-                  <p className="text-gray-800 font-semibold pl-6">
-                    {profileData?.department || "Computer Science"}
-                  </p>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <FaGraduationCap className="text-blue-500 mr-2" />
-                    <span className="text-gray-500 font-medium">Program</span>
-                  </div>
-                  <p className="text-gray-800 font-semibold pl-6">
-                    {profileData?.program || "Bachelor of Science"}
-                  </p>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <FaCalendarAlt className="text-blue-500 mr-2" />
-                    <span className="text-gray-500 font-medium">
-                      Enrolled Year
-                    </span>
-                  </div>
-                  <p className="text-gray-800 font-semibold pl-6">
-                    {profileData?.enrollmentYear || "2023"}
-                  </p>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <FaPhoneAlt className="text-blue-500 mr-2" />
-                    <span className="text-gray-500 font-medium">Phone</span>
-                  </div>
-                  <p className="text-gray-800 font-semibold pl-6">
-                    {profileData?.phone ||
-                      profileData?.phoneNumber ||
-                      "Not provided"}
-                  </p>
-                </div>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="mt-8">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                  Academic Status
-                </h3>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                      <h4 className="text-gray-500">Current Semester</h4>
-                      <p className="text-2xl font-bold text-blue-600 mt-2">
-                        {profileData?.semester || "3rd"}
-                      </p>
-                    </div>
-                    <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                      <h4 className="text-gray-500">CGPA</h4>
-                      <p className="text-2xl font-bold text-blue-600 mt-2">
-                        {profileData?.cgpa || "3.8"}
-                      </p>
-                    </div>
-                    <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                      <h4 className="text-gray-500">Credits Completed</h4>
-                      <p className="text-2xl font-bold text-blue-600 mt-2">
-                        {profileData?.creditsCompleted || "64"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-
-          {activeTab === "courses" && (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                Current Courses
-              </h3>
-              <div className="space-y-4">
-                {courses.map((course) => (
-                  <motion.div
-                    key={course.id}
-                    variants={itemVariants}
-                    className="bg-gray-50 p-4 rounded-lg"
-                  >
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                      <div className="mb-4 md:mb-0">
-                        <div className="flex items-center">
-                          <FaBook className="text-blue-500 mr-2" />
-                          <h4 className="text-lg font-medium text-gray-800">
-                            {course.name}
-                          </h4>
-                        </div>
-                        <p className="text-gray-600 mt-1 pl-6">
-                          Instructor: {course.instructor}
-                        </p>
-                      </div>
-                      <div className="w-full md:w-1/3">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm text-gray-600">
-                            Progress
-                          </span>
-                          <span className="text-sm font-medium text-blue-600">
-                            {course.progress}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${course.progress}%` }}
-                            transition={{ duration: 1, ease: "easeOut" }}
-                            className="bg-blue-500 h-2 rounded-full"
-                          ></motion.div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === "grades" && (
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                Academic Performance
-              </h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-200">
-                  <thead>
-                    <tr>
-                      <th className="py-3 px-4 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                        Subject
-                      </th>
-                      <th className="py-3 px-4 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                        Midterm
-                      </th>
-                      <th className="py-3 px-4 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                        Final
-                      </th>
-                      <th className="py-3 px-4 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-                        Grade
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {grades.map((item, index) => (
-                      <motion.tr
-                        key={index}
-                        variants={itemVariants}
-                        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                      >
-                        <td className="py-4 px-4 border-b">
-                          <div className="flex items-center">
-                            <MdSubject className="text-blue-500 mr-2" />
-                            {item.subject}
-                          </div>
-                        </td>
-                        <td className="py-4 px-4 border-b">{item.midterm}</td>
-                        <td className="py-4 px-4 border-b">{item.final}</td>
-                        <td className="py-4 px-4 border-b">
-                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {item.grade}
-                          </span>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

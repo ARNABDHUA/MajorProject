@@ -153,7 +153,7 @@ const Sidebar = ({
                 transition={{ delay: 0.1 }}
                 className="ml-3 font-semibold text-lg text-teal-600"
               >
-                ECollege
+                <Link to="/">ECollege</Link>
               </motion.span>
             )}
           </motion.div>

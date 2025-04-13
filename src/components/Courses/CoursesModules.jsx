@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { FaUserGraduate } from "react-icons/fa";
 import CourseTab from "./CourseModulesTab/CourseTab";
@@ -442,7 +442,22 @@ const courses = [
 ];
 
 const CoursesModules = () => {
+  const [paymentStatus, setPaymentStatus] = useState(false);
   const { id } = useParams();
+
+  useEffect(() => {
+    try {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        const user = JSON.parse(userData);
+        setPaymentStatus(user.payment || false);
+      }
+    } catch (error) {
+      console.error("Error accessing user data:", error);
+      setPaymentStatus(false);
+    }
+  }, []);
+
   // Find the course based on id
   const course = courses.find((c) => c.id === parseInt(id));
   console.log("Courses:", course);
@@ -496,9 +511,15 @@ const CoursesModules = () => {
             <FaUserGraduate className="text-yellow-500" />
             {course.students} already enrolled
           </h1>
-          <button className="bg-yellow-500 text-black font-semibold w-full rounded-lg h-12 mt-4 hover:bg-yellow-600 transition">
-            <Link to="Enrollment-course">Enroll Course</Link>
-          </button>
+          {paymentStatus ? (
+            <div className="bg-yellow-500 text-black font-semibold w-full rounded-lg h-12 mt-4 flex items-center justify-center">
+              Already paid
+            </div>
+          ) : (
+            <button className="bg-yellow-500 text-black font-semibold w-full rounded-lg h-12 mt-4 hover:bg-yellow-600 transition">
+              <Link to="Enrollment-course">Enroll Coursera</Link>
+            </button>
+          )}
         </div>
       </div>
 

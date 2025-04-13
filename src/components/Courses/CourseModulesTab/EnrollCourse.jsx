@@ -133,10 +133,6 @@ const EnrollCourse = () => {
       newErrors.twelfth_marks = "12th percentage is required";
     }
 
-    // New required fields
-    if (!formData.course_code) {
-      newErrors.course_code = "Course code is required";
-    }
     if (!formData.rank) {
       newErrors.rank = "Rank is required";
     }

@@ -160,7 +160,14 @@ const DisplaySetup = () => {
             </Route>
             {/* Admin */}
             <Route path="/admin" element={<Admin />} />
-
+            <Route
+              path="/payment"
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <Payment />
+                </ProtectedRoute>
+              }
+            />
             {/* Student Dashboard Routes */}
             <Route element={<StudentLayout />}>
               <Route
@@ -228,12 +235,9 @@ const DisplaySetup = () => {
                 }
               />
             </Route>
-
             {/* Error404 */}
             <Route path="*" element={<Error404 />} />
-
             <Route path="/room/:roomId" element={<Room />} />
-
             {/* Regular routes WITH navbar/footer */}
             <Route element={<MainLayout />}>
               <Route path="/contact-us" element={<ContactUs />} />
@@ -244,7 +248,11 @@ const DisplaySetup = () => {
                 path="/courseModules/:id/Enrollment-course"
                 element={<EnrollCourse />}
               />
-              <Route path="/payment" element={<Payment />} />
+
+              {/* payment */}
+
+              {/* Payment */}
+              {/* <Route path="/payment" element={<Payment />} /> */}
               <Route path="/signup" element={<StudentSignup />} />
               {/* <Route path="/chats" element={<Chatpage />} /> */}
               <Route path="/courseModules" element={<CoursesModules />} />

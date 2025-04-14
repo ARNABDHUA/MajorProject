@@ -4,6 +4,7 @@ import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import HashLoader from "react-spinners/HashLoader";
 import axios from "axios";
 import os from "/images/os.gif"; // Ensure this path is correct for your project
+import { UserX } from "lucide-react";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
@@ -12,7 +13,16 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [popup, setPopup] = useState({ message: "", type: "", visible: false });
+  const [userx,setUserx]=useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    
+    const data=JSON.parse(localStorage.getItem("user"));
+    if (data)
+    {setUserx({...data})}
+   
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,6 +71,7 @@ const Login = () => {
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(userData));
         console.log("User Data:", userData);
+        
         showPopup("Signin Successful! Redirecting...", "success");
 
         // Inner API call only happens after successful outer API call
@@ -108,9 +119,15 @@ const Login = () => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    if (userx) {
+      navigate("/student-profile");
+    }
+  }, [userx]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
+    <div>
+    {!userx &&(<div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
       <div className="flex flex-col md:flex-row bg-white shadow-2xl rounded-2xl overflow-hidden w-full max-w-4xl">
         {/* Left Section (Form) */}
         <div className="flex flex-col justify-center p-6 md:p-12 w-full md:w-1/2 min-h-145">
@@ -214,6 +231,7 @@ const Login = () => {
           />
         </div>
       </div>
+    </div>)}
     </div>
   );
 };

@@ -53,7 +53,10 @@ const GroupChatModal = ({ children }) => {
         `https://e-college-data.onrender.com/v1/chat/chat-user-all?search=${query}`,
         { _id: user._id }
       );
-      setSearchResult(data);
+      
+      // Filter out the current user from search results
+      const filteredResults = data.filter(u => u._id !== user._id);
+      setSearchResult(filteredResults);
     } catch (error) {
       showToast("Error", "Failed to load users", "error");
     } finally {

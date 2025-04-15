@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChatState } from "../../../context/ChatProvider";
 import UserBadgeItem from "../userAvatar/UserBadgeItem";
 import UserListItem from "../userAvatar/UserListItem";
-import { FiEye, FiX, FiSearch, FiPlus, FiLogOut, FiEdit, FiUsers, FiSettings } from "react-icons/fi";
+import { FiEye, FiX, FiSearch, FiPlus, FiLogOut, FiEdit, FiUsers, FiSettings, FiAlertTriangle, FiMail, FiUser } from "react-icons/fi";
 
 const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +20,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [activeTab, setActiveTab] = useState("members"); // "members", "add", or "settings"
   const modalRef = useRef(null);
   const [modalMaxHeight, setModalMaxHeight] = useState("85vh");
+  const [confirmRemove, setConfirmRemove] = useState(null); // State to track user to remove
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -29,29 +31,30 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   }, []);
 
   useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setWindowWidth(width);
+      
+      // Handle responsive height
+      const windowHeight = window.innerHeight;
+      // Set modal max height based on screen size
+      const newMaxHeight = windowHeight < 600 
+        ? '95vh' 
+        : windowHeight < 800 
+          ? '90vh' 
+          : '85vh';
+      setModalMaxHeight(newMaxHeight);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Set initial values
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
     if (isOpen && selectedChat) {
       setGroupChatName(selectedChat.chatName);
-      
-      // Handle window resize for responsive height
-      const handleResize = () => {
-        const windowHeight = window.innerHeight;
-        // Set modal max height to 85% of window height or less for very small screens
-        const newMaxHeight = windowHeight < 600 
-          ? '95vh' 
-          : windowHeight < 800 
-            ? '90vh' 
-            : '85vh';
-        setModalMaxHeight(newMaxHeight);
-      };
-      
-      // Set initial height
-      handleResize();
-      
-      // Add resize listener
-      window.addEventListener('resize', handleResize);
-      
-      // Cleanup
-      return () => window.removeEventListener('resize', handleResize);
     }
   }, [isOpen, selectedChat]);
 
@@ -145,6 +148,17 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     }
   };
 
+  // Show confirmation dialog before removing
+  const confirmRemoveUser = (user1) => {
+    setConfirmRemove(user1);
+  };
+
+  // Cancel confirmation
+  const cancelRemove = () => {
+    setConfirmRemove(null);
+  };
+
+  // Actually remove the user after confirmation
   const handleRemove = async (user1) => {
     if (selectedChat.groupAdmin._id !== user._id && user1._id !== user._id) {
       showToast("Only admins can remove someone", "", "error");
@@ -164,6 +178,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       if (user1._id === user._id) {
         setIsOpen(false);
       }
+      setConfirmRemove(null); // Clear confirmation state
     } catch (error) {
       showToast("Error", error.response?.data?.message || "Failed to remove user", "error");
     } finally {
@@ -200,14 +215,56 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   };
 
   const isAdmin = selectedChat?.groupAdmin?._id === user?._id;
+  const isMobile = windowWidth < 640;
 
   // Calculate content height based on screen size
   const getContentMaxHeight = () => {
     const windowHeight = window.innerHeight;
-    // For smaller screens, allocate less space for content
     if (windowHeight < 500) return "30vh";
     if (windowHeight < 700) return "40vh";
     return "50vh";
+  };
+
+  // Modified UserBadgeItem component that incorporates user image
+  const ModifiedUserBadgeItem = ({ user: badgeUser, admin, handleFunction }) => {
+    const canRemove = isAdmin || badgeUser._id === user?._id;
+    
+    return (
+      <motion.div
+        className="flex items-center bg-blue-50 text-blue-800 text-xs rounded-full px-2 py-1 max-w-full"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <div className="flex items-center gap-1.5 overflow-hidden">
+          {badgeUser.pic ? (
+            <img 
+              src={badgeUser.pic} 
+              alt={badgeUser.name} 
+              className="h-5 w-5 rounded-full object-cover border border-blue-200 flex-shrink-0"
+            />
+          ) : (
+            <div className="h-5 w-5 rounded-full bg-blue-400 text-white flex items-center justify-center text-xs flex-shrink-0">
+              {badgeUser.name?.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <span className="truncate">{badgeUser.name}</span>
+          {badgeUser._id === admin._id && (
+            <span className="ml-1 bg-blue-200 text-blue-800 text-xs px-1 rounded flex-shrink-0">
+              Admin
+            </span>
+          )}
+        </div>
+        {canRemove && (
+          <button
+            className="ml-1 text-blue-600 hover:text-blue-800 focus:outline-none flex-shrink-0"
+            onClick={() => confirmRemoveUser(badgeUser)}
+            aria-label="Remove user"
+          >
+            <FiX size={14} />
+          </button>
+        )}
+      </motion.div>
+    );
   };
 
   return (
@@ -350,11 +407,11 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                       </div>
                       <div className="flex flex-wrap gap-2 pb-2 max-h-32 sm:max-h-40 overflow-y-auto p-2 bg-gray-50 rounded-lg border border-gray-100">
                         {selectedChat.users.map((u) => (
-                          <UserBadgeItem
+                          <ModifiedUserBadgeItem
                             key={u._id}
                             user={u}
                             admin={selectedChat.groupAdmin}
-                            handleFunction={() => handleRemove(u)}
+                            handleFunction={() => confirmRemoveUser(u)}
                           />
                         ))}
                         {selectedChat.users.length === 0 && (
@@ -401,7 +458,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                               <UserListItem 
                                 user={user} 
                                 handleFunction={() => handleAddUser(user)} 
-                                compact={window.innerHeight < 700} // Use compact version for small screens
+                                compact={isMobile} // Use compact version for small screens
                               />
                             </motion.div>
                           ))
@@ -462,7 +519,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                   transition={{ delay: 0.3 }}
                 >
                   <motion.button
-                    onClick={() => handleRemove(user)}
+                    onClick={() => confirmRemoveUser(user)}
                     className="bg-red-500 text-white px-3 py-2 text-sm rounded-lg shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center gap-1.5"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
@@ -471,6 +528,89 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                     <span>Leave Group</span>
                   </motion.button>
                 </motion.div>
+
+                {/* Confirmation dialog */}
+                <AnimatePresence>
+                  {confirmRemove && (
+                    <>
+                      <motion.div 
+                        className="fixed inset-0 z-50 bg-black bg-opacity-50"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      />
+                      <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
+                        <motion.div 
+                          className="bg-white rounded-lg shadow-lg max-w-sm w-full p-4"
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.9, opacity: 0 }}
+                        >
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="bg-red-100 p-2 rounded-full text-red-600">
+                              <FiAlertTriangle className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900">Confirm Removal</h3>
+                          </div>
+                          
+                          {/* User info card for who's being removed */}
+                          <div className="p-3 bg-gray-50 rounded-lg mb-4 flex items-center gap-3">
+                            <div className="flex-shrink-0">
+                              {confirmRemove.pic ? (
+                                <img 
+                                  src={confirmRemove.pic} 
+                                  alt={confirmRemove.name} 
+                                  className="h-12 w-12 rounded-full object-cover border border-gray-200"
+                                />
+                              ) : (
+                                <div className="h-12 w-12 rounded-full bg-blue-400 text-white flex items-center justify-center text-lg">
+                                  {confirmRemove.name?.charAt(0).toUpperCase()}
+                                </div>
+                              )}
+                            </div>
+                            <div className="overflow-hidden">
+                              <div className="flex items-center gap-1 text-gray-700 font-medium">
+                                <FiUser className="h-3.5 w-3.5 text-gray-500" />
+                                <span className="truncate">{confirmRemove.name}</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
+                                <FiMail className="h-3.5 w-3.5 text-gray-400" />
+                                <span className="truncate">{confirmRemove.email}</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <p className="text-gray-600 mb-4 text-sm sm:text-base leading-tight sm:leading-normal">
+                            {confirmRemove._id === user?._id 
+                              ? "Are you sure you want to leave this group?" 
+                              : windowWidth < 380
+                                ? `Remove ${confirmRemove.name.split(' ')[0]} from group?`
+                                : windowWidth < 640
+                                  ? `Remove this user from the group?`
+                                  : `Remove ${confirmRemove.name.split(' ')[0]} from group?`}
+                          </p>
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={cancelRemove}
+                              className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={() => handleRemove(confirmRemove)}
+                              className="px-4 py-2 text-sm bg-red-600 text-white hover:bg-red-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                              disabled={loading}
+                            >
+                              {loading ? (
+                                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+                              ) : confirmRemove._id === user?._id ? "Leave" : "Remove"}
+                            </button>
+                          </div>
+                        </motion.div>
+                      </div>
+                    </>
+                  )}
+                </AnimatePresence>
               </motion.div>
             </div>
           </>

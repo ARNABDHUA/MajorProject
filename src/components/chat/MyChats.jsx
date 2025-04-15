@@ -119,7 +119,6 @@ const ImagePickerModal = ({ isOpen, onClose, onSelect, currentImageUrl }) => {
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
-  const [user, setUser] = useState();
   const [token, setToken] = useState();
   const [unreadCounts, setUnreadCounts] = useState({});
   const [groupImageMap, setGroupImageMap] = useState({});
@@ -128,6 +127,8 @@ const MyChats = ({ fetchAgain }) => {
   const pressTimerRef = useRef(null);
   const [isPressing, setIsPressing] = useState(false);
   const [pressingChatId, setPressingChatId] = useState(null);
+  // Add loading state to prevent rendering before user data is ready
+  const [isLoading, setIsLoading] = useState(true);
 
   const { 
     selectedChat, 
@@ -139,17 +140,44 @@ const MyChats = ({ fetchAgain }) => {
   } = ChatState();
 
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    const userToken = localStorage.getItem("token");
-    setUser(userInfo);
-    setToken(userToken);
-    setLoggedUser(userInfo);
+    const loadUserData = () => {
+      try {
+        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        const userToken = localStorage.getItem("token");
+        
+        // Skip processing if userInfo is not available
+        if (!userInfo) {
+          console.warn("User info not found in localStorage");
+          return false;
+        }
+        
+        setLoggedUser(userInfo);
+        setToken(userToken);
+        
+        // Load saved group images from localStorage
+        const savedGroupImages = localStorage.getItem("groupChatImages");
+        if (savedGroupImages) {
+          try {
+            const parsedImages = JSON.parse(savedGroupImages);
+            setGroupImageMap(parsedImages);
+          } catch (error) {
+            console.error("Error parsing group images from localStorage:", error);
+            // Reset the corrupted localStorage item
+            localStorage.removeItem("groupChatImages");
+            setGroupImageMap({});
+          }
+        }
+        
+        return true;
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        return false;
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    // Load saved group images from localStorage
-    const savedGroupImages = localStorage.getItem("groupChatImages");
-    if (savedGroupImages) {
-      setGroupImageMap(JSON.parse(savedGroupImages));
-    }
+    loadUserData();
   }, []);
 
   // Simple hash function to convert chat ID to a number
@@ -161,6 +189,17 @@ const MyChats = ({ fetchAgain }) => {
       hash = hash & hash; // Convert to 32bit integer
     }
     return hash;
+  };
+
+  // Save group image map to localStorage
+  const saveGroupImagestoLocalStorage = (imageMap) => {
+    try {
+      localStorage.setItem("groupChatImages", JSON.stringify(imageMap));
+      return true;
+    } catch (error) {
+      console.error("Error saving group images to localStorage:", error);
+      return false;
+    }
   };
 
   // Assign random images to group chats and persist to localStorage
@@ -182,13 +221,19 @@ const MyChats = ({ fetchAgain }) => {
       setGroupImageMap(newGroupImageMap);
       
       // Save to localStorage
-      localStorage.setItem("groupChatImages", JSON.stringify(newGroupImageMap));
+      saveGroupImagestoLocalStorage(newGroupImageMap);
     }
   };
 
   const fetchChats = async () => {
     try {
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      // Check if userInfo exists before proceeding
+      if (!userInfo || !userInfo._id) {
+        console.warn("User info not available for fetching chats");
+        return;
+      }
+      
       const ownId = userInfo._id;
 
       const data = await axios.post(
@@ -198,6 +243,7 @@ const MyChats = ({ fetchAgain }) => {
       setChats(data.data);
       assignGroupImages(data.data);
     } catch (error) {
+      console.error("Error fetching chats:", error);
       toast.error("Failed to Load the chats", {
         duration: 5000,
         position: "bottom-left",
@@ -262,30 +308,47 @@ const MyChats = ({ fetchAgain }) => {
     setPressingChatId(null);
   };
 
-  // Change group image and save to localStorage
-  const handleImageSelect = (imageUrl) => {
-    const newGroupImageMap = { ...groupImageMap };
-    newGroupImageMap[imagePicker.chatId] = imageUrl;
+const handleImageSelect = (imageUrl) => {
+  try {
+    // Create a new object with the updated image
+    const updatedImageMap = {
+      ...groupImageMap,
+      [imagePicker.chatId]: imageUrl
+    };
     
-    // Update state
-    setGroupImageMap(newGroupImageMap);
+    // Update localStorage with stringified JSON data
+    localStorage.removeItem("groupChatImages"); // First remove any existing data
+    localStorage.setItem("groupChatImages", JSON.stringify(updatedImageMap));
     
-    // Save to localStorage
-    localStorage.setItem("groupChatImages", JSON.stringify(newGroupImageMap));
+    // Force a direct DOM update of localStorage to ensure it's saved
+    // This is a hack but sometimes helps with localStorage sync issues
+    document.cookie = "forceSyncLocalStorage=" + Date.now();
     
-    // Show success toast
+    // Update React state after localStorage
+    setGroupImageMap(updatedImageMap);
+    
+    // Add a flag in localStorage to indicate images have been updated
+    localStorage.setItem("groupImagesLastUpdated", Date.now().toString());
+    
     toast.success("Group image updated", {
+      duration: 2000,
+      position: "bottom-left"
+    });
+  } catch (error) {
+    console.error("Failed to save group image:", error);
+    toast.error("Failed to save group image", {
       duration: 3000,
       position: "bottom-left"
     });
-    
-    // Close modal
-    setImagePicker({
-      isOpen: false,
-      chatId: null,
-      currentUrl: ''
-    });
-  };
+  }
+  
+  // Close modal
+  setImagePicker({
+    isOpen: false,
+    chatId: null,
+    currentUrl: ''
+  });
+};
 
   // Mark messages as read when selecting a chat
   const handleSelectChat = (chat) => {
@@ -310,12 +373,36 @@ const MyChats = ({ fetchAgain }) => {
 
   // Get user image for single chats or group icon for group chats
   const getChatImage = (chat) => {
+    // Guard clause to prevent errors when loggedUser is undefined
+    if (!loggedUser) {
+      return "/api/placeholder/40/40";
+    }
+    
     if (chat.isGroupChat) {
       // Use the mapped group image or a fallback
       return groupImageMap[chat._id] || "/api/placeholder/40/40";
     } else {
-      const otherUser = getSenderFull(loggedUser, chat.users);
-      return otherUser?.pic || "/api/placeholder/40/40"; // User profile pic or placeholder
+      try {
+        const otherUser = getSenderFull(loggedUser, chat.users);
+        return otherUser?.pic || "/api/placeholder/40/40"; // User profile pic or placeholder
+      } catch (error) {
+        console.error("Error getting sender:", error);
+        return "/api/placeholder/40/40"; // Fallback if there's an error
+      }
+    }
+  };
+
+  // Get sender name safely
+  const getSenderSafely = (loggedUser, users) => {
+    if (!loggedUser || !users || users.length < 2) {
+      return "Unknown User";
+    }
+    
+    try {
+      return getSender(loggedUser, users);
+    } catch (error) {
+      console.error("Error getting sender name:", error);
+      return "Unknown User";
     }
   };
 
@@ -353,6 +440,35 @@ const MyChats = ({ fetchAgain }) => {
     }
   }, [chats]);
 
+  // Verify group images in localStorage match current state
+  useEffect(() => {
+    // Only run this effect when the groupImageMap changes
+    if (Object.keys(groupImageMap).length > 0) {
+      const savedJson = localStorage.getItem("groupChatImages");
+      if (savedJson) {
+        try {
+          const savedMap = JSON.parse(savedJson);
+          // Check if the saved map is different from current state
+          const isDifferent = Object.keys(groupImageMap).some(key => 
+            groupImageMap[key] !== savedMap[key]
+          );
+          
+          // If different, update localStorage
+          if (isDifferent || Object.keys(savedMap).length !== Object.keys(groupImageMap).length) {
+            saveGroupImagestoLocalStorage(groupImageMap);
+          }
+        } catch (error) {
+          console.error("Error comparing group images with localStorage:", error);
+          // Reset localStorage with current state
+          saveGroupImagestoLocalStorage(groupImageMap);
+        }
+      } else {
+        // If no saved data exists, save the current state
+        saveGroupImagestoLocalStorage(groupImageMap);
+      }
+    }
+  }, [groupImageMap]);
+
   // Clean up press timer if component unmounts
   useEffect(() => {
     return () => {
@@ -362,10 +478,28 @@ const MyChats = ({ fetchAgain }) => {
     };
   }, []);
 
+  // Fetch chats when component mounts or fetchAgain changes
   useEffect(() => {
-    fetchChats();
+    // Only fetch chats if user data is loaded
+    if (loggedUser) {
+      fetchChats();
+    }
     // eslint-disable-next-line
-  }, [fetchAgain]);
+  }, [fetchAgain, loggedUser]);
+
+  // Show loading state while waiting for user data
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center p-3 bg-white w-full md:w-[31%] rounded-lg border border-gray-300">
+        <div className="pb-3 px-3 text-[28px] md:text-[30px] font-['Work_Sans'] flex justify-between items-center w-full">
+          My Chats
+        </div>
+        <div className="flex flex-col p-3 bg-[#F8F8F8] w-full h-full rounded-lg overflow-hidden">
+          <ChatLoading />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -393,13 +527,14 @@ const MyChats = ({ fetchAgain }) => {
 
         {/* Chat List */}
         <div className="flex flex-col p-3 bg-[#F8F8F8] w-full h-full rounded-lg overflow-hidden">
-          {chats ? (
+          {chats && chats.length > 0 ? (
             <div className="flex flex-col gap-2 overflow-y-auto">
               {chats.map((chat) => {
                 const notificationCount = getNotificationCount(chat._id);
                 const chatImage = getChatImage(chat);
+                // Use safe version to prevent errors
                 const chatName = !chat.isGroupChat
-                  ? getSender(loggedUser, chat.users)
+                  ? getSenderSafely(loggedUser, chat.users)
                   : chat.chatName;
                 const isPressingThisChat = isPressing && pressingChatId === chat._id;
                 
@@ -475,13 +610,6 @@ const MyChats = ({ fetchAgain }) => {
                         )}
                       </div>
                     </div>
-                    
-                    {/* Press-and-hold instruction for group chats on mobile */}
-                    {/* {chat.isGroupChat && (
-                      <div className="absolute bottom-0 right-2 text-[10px] text-gray-500 md:hidden">
-                        Hold to change image
-                      </div>
-                    )} */}
                   </div>
                 );
               })}

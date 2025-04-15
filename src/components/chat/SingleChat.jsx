@@ -29,7 +29,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const chatContainerRef = useRef(null);
 
   const { selectedChat, setSelectedChat, notification, setNotification } = ChatState();
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null); // Initialize as null
 
   // Common emojis array organized in categories for better user experience
   const emojiCategories = [
@@ -37,30 +37,29 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       name: "Smileys",
       emojis: [
         "😊", "😂", "🤣", "😍", "😘", "🥰", "😎", "🤔", "😇", "😉", "😋", "🤗", "😆", "😅",
-        "😛", "😜", "😝", "🤩", "😌", "😺", "😸", "😻", "😽"
+        "😛", "😜", "😝", "🤩", "😌", "😺", "😸", "😻", "😽", "😹", "🙃", "😏", "😈", "👿"
       ]
     },
     {
       name: "Gestures",
       emojis: [
         "👍", "👏", "🙏", "🤝", "👋", "✌️", "👌", "🤘", "🤙", "👆", "👉", "👈",
-        "👇", "🖖", "🖐️", "✋", "👊", "✊", "🤞", "🫶"
+        "👇", "🖖", "🖐️", "✋", "👊", "✊", "🤞", "🫶", "🫱", "🫲", "🤟"
       ]
     },
     {
       name: "Emotions",
       emojis: [
         "❤️", "🔥", "✨", "💯", "💪", "🎉", "👀", "💕", "💓", "💔", "😢", "😭",
-        "😡", "😠", "😤", "😬", "😞", "😔", "😟", "😩", "😫"
+        "😡", "😠", "😤", "😬", "😞", "😔", "😟", "😩", "😫", "😨", "😰", "🥵", "🥶"
       ]
     },
     {
       name: "Cloud",
       emojis: [
-        "🥺", "😩", "😫", "😖", "😣", "☹️", "🤬", "🤯", "😳", "🥵", "🥶", "😶‍🌫️", "😱",
-        "😨", "😰", "😥", "😓", "🫥", "😶", "🤥", "🫠", "🤫", "🫡", "🫢",
-        "👩‍❤️‍💋‍👨", "👨‍❤️‍👨", "💑", "👩‍❤️‍👩", "👩‍❤️‍👨", "👩‍❤️‍💋‍👩", "💏",
-        "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁", "🐮", "🐷", "🐽", "🐸", "🐵",
+        "🥺", "😩", "😫", "😖", "😣", "☹️", "🤬", "🤯", "😳", "😱", "😓", "🫥", "😶",
+        "🤥", "🫠", "🤫", "🫡", "🫢", "👩‍❤️‍💋‍👨", "👨‍❤️‍👨", "💑", "👩‍❤️‍👩", "💏",
+        "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵",
         "🙈", "🙉", "🙊", "🐒"
       ]
     },
@@ -70,8 +69,71 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         "🫠", "🫨", "🫣", "🫡", "🤯", "😵‍💫", "😤", "🥹", "💃", "🕺", "🕳️", "🚶‍♂️", "🏃‍♀️",
         "🤷", "🤦", "🧍", "🧎", "🙇", "🧠", "🦴", "👁️‍🗨️", "🔁", "🔂", "🔄", "⏳", "⏱️"
       ]
+    },
+    {
+      name: "Food",
+      emojis: [
+        "🍎", "🍌", "🍇", "🍓", "🍒", "🍉", "🥭", "🍍", "🥝", "🍑",
+        "🍔", "🍟", "🌭", "🍕", "🥪", "🌮", "🌯", "🥗", "🍱", "🍣"
+      ]
+    },
+    {
+      name: "Nature",
+      emojis: [
+        "🌞", "🌝", "🌚", "🌛", "🌜", "🌟", "🌈", "☁️", "🌧️", "⛈️", "🌩️", "❄️", "🌊", "🌬️"
+      ]
+    },
+    {
+      name: "Weather",
+      emojis: [
+        "☀️", "🌤️", "⛅", "🌥️", "☁️", "🌦️", "🌧️", "⛈️", "🌩️", "🌨️", "❄️", "🌪️", "🌫️", "🌈", "💨", "☔", "⚡"
+      ]
+    },
+    {
+      name: "Daytime",
+      emojis: [
+        "🌅", // Sunrise
+        "🌄", // Sunrise over mountains
+        "🌇", // Sunset (evening)
+        "🌆", // Cityscape at dusk
+        "🌃", // Night with stars
+        "🌌", // Milky Way
+        "🌉", // Bridge at night
+        "🌙", // Crescent moon
+        "🕯️", // Candle (night mood)
+        "🛏️", // Bed (sleepy night)
+        "🛌", // Person in bed
+        "🧘", // Meditation (chill evening)
+        "🌤️", "🌞", "☀️", // Day/morning
+        "✨", "🪷" // Soft evening vibes
+      ]
+    },
+    {
+      name: "Time",
+      emojis: [
+        "⏰", "⏱️", "⏳", "⌛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚", "🕛"
+      ]
+    },
+    {
+      name: "Objects",
+      emojis: [
+        "📱", "💻", "🖥️", "🖱️", "⌨️", "💡", "🔦", "📷", "🎥", "🎧", "📚", "📖", "📝", "✏️"
+      ]
+    },
+    {
+      name: "Transport",
+      emojis: [
+        "🚗", "🚕", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚚", "🚛", "🚜", "✈️", "🚀", "🛸", "🚁"
+      ]
+    },
+    {
+      name: "Symbols",
+      emojis: [
+        "✔️", "❌", "⚠️", "❗", "❓", "💤", "🆗", "🔞", "🚫", "✅", "➕", "➖", "➗", "✖️", "🔃"
+      ]
     }
   ];
+  
   
 
   // Check if device is mobile
@@ -91,8 +153,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, []);
 
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    setUser(userInfo);
+    // Load user info from localStorage
+    try {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      if (userInfo) {
+        setUser(userInfo);
+      }
+    } catch (error) {
+      console.error("Error loading user info from localStorage:", error);
+    }
 
     // Close emoji picker when clicking outside
     const handleClickOutside = (event) => {
@@ -109,8 +178,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     socket = io(ENDPOINT);
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    socket.emit("setup", userInfo);
+    try {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      if (userInfo) {
+        socket.emit("setup", userInfo);
+      }
+    } catch (error) {
+      console.error("Error setting up socket:", error);
+    }
 
     socket.on("connected", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
@@ -124,7 +199,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, []);
 
   const fetchMessages = async () => {
-    if (!selectedChat) return;
+    if (!selectedChat || !selectedChat._id) return;
     try {
       setLoading(true);
       const { data } = await axios.get(`${ENDPOINT}/v1/chat/${selectedChat._id}`);
@@ -133,16 +208,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
       console.error("Failed to Load the Messages", error);
+      setLoading(false);
     }
   };
 
   const sendMessage = async (event) => {
+    if (!selectedChat || !selectedChat._id) return;
+    
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (!userInfo || !userInfo._id) return;
+    
     if (event) {
       if (event.key === "Enter" && newMessage.trim()) {
         event.preventDefault();
         socket.emit("stop typing", selectedChat._id);
         try {
-          const userInfo = JSON.parse(localStorage.getItem("userInfo"));
           const { data } = await axios.post(`${ENDPOINT}/v1/chat/chat-messages`, {
             ownId: userInfo._id,
             content: newMessage,
@@ -159,7 +239,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       // For button click or emoji click
       socket.emit("stop typing", selectedChat._id);
       try {
-        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
         const { data } = await axios.post(`${ENDPOINT}/v1/chat/chat-messages`, {
           ownId: userInfo._id,
           content: newMessage,
@@ -188,20 +267,32 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   useEffect(() => {
-    fetchMessages();
-    selectedChatCompare = selectedChat;
+    if (selectedChat && selectedChat._id) {
+      fetchMessages();
+      selectedChatCompare = selectedChat;
+    }
   }, [selectedChat]);
 
   useEffect(() => {
     const messageListener = (newMessageReceived) => {
+      if (!newMessageReceived || !newMessageReceived.chat) return;
+      
       if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
-        if (!notification.find((n) => n._id === newMessageReceived._id)) {
-          setNotification([newMessageReceived, ...notification]);
-          setFetchAgain(!fetchAgain);
+        // If notification state is available
+        if (notification) {
+          // Check if notification with same ID already exists
+          if (!notification.find((n) => n && n._id === newMessageReceived._id)) {
+            setNotification([newMessageReceived, ...notification]);
+            setFetchAgain(!fetchAgain);
+          }
         }
       } else {
         setMessages((prevMessages) => {
-          const exists = prevMessages.some((msg) => msg._id === newMessageReceived._id);
+          // Make sure we have valid previous messages
+          if (!prevMessages) return [newMessageReceived];
+          
+          // Check if message already exists
+          const exists = prevMessages.some((msg) => msg && msg._id === newMessageReceived._id);
           return exists ? prevMessages : [...prevMessages, newMessageReceived];
         });
       }
@@ -213,7 +304,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
-    if (!socketConnected) return;
+    
+    if (!socketConnected || !selectedChat || !selectedChat._id) return;
+    
     if (!typing) {
       setTyping(true);
       socket.emit("typing", selectedChat._id);
@@ -240,6 +333,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     },
   };
 
+  // Helper function to safely get sender info with null checks
+  const getSafeSenderFull = () => {
+    if (!user || !selectedChat || !selectedChat.users || !Array.isArray(selectedChat.users)) return null;
+    return getSenderFull(user, selectedChat.users);
+  };
+
+  const getSafeSender = () => {
+    if (!user || !selectedChat || !selectedChat.users || !Array.isArray(selectedChat.users)) return "";
+    return getSender(user, selectedChat.users);
+  };
+
+  // Get sender information safely
+  const senderFull = getSafeSenderFull();
+  const senderName = getSafeSender();
+
   return (
     <>
       {selectedChat ? (
@@ -247,14 +355,30 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           {/* Header */}
           <div className="flex justify-between items-center w-full px-2 pb-2 sm:pb-3 text-base sm:text-lg md:text-xl font-['Work_Sans']">
             <div className="flex items-center gap-1 sm:gap-2 flex-wrap truncate max-w-[80%]">
-              {!selectedChat.isGroupChat ? (
+              {selectedChat.isGroupChat === false ? (
                 <>
-                  <span className="truncate">{getSender(user, selectedChat.users)}</span>
-                  <ProfileModal user={getSenderFull(user, selectedChat.users)} />
+                  {/* User image and name for non-group chat */}
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    {/* User Image */}
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full overflow-hidden flex-shrink-0">
+                      <img
+                        src={senderFull?.pic || "/default-avatar.png"}
+                        alt={senderName || "User"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/default-avatar.png";
+                        }}
+                      />
+                    </div>
+                    {/* User Name */}
+                    <span className="truncate font-medium">{senderName || "User"}</span>
+                    {senderFull && <ProfileModal user={senderFull} />}
+                  </div>
                 </>
               ) : (
                 <>
-                  <span className="truncate">{selectedChat.chatName.toUpperCase()}</span>
+                  <span className="truncate">{selectedChat.chatName ? selectedChat.chatName.toUpperCase() : "Group Chat"}</span>
                   <UpdateGroupChatModal
                     fetchMessages={fetchMessages}
                     fetchAgain={fetchAgain}

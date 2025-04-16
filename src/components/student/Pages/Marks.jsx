@@ -1,7 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 const Marks = () => {
+    useEffect(() => {
+     console.log("hello Arnab")
+    }, [])
+    
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-200 px-4">
       <motion.div

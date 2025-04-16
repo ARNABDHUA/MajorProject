@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChatState } from "../../../context/ChatProvider";
 import UserBadgeItem from "../userAvatar/UserBadgeItem";
 import UserListItem from "../userAvatar/UserListItem";
-import { FiEye, FiX, FiSearch, FiPlus, FiLogOut, FiEdit, FiUsers, FiSettings, FiAlertTriangle, FiMail, FiUser } from "react-icons/fi";
+import { FiEye, FiX, FiSearch, FiPlus, FiLogOut, FiEdit, FiUsers, FiSettings, FiAlertTriangle, FiMail, FiUser, FiMessageSquare, FiLock, FiUnlock } from "react-icons/fi";
 
 const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +14,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [renameloading, setRenameLoading] = useState(false);
+  const [adminOnlyMode, setAdminOnlyMode] = useState(false); // New state for admin-only mode
+  const [updatingMode, setUpdatingMode] = useState(false); // New state for loading state when updating mode
   const { selectedChat, setSelectedChat } = ChatState();
   const [user, setUser] = useState();
   const [token, setToken] = useState();
@@ -55,6 +57,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   useEffect(() => {
     if (isOpen && selectedChat) {
       setGroupChatName(selectedChat.chatName);
+      // Check if adminOnlyMode is set in the chat document
+      setAdminOnlyMode(selectedChat.adminOnlyMode || false);
     }
   }, [isOpen, selectedChat]);
 
@@ -118,6 +122,40 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       showToast("Error", error.response?.data?.message || "Failed to rename group", "error");
     } finally {
       setRenameLoading(false);
+    }
+  };
+
+  // New function to toggle admin-only mode
+  const toggleAdminOnlyMode = async () => {
+    if (selectedChat.groupAdmin._id !== user._id) {
+      showToast("Only admins can change message permissions", "", "error");
+      return;
+    }
+    
+    try {
+      setUpdatingMode(true);
+      const { data } = await axios.post(`https://e-college-data.onrender.com/v1/chat/chat-group-admin-mode`, {
+        chatId: selectedChat._id,
+        adminOnlyMode: !adminOnlyMode,
+        ownId:user._id
+      });
+      
+      // Update local state
+      setAdminOnlyMode(!adminOnlyMode);
+      setSelectedChat({...selectedChat, adminOnlyMode: !adminOnlyMode});
+      setFetchAgain(!fetchAgain);
+      
+      showToast(
+        "Success", 
+        !adminOnlyMode 
+          ? "Admin-only messaging enabled" 
+          : "Everyone can now send messages", 
+        "success"
+      );
+    } catch (error) {
+      showToast("Error", error.response?.data?.message || "Failed to update message permissions", "error");
+    } finally {
+      setUpdatingMode(false);
     }
   };
 
@@ -314,6 +352,11 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                   </motion.h2>
                   <p className="text-teal-50 text-xs sm:text-sm text-center mt-0.5">
                     {selectedChat.users.length} member{selectedChat.users.length !== 1 ? "s" : ""}
+                    {adminOnlyMode && (
+                      <span className="ml-2 inline-flex items-center bg-teal-600 text-white text-xs px-1.5 py-0.5 rounded">
+                        <FiLock className="mr-1 h-3 w-3" /> Admin Only
+                      </span>
+                    )}
                   </p>
                   <motion.button
                     onClick={() => setIsOpen(false)}
@@ -477,35 +520,83 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                   {/* Settings tab */}
                   {isAdmin && activeTab === "settings" && (
                     <motion.div 
-                      className="space-y-3"
+                      className="space-y-4"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.2 }}
                     >
-                      <h3 className="text-sm font-medium text-gray-500">Rename Group</h3>
-                      <div className="flex gap-2 flex-col sm:flex-row">
-                        <div className="relative flex-1">
-                          <input
-                            className="w-full px-4 py-2 pl-9 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
-                            placeholder="New Group Name"
-                            value={groupChatName}
-                            onChange={(e) => setGroupChatName(e.target.value)}
-                          />
-                          <FiEdit className="absolute left-3 top-2.5 text-gray-400" />
+                      {/* Group Rename Section */}
+                      <div className="space-y-2">
+                        <h3 className="text-sm font-medium text-gray-500">Rename Group</h3>
+                        <div className="flex gap-2 flex-col sm:flex-row">
+                          <div className="relative flex-1">
+                            <input
+                              className="w-full px-4 py-2 pl-9 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                              placeholder="New Group Name"
+                              value={groupChatName}
+                              onChange={(e) => setGroupChatName(e.target.value)}
+                            />
+                            <FiEdit className="absolute left-3 top-2.5 text-gray-400" />
+                          </div>
+                          <motion.button
+                            onClick={handleRename}
+                            className="bg-teal-500 text-white px-3 py-2 text-sm rounded-lg shadow-sm hover:bg-teal-600 disabled:opacity-60 flex items-center justify-center sm:min-w-20"
+                            disabled={renameloading}
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
+                          >
+                            {renameloading ? (
+                              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              "Update Name"
+                            )}
+                          </motion.button>
                         </div>
-                        <motion.button
-                          onClick={handleRename}
-                          className="bg-teal-500 text-white px-3 py-2 text-sm rounded-lg shadow-sm hover:bg-teal-600 disabled:opacity-60 flex items-center justify-center sm:min-w-20"
-                          disabled={renameloading}
-                          whileHover={{ scale: 1.03 }}
-                          whileTap={{ scale: 0.97 }}
-                        >
-                          {renameloading ? (
-                            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            "Update Name"
-                          )}
-                        </motion.button>
+                      </div>
+
+                      {/* Admin-Only Mode Section */}
+                      <div className="space-y-2 border-t border-gray-100 pt-4">
+                        <h3 className="text-sm font-medium text-gray-500">Message Permissions</h3>
+                        <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              {adminOnlyMode ? (
+                                <FiLock className="h-5 w-5 text-orange-500" />
+                              ) : (
+                                <FiMessageSquare className="h-5 w-5 text-teal-500" />
+                              )}
+                              <div>
+                                <h4 className="text-sm font-medium text-gray-800">
+                                  {adminOnlyMode ? "Admin-Only Mode" : "Everyone Can Message"}
+                                </h4>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                  {adminOnlyMode 
+                                    ? "Only admin can send messages " 
+                                    : "All members can send messages "}
+                                </p>
+                              </div>
+                            </div>
+                            <motion.button
+                              onClick={toggleAdminOnlyMode}
+                              className={`relative inline-flex h-6 w-11 items-center rounded-full ${
+                                adminOnlyMode ? "bg-orange-500" : "bg-teal-500"
+                              } transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500`}
+                              disabled={updatingMode}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              <span
+                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                                  adminOnlyMode ? "translate-x-6" : "translate-x-1"
+                                }`}
+                              />
+                              {updatingMode && (
+                                <span className="absolute inset-0 flex items-center justify-center">
+                                  <span className="h-3 w-3 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                                </span>
+                              )}
+                            </motion.button>
+                          </div>
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -579,32 +670,38 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                               </div>
                             </div>
                           </div>
-                          
+
                           <p className="text-gray-600 mb-4 text-sm sm:text-base leading-tight sm:leading-normal">
                             {confirmRemove._id === user?._id 
                               ? "Are you sure you want to leave this group?" 
                               : windowWidth < 380
-                                ? `Remove ${confirmRemove.name.split(' ')[0]} from group?`
-                                : windowWidth < 640
-                                  ? `Remove this user from the group?`
-                                  : `Remove ${confirmRemove.name.split(' ')[0]} from group?`}
+                                ? `Remove ${confirmRemove.name}?`
+                                : `Are you sure you want to remove ${confirmRemove.name} from this group?`
+                            }
                           </p>
-                          <div className="flex justify-end gap-2">
-                            <button
+                          
+                          <div className="flex gap-2 justify-end">
+                            <motion.button
                               onClick={cancelRemove}
-                              className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                              className="px-3 py-1.5 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50"
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
                             >
                               Cancel
-                            </button>
-                            <button
+                            </motion.button>
+                            <motion.button
                               onClick={() => handleRemove(confirmRemove)}
-                              className="px-4 py-2 text-sm bg-red-600 text-white hover:bg-red-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                              className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600"
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
                               disabled={loading}
                             >
                               {loading ? (
-                                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
-                              ) : confirmRemove._id === user?._id ? "Leave" : "Remove"}
-                            </button>
+                                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-4" />
+                              ) : (
+                                confirmRemove._id === user?._id ? "Leave Group" : "Remove"
+                              )}
+                            </motion.button>
                           </div>
                         </motion.div>
                       </div>

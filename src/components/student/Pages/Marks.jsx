@@ -2,7 +2,7 @@ import React from 'react'
 
 const Marks = () => {
   return (
-    <div>Marks</div>
+    <div>Marks by Arnab</div>
   )
 }
 

@@ -9,7 +9,7 @@ import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../../context/ChatProvider";
 import { getSender, getSenderFull } from "./config/ChatLogics";
-import { XCircle, Smile } from "lucide-react";
+import { XCircle, Smile, LockIcon } from "lucide-react";
 import { FaArrowRight } from "react-icons/fa";
 
 const ENDPOINT = "https://e-college-data.onrender.com";
@@ -24,6 +24,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [istyping, setIsTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isAdminOnlyMode, setIsAdminOnlyMode] = useState(false);
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
   const emojiPickerRef = useRef(null);
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -134,8 +136,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   ];
   
-  
-
   // Check if device is mobile
   useEffect(() => {
     const checkIfMobile = () => {
@@ -198,6 +198,25 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
   }, []);
 
+  // Check if chat is in admin-only mode and if user is an admin
+  const checkAdminStatus = async () => {
+    if (!selectedChat || !selectedChat._id) return;
+    
+    try {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      if (!userInfo) return;
+      
+      const { data } = await axios.post(`${ENDPOINT}/v1/chat/chat-admin-mode-find`, {
+        chatId: selectedChat
+      });
+      
+      setIsAdminOnlyMode(data.adminOnlyMode === true);
+      setIsUserAdmin(data.groupAdmin && data.groupAdmin._id === userInfo._id);
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+    }
+  };
+
   const fetchMessages = async () => {
     if (!selectedChat || !selectedChat._id) return;
     try {
@@ -206,6 +225,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setMessages(data);
       setLoading(false);
       socket.emit("join chat", selectedChat._id);
+      
+      // Check admin status when fetching messages
+      await checkAdminStatus();
     } catch (error) {
       console.error("Failed to Load the Messages", error);
       setLoading(false);
@@ -214,6 +236,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (event) => {
     if (!selectedChat || !selectedChat._id) return;
+    
+    // Check if user can send messages in admin-only mode
+    if (isAdminOnlyMode && !isUserAdmin) {
+      // User is not admin and chat is in admin-only mode
+      return;
+    }
     
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     if (!userInfo || !userInfo._id) return;
@@ -305,7 +333,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
     
-    if (!socketConnected || !selectedChat || !selectedChat._id) return;
+    // Don't show typing indicator if user can't send messages
+    if (!socketConnected || !selectedChat || !selectedChat._id || (isAdminOnlyMode && !isUserAdmin)) return;
     
     if (!typing) {
       setTyping(true);
@@ -348,6 +377,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const senderFull = getSafeSenderFull();
   const senderName = getSafeSender();
 
+  // Check if user can send messages
+  const canSendMessages = !isAdminOnlyMode || isUserAdmin;
+
   return (
     <>
       {selectedChat ? (
@@ -378,7 +410,20 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 </>
               ) : (
                 <>
-                  <span className="truncate">{selectedChat.chatName ? selectedChat.chatName.toUpperCase() : "Group Chat"}</span>
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <span className="truncate">{selectedChat.chatName ? selectedChat.chatName.toUpperCase() : "Group Chat"}</span>
+                    {/* Show admin-only mode indicator for group chats */}
+                    {isAdminOnlyMode && (
+                       <span className="inline-flex items-center text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">
+                      {/* LockIcon: always visible */}
+                             <LockIcon className="w-3 h-3 mr-1" />
+
+                              {/* Text: hidden on small screens, shown on sm and up */}
+                             <span className="hidden sm:inline">Admin Only</span>
+                            </span>
+                              )}
+
+                  </div>
                   <UpdateGroupChatModal
                     fetchMessages={fetchMessages}
                     fetchAgain={fetchAgain}
@@ -417,10 +462,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </div>
             )}
 
+            {/* Admin-only mode message */}
+            {isAdminOnlyMode && !isUserAdmin && (
+              <div className="bg-gray-100 text-gray-700 p-2 rounded-md text-center text-sm mb-2">
+                <LockIcon className="w-4 h-4 inline-block mr-1" />
+                This chat is in admin-only mode. Only admins can send messages.
+              </div>
+            )}
+
             {/* Input + Send Button (with conditional Emoji for non-mobile) */}
             <div className="flex items-center gap-1 sm:gap-2 mt-2 sm:mt-3 relative">
-              {/* Only show emoji button on non-mobile devices */}
-              {!isMobile && (
+              {/* Only show emoji button on non-mobile devices and if user can send messages */}
+              {!isMobile && canSendMessages && (
                 <div ref={emojiPickerRef} className="relative z-10">
                   <button
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
@@ -458,23 +511,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 </div>
               )}
               
-              {/* Input Field */}
+              {/* Input Field - disabled if user can't send messages */}
               <input
                 ref={inputRef}
                 type="text"
-                className="flex-grow p-1.5 sm:p-2 text-xs sm:text-sm md:text-base rounded-md bg-[#E0E0E0] focus:outline-none focus:ring-1 focus:ring-blue-400"
-                placeholder="Enter a message..."
+                className={`flex-grow p-1.5 sm:p-2 text-xs sm:text-sm md:text-base rounded-md bg-[#E0E0E0] focus:outline-none focus:ring-1 focus:ring-blue-400 ${!canSendMessages ? 'opacity-60 cursor-not-allowed' : ''}`}
+                placeholder={canSendMessages ? "Enter a message..." : "Only admins can send messages"}
                 value={newMessage}
                 onChange={typingHandler}
-                onKeyDown={sendMessage}
+                onKeyDown={canSendMessages ? sendMessage : null}
+                disabled={!canSendMessages}
               />
               
-              {/* Send Button */}
+              {/* Send Button - disabled if user can't send messages */}
               <button
-                onClick={() => sendMessage()}
-                className="p-1.5 sm:p-2 md:p-2.5 bg-green-500 rounded-md hover:bg-green-600 transition duration-200"
-                title="Send Message"
-                disabled={!newMessage.trim()}
+                onClick={() => canSendMessages && sendMessage()}
+                className={`p-1.5 sm:p-2 md:p-2.5 ${canSendMessages ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'} rounded-md transition duration-200`}
+                title={canSendMessages ? "Send Message" : "Only admins can send messages"}
+                disabled={!canSendMessages || !newMessage.trim()}
                 aria-label="Send message"
               >
                 <FaArrowRight className="text-white text-sm sm:text-lg" />

@@ -15,7 +15,7 @@ const Admin = () => {
   const [loaderProgress, setLoaderProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [consoleLines, setConsoleLines] = useState([]);
-  console.log("Arnab is admin of this page");
+  console.log("parbat is admin of this page");
   // Update console messages
   useEffect(() => {
     const messages = [

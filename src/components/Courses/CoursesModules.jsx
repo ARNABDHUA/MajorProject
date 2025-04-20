@@ -17,6 +17,7 @@ import java from "/images/java.png";
 import cpp from "/images/cpp.png";
 import dbms from "/images/dbms.png";
 import Routine from "./CourseModulesTab/Routine";
+import RecordedClassPlayer from "./CourseModulesTab/RecordedClassPlayer";
 //In backend we have to get every data
 const courses = [
   {
@@ -478,7 +479,7 @@ const CoursesModules = () => {
         </div>
       );
     } else if (activeTab === "Recorded Classes") {
-      return <div className="px-4 md:px-7 py-2">notes</div>;
+      return <div className="px-4 md:px-7 py-2"><RecordedClassPlayer/></div>;
     } else if (activeTab === "Routine") {
       return (
         <div className="px-4 md:px-7 py-2">

@@ -140,7 +140,7 @@ const StudentSidebar = ({
   return (
     <AnimatePresence>
       <motion.div
-        className={`h-full bg-white text-gray-700 shadow-xl ${
+        className={`h-full bg-white text-gray-700 shadow-xl flex flex-col ${
           isMobile ? "w-64" : ""
         }`}
         variants={isMobile ? mobileSidebarVariants : sidebarVariants}
@@ -149,7 +149,7 @@ const StudentSidebar = ({
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
         {/* Sidebar header with logo and toggle/close button */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 flex-shrink-0">
           <motion.div
             initial={false}
             animate={{ opacity: isCollapsed && !isMobile ? 0 : 1 }}
@@ -196,74 +196,76 @@ const StudentSidebar = ({
           )}
         </div>
 
-        {/* Menu items */}
-        <div className="py-4 flex flex-col h-[calc(100%-4rem)] justify-between">
-          <div className="space-y-1 px-3">
-            {menuItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <NavLink
-                  key={item.id}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `flex items-center py-3 px-3 rounded-lg transition-all duration-200 ${
-                      isActive
-                        ? "bg-blue-500 text-white shadow-md"
-                        : "text-gray-600 hover:bg-gray-100"
-                    }`
-                  }
-                  onClick={isMobile ? onCloseMobile : undefined}
-                >
-                  <motion.div
-                    className={`${isCollapsed && !isMobile ? "mx-auto" : ""}`}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
+        {/* Menu items with scrollbar */}
+        <div className="flex flex-col h-full">
+          <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            <div className="space-y-1 px-3 py-4">
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <NavLink
+                    key={item.id}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `flex items-center py-3 px-3 rounded-lg transition-all duration-200 ${
+                        isActive
+                          ? "bg-blue-500 text-white shadow-md"
+                          : "text-gray-600 hover:bg-gray-100"
+                      }`
+                    }
+                    onClick={isMobile ? onCloseMobile : undefined}
                   >
-                    {React.cloneElement(item.icon, {
-                      className: `w-5 h-5 ${
-                        isActive ? "text-white" : "text-gray-500"
-                      }`,
-                    })}
-                  </motion.div>
-
-                  {(!isCollapsed || isMobile) && (
-                    <motion.span
-                      initial={
-                        isCollapsed && !isMobile
-                          ? { opacity: 0 }
-                          : { opacity: 1 }
-                      }
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                      className="ml-3 font-medium"
-                    >
-                      {item.title}
-                    </motion.span>
-                  )}
-
-                  {isActive && !isCollapsed && !isMobile && (
                     <motion.div
-                      className="w-1.5 h-1.5 rounded-full bg-white ml-auto"
-                      layoutId="activeIndicator"
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                </NavLink>
-              );
-            })}
+                      className={`${isCollapsed && !isMobile ? "mx-auto" : ""}`}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {React.cloneElement(item.icon, {
+                        className: `w-5 h-5 ${
+                          isActive ? "text-white" : "text-gray-500"
+                        }`,
+                      })}
+                    </motion.div>
+
+                    {(!isCollapsed || isMobile) && (
+                      <motion.span
+                        initial={
+                          isCollapsed && !isMobile
+                            ? { opacity: 0 }
+                            : { opacity: 1 }
+                        }
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                        className="ml-3 font-medium"
+                      >
+                        {item.title}
+                      </motion.span>
+                    )}
+
+                    {isActive && !isCollapsed && !isMobile && (
+                      <motion.div
+                        className="w-1.5 h-1.5 rounded-full bg-white ml-auto"
+                        layoutId="activeIndicator"
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 30,
+                        }}
+                      />
+                    )}
+                  </NavLink>
+                );
+              })}
+            </div>
           </div>
 
           {/* Logout button and user info at bottom */}
-          <div className="mt-auto px-3 pb-4">
+          <div className="px-3 pb-4 mt-auto border-t border-gray-200 flex-shrink-0">
             <div
               className={`px-3 py-2 ${!isCollapsed || isMobile ? "mb-2" : ""}`}
             >
               {(!isCollapsed || isMobile) && (
-                <div className="border-t border-gray-200 pt-2">
+                <div className="pt-2">
                   <div className="flex items-center">
                     {studentData?.pic ? (
                       <img

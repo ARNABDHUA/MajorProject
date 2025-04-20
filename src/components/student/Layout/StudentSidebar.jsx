@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import Swal from "sweetalert2"; // Import SweetAlert
 import {
   FaUser,
   FaGraduationCap,
@@ -109,10 +110,31 @@ const StudentSidebar = ({
     hidden: { x: "-100%" },
     visible: { x: 0 },
   };
-  //logout
+
+  //logout with confirmation
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    window.location.href = "/login"; // Redirect to login
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out of your account",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("user");
+        Swal.fire({
+          title: "Logged Out!",
+          text: "You have been successfully logged out.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        }).then(() => {
+          window.location.href = "/login"; // Redirect to login
+        });
+      }
+    });
   };
 
   return (

@@ -6,6 +6,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
 import { FaChevronDown, FaUserCircle } from "react-icons/fa";
 import { MdDashboard, MdLogout } from "react-icons/md";
+import Swal from "sweetalert2";
 import logo from "/images/Logo.svg";
 
 const Navbar = () => {
@@ -53,13 +54,36 @@ const Navbar = () => {
   };
 
   const handleSignOut = () => {
-    // Clear local storage
-    localStorage.removeItem("user");
-    setUserProfile(null);
-    // Redirect to home or login page
-    navigate("/");
-    // Close the dropdown
-    setUserMenuOpen(false);
+    // Show SweetAlert confirmation dialog
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out of your account!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Clear local storage
+        localStorage.removeItem("user");
+        setUserProfile(null);
+
+        // Show success message
+        Swal.fire({
+          title: "Logged Out!",
+          text: "You have been successfully logged out.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        // Redirect to home or login page
+        navigate("/");
+        // Close the dropdown
+        setUserMenuOpen(false);
+      }
+    });
   };
 
   const handleDashboard = () => {

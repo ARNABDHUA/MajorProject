@@ -1,178 +1,37 @@
-// import React from "react";
-// import { IoIosSearch } from "react-icons/io";
-// import { useState } from "react";
-// import { GiHamburgerMenu } from "react-icons/gi";
-// import { IoClose } from "react-icons/io5";
-// import logo from "/images/Logo.svg";
-// import { FaChevronDown } from "react-icons/fa";
-// import { FaUserCircle } from "react-icons/fa";
-// import { HiDotsHorizontal } from "react-icons/hi";
-// import { NavLink } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
-// const Navbar = () => {
-//   const [toggle, settoggle] = useState(true);
-//   const changeToggle = () => {
-//     toggle === true ? settoggle(false) : settoggle(true);
-//   };
-//   const [toggleAccount, settoggleAccount] = useState(false);
-//   const navigate = useNavigate();
-
-//   return (
-//     <div className="sticky top-0 z-100 bg-white  ">
-//       <div className="relative py-5 lg:p-5">
-//         {/* desktop view */}
-//         <div className="flex justify-between mx-2 items-center">
-//           <div>
-//             <img src={logo} alt="" className="w-34" />
-//           </div>
-
-//           <div className="hidden  md:flex ">
-//             <ul className=" hidden  md:flex space-x-3  ">
-//               <li className="hover:text-blue-500">
-//                 <NavLink to="/">Home</NavLink>
-//               </li>
-
-//               <li className="hover:text-blue-500">
-//                 {" "}
-//                 <NavLink to="/notice">Notice</NavLink>
-//               </li>
-
-//               <li className="relative group">
-//                 <span className="px-2 cursor-pointer space-x-2 flex justify-center items-center">
-//                   <span className="text-blue-500">Accounts</span>
-//                   <span>
-//                     <FaChevronDown />
-//                   </span>
-//                 </span>
-//                 <ul className="absolute z-10 hidden group-hover:block bg-white text-blue-600  rounded-md">
-//                   <li
-//                     className=" hover:text-blue-900 text-blue-700 px-4 py-2 cursor-pointer"
-//                     onClick={() => navigate("/login")}
-//                   >
-//                     Student
-//                   </li>
-//                   <li className="hover:text-blue-900 text-blue-700 px-4 py-2">
-//                     Teacher
-//                   </li>
-//                   <li className="hover:text-blue-900 text-blue-700 px-4 py-2">
-//                     Admin
-//                   </li>
-//                 </ul>
-//               </li>
-
-//               <li className="hover:text-blue-500">
-//                 <NavLink to="/contact-us">Contact us</NavLink>
-//               </li>
-//               <li className="hover:text-blue-500">
-//                 <NavLink to="/about">About</NavLink>
-//               </li>
-//             </ul>
-//           </div>
-
-//           <div className="relative hidden md:flex space-x-4 ">
-//             <input
-//               type="text"
-//               placeholder="Search"
-//               className="pl-2 pr-3 py-2 border rounded md:w-52 lg:w-64 border-gray-400 outline-blue-500"
-//             />
-//             <IoIosSearch className="absolute right-10 top-3 text-gray-500 text-xl hover:text-blue-500" />
-//             <div>
-//               <FaUserCircle className="text-3xl text-blue-600" />
-//             </div>
-//           </div>
-//           {/* toggle menu */}
-
-//           <div className=" flex items-center space-x-4 md:hidden justify-center">
-//             {toggle ? (
-//               <GiHamburgerMenu className="text-2xl" onClick={changeToggle} />
-//             ) : (
-//               <IoClose className="text-2xl" onClick={changeToggle} />
-//             )}
-//             <div className="">
-//               <FaUserCircle className="text-3xl text-blue-600" />
-//             </div>
-//           </div>
-//         </div>
-
-//         {toggle === false && (
-//           <div className="md:hidden flex flex-col justify-center items-center absolute bg-white text-blue-500 w-full z-1">
-//             <div className=" w-full">
-//               <ul className="flex flex-col space-y-4 mb-8 p-2">
-//                 <li className="hover:text-blue-500">
-//                   <NavLink to="/">Home</NavLink>
-//                 </li>
-
-//                 <li className="hover:text-blue-500">
-//                   <NavLink to="/notice">Notice</NavLink>
-//                 </li>
-//                 <div>
-//                   <li className="flex justify-between pr-3">
-//                     <span>
-//                       <NavLink>Accounts</NavLink>
-//                     </span>
-//                     <span>
-//                       <HiDotsHorizontal
-//                         onClick={() => {
-//                           settoggleAccount(!toggleAccount);
-//                         }}
-//                       />
-//                     </span>
-//                   </li>
-
-//                   {toggleAccount && (
-//                     <ul className="flex flex-col space-y-4 py-2 ml-5 text-black bg-white m-3 p-2">
-//                       <li onClick={() => navigate("/login")}>Student</li>
-//                       <li>Teacher</li>
-//                       <li>Admin</li>
-//                     </ul>
-//                   )}
-//                 </div>
-
-//                 <li className="hover:text-blue-500">
-//                   <NavLink to="/contact-us">Contact us</NavLink>
-//                 </li>
-//                 <li className="hover:text-blue-500">
-//                   {" "}
-//                   <NavLink to="/about">About</NavLink>
-//                 </li>
-//               </ul>
-//             </div>
-
-//             <div className="relative flex flex-col justify-center items-center space-y-2">
-//               <input
-//                 type="text"
-//                 placeholder="Search"
-//                 className="pl-2 pr-3 py-2 border rounded w-48  outline-blue-500 border-gray-500"
-//               />
-//               <IoIosSearch className="absolute right-2 top-2 text-gray-500 text-xl hover:text-blue-500" />
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Navbar;
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoIosSearch } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
-import { FaChevronDown } from "react-icons/fa";
-import { FaUserCircle } from "react-icons/fa";
+import { FaChevronDown, FaUserCircle } from "react-icons/fa";
+import { MdDashboard, MdLogout } from "react-icons/md";
 import logo from "/images/Logo.svg";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [accountsOpen, setAccountsOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchFocus, setSearchFocus] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Get user data from localStorage
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUserProfile(parsedUser);
+      } catch (error) {
+        console.error("Failed to parse user data from localStorage", error);
+      }
+    }
+  }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleAccounts = () => setAccountsOpen(!accountsOpen);
+  const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
 
   // Animation variants
   const menuVariants = {
@@ -180,7 +39,7 @@ const Navbar = () => {
     visible: { opacity: 1, height: "auto", transition: { duration: 0.3 } },
   };
 
-  const accountsVariants = {
+  const dropdownVariants = {
     hidden: { opacity: 0, y: -5 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
   };
@@ -191,6 +50,100 @@ const Navbar = () => {
 
   const linkVariants = {
     hover: { color: "#3B82F6", transition: { duration: 0.2 } },
+  };
+
+  const handleSignOut = () => {
+    // Clear local storage
+    localStorage.removeItem("user");
+    setUserProfile(null);
+    // Redirect to home or login page
+    navigate("/");
+    // Close the dropdown
+    setUserMenuOpen(false);
+  };
+
+  const handleDashboard = () => {
+    if (userProfile && userProfile.role === "student") {
+      navigate("/student-profile");
+    }
+    setUserMenuOpen(false);
+  };
+
+  const renderProfileImage = () => {
+    if (userProfile && userProfile.pic) {
+      return (
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="cursor-pointer relative"
+          onClick={toggleUserMenu}
+        >
+          <img
+            src={userProfile.pic}
+            alt={userProfile.name || "User"}
+            className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
+          />
+
+          {/* User dropdown menu */}
+          <AnimatePresence>
+            {userMenuOpen && (
+              <motion.div
+                className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50"
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={dropdownVariants}
+              >
+                <div className="p-4 border-b border-gray-100">
+                  <p className="font-medium text-gray-800">
+                    {userProfile.name}
+                  </p>
+                  <p className="text-sm text-gray-500 truncate">
+                    {userProfile.email}
+                  </p>
+                </div>
+
+                <div className="py-2">
+                  <motion.div
+                    className="flex items-center px-4 py-3 hover:bg-blue-50 cursor-pointer"
+                    onClick={handleDashboard}
+                    whileHover={{
+                      backgroundColor: "#EFF6FF",
+                      color: "#2563EB",
+                    }}
+                  >
+                    <MdDashboard className="mr-3 text-lg" />
+                    <span>Dashboard</span>
+                  </motion.div>
+
+                  <motion.div
+                    className="flex items-center px-4 py-3 hover:bg-blue-50 cursor-pointer"
+                    onClick={handleSignOut}
+                    whileHover={{
+                      backgroundColor: "#EFF6FF",
+                      color: "#2563EB",
+                    }}
+                  >
+                    <MdLogout className="mr-3 text-lg" />
+                    <span>Sign out</span>
+                  </motion.div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      );
+    } else {
+      return (
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate("/login")}
+        >
+          <FaUserCircle className="text-3xl text-blue-600 cursor-pointer" />
+        </motion.div>
+      );
+    }
   };
 
   return (
@@ -259,7 +212,7 @@ const Navbar = () => {
                       initial="hidden"
                       animate="visible"
                       exit="hidden"
-                      variants={accountsVariants}
+                      variants={dropdownVariants}
                     >
                       <motion.li
                         className="px-4 py-3 hover:bg-blue-50 text-gray-700 cursor-pointer"
@@ -354,9 +307,7 @@ const Navbar = () => {
                 <IoIosSearch className="text-xl" />
               </motion.div>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <FaUserCircle className="text-3xl text-blue-600 cursor-pointer" onClick={()=>navigate("/student-profile")} />
-            </motion.div>
+            {renderProfileImage()}
           </div>
 
           {/* Toggle menu button for mobile */}
@@ -372,9 +323,7 @@ const Navbar = () => {
                 <GiHamburgerMenu className="text-2xl text-blue-600" />
               )}
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <FaUserCircle className="text-3xl text-blue-600" onClick={()=>navigate("/student-profile")} />
-            </motion.div>
+            {renderProfileImage()}
           </div>
         </div>
 

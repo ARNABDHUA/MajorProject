@@ -243,9 +243,17 @@ const StudentSidebar = ({
               {(!isCollapsed || isMobile) && (
                 <div className="border-t border-gray-200 pt-2">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <FaUser className="w-4 h-4 text-blue-600" />
-                    </div>
+                    {studentData?.pic ? (
+                      <img
+                        src={studentData.pic}
+                        alt="Profile"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <FaUser className="w-4 h-4 text-blue-600" />
+                      </div>
+                    )}
                     <div className="ml-3">
                       <p className="text-sm font-medium text-gray-700">
                         {studentData?.name || "Student Name"}

@@ -16,11 +16,14 @@ import {
   FiAward,
   FiBriefcase,
   FiCheck,
+  FiImage,
+  FiUpload,
 } from "react-icons/fi";
 
 const TeacherProfile = () => {
   const [teacherData, setTeacherData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
 
   // Edit form states
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -33,10 +36,12 @@ const TeacherProfile = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [newImageFile, setNewImageFile] = useState(null);
 
   useEffect(() => {
     // Retrieve data from localStorage
     const localData = localStorage.getItem("user");
+    const localImage = localStorage.getItem("image");
 
     if (localData) {
       try {
@@ -50,12 +55,31 @@ const TeacherProfile = () => {
     } else {
       console.log("No teacher data found in Local Storage.");
     }
+
+    // Set profile image if available
+    if (localImage) {
+      setProfileImage(localImage);
+    }
   }, []);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
     setError("");
     setSuccess("");
+    setNewImageFile(null);
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setNewImageFile(reader.result);
+      };
+
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -67,6 +91,12 @@ const TeacherProfile = () => {
     try {
       // Build request object based on what's been filled out
       const updateData = {};
+
+      // Save new image to localStorage if available
+      if (newImageFile) {
+        localStorage.setItem("image", newImageFile);
+        setProfileImage(newImageFile);
+      }
 
       if (phoneNumber && phoneNumber !== teacherData.phoneNumber) {
         updateData.phoneNumber = phoneNumber;
@@ -86,10 +116,21 @@ const TeacherProfile = () => {
         updateData.expertise = newExpertise;
       }
 
-      // Only make the API call if we have something to update
-      if (Object.keys(updateData).length === 0) {
+      // Only make the API call if we have something to update (excluding image)
+      if (Object.keys(updateData).length === 0 && !newImageFile) {
         // Instead of setting an error or exiting, just notify the user
         setSuccess("No changes to update");
+        setLoading(false);
+        setTimeout(() => {
+          setIsEditing(false);
+          setSuccess("");
+        }, 1500);
+        return;
+      }
+
+      // If we only have an image update, skip the API call
+      if (Object.keys(updateData).length === 0 && newImageFile) {
+        setSuccess("Profile image updated successfully!");
         setLoading(false);
         setTimeout(() => {
           setIsEditing(false);
@@ -220,145 +261,160 @@ const TeacherProfile = () => {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
-          {/* Basic Information Card */}
+          {/* Profile Image and Basic Info Card */}
           <motion.div
             variants={itemVariants}
-            className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
+            className="md:col-span-1 bg-white rounded-xl shadow-md p-6 overflow-hidden flex flex-col items-center"
           >
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <FiUser className="text-blue-600" size={20} />
-              Basic Information
+            <div className="w-40 h-40 mb-4 rounded-full overflow-hidden border-4 border-blue-100 shadow-md">
+              {profileImage ? (
+                <img
+                  src={profileImage}
+                  alt="Teacher Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                  <FiUser size={64} className="text-gray-400" />
+                </div>
+              )}
+            </div>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-1">
+              {teacherData.name || "Teacher Name"}
             </h3>
-            <div className="space-y-3">
-              <div className="flex items-start">
-                <span className="font-medium text-gray-600 w-32">Name:</span>
-                <span className="text-gray-800">
-                  {teacherData.name || "N/A"}
-                </span>
-              </div>
-              <div className="flex items-start">
-                <span className="font-medium text-gray-600 w-32">Email:</span>
-                <span className="text-gray-800 flex items-center gap-2">
-                  <FiMail size={16} className="text-gray-500" />
-                  {teacherData.email || "N/A"}
-                </span>
-              </div>
-              <div className="flex items-start">
-                <span className="font-medium text-gray-600 w-32">Phone:</span>
-                <span className="text-gray-800 flex items-center gap-2">
-                  <FiPhone size={16} className="text-gray-500" />
-                  {teacherData.phoneNumber || "N/A"}
-                </span>
-              </div>
-              <div className="flex items-start">
-                <span className="font-medium text-gray-600 w-32">
-                  Roll Number:
-                </span>
-                <span className="text-gray-800 flex items-center gap-2">
-                  <FiHash size={16} className="text-gray-500" />
-                  {teacherData.c_roll || "N/A"}
-                </span>
-              </div>
-              <div className="flex items-start">
-                <span className="font-medium text-gray-600 w-32">Salary:</span>
-                <span className="text-gray-800 flex items-center gap-2">
-                  <FiDollarSign size={16} className="text-gray-500" />
-                  Rs. {teacherData.salary || "N/A"}
-                </span>
-              </div>
-              <div className="flex items-start">
-                <span className="font-medium text-gray-600 w-32">Rating:</span>
-                <span className="text-gray-800 flex items-center gap-2">
-                  <FiStar size={16} className="text-yellow-500" />
-                  {teacherData.rating !== undefined
-                    ? teacherData.rating
-                    : "N/A"}
-                </span>
-              </div>
+            <p className="text-blue-600 font-medium mb-4">
+              {teacherData.c_roll || "Teacher ID"}
+            </p>
+            <div className="flex items-center gap-2 mb-2">
+              <FiMail size={16} className="text-gray-500" />
+              <span className="text-gray-700">
+                {teacherData.email || "N/A"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FiPhone size={16} className="text-gray-500" />
+              <span className="text-gray-700">
+                {teacherData.phoneNumber || "N/A"}
+              </span>
             </div>
           </motion.div>
 
-          {/* Courses Card */}
+          {/* Information Cards */}
           <motion.div
             variants={itemVariants}
-            className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
+            className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <FiBook className="text-blue-600" size={20} />
-              Courses
-            </h3>
-            {Array.isArray(teacherData.teacher_course) &&
-            teacherData.teacher_course.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {teacherData.teacher_course.map((course, index) => (
-                  <span
-                    key={index}
-                    className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
-                  >
-                    {course}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">No courses assigned</p>
-            )}
-          </motion.div>
+            {/* Courses Card */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
+            >
+              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <FiBook className="text-blue-600" size={20} />
+                Courses
+              </h3>
+              {Array.isArray(teacherData.teacher_course) &&
+              teacherData.teacher_course.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {teacherData.teacher_course.map((course, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      {course}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No courses assigned</p>
+              )}
+            </motion.div>
 
-          {/* Expertise Card */}
-          <motion.div
-            variants={itemVariants}
-            className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
-          >
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <FiBriefcase className="text-blue-600" size={20} />
-              Expertise
-            </h3>
-            {Array.isArray(teacherData.expertise) &&
-            teacherData.expertise.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {teacherData.expertise.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">No expertise listed</p>
-            )}
-          </motion.div>
+            {/* Expertise Card */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
+            >
+              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <FiBriefcase className="text-blue-600" size={20} />
+                Expertise
+              </h3>
+              {Array.isArray(teacherData.expertise) &&
+              teacherData.expertise.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {teacherData.expertise.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No expertise listed</p>
+              )}
+            </motion.div>
 
-          {/* Qualifications Card */}
-          <motion.div
-            variants={itemVariants}
-            className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
-          >
-            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <FiAward className="text-blue-600" size={20} />
-              Qualifications
-            </h3>
-            {Array.isArray(teacherData.qualification) &&
-            teacherData.qualification.length > 0 ? (
+            {/* Additional Information Card */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
+            >
+              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <FiHash className="text-blue-600" size={20} />
+                Additional Information
+              </h3>
               <div className="space-y-3">
-                {teacherData.qualification.map((qual) => (
-                  <div
-                    key={qual._id || qual.degree}
-                    className="bg-gray-50 p-3 rounded-lg"
-                  >
-                    <p className="font-medium text-gray-800">{qual.degree}</p>
-                    <p className="text-gray-600 text-sm">
-                      {qual.institution} • {qual.year}
-                    </p>
-                  </div>
-                ))}
+                <div className="flex items-center gap-2">
+                  <FiDollarSign size={16} className="text-gray-500" />
+                  <span className="font-medium text-gray-600">Salary:</span>
+                  <span className="text-gray-800">
+                    Rs. {teacherData.salary || "N/A"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FiStar size={16} className="text-yellow-500" />
+                  <span className="font-medium text-gray-600">Rating:</span>
+                  <span className="text-gray-800">
+                    {teacherData.rating !== undefined
+                      ? teacherData.rating
+                      : "N/A"}
+                  </span>
+                </div>
               </div>
-            ) : (
-              <p className="text-gray-500">No qualifications listed</p>
-            )}
+            </motion.div>
+
+            {/* Qualifications Card */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
+            >
+              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <FiAward className="text-blue-600" size={20} />
+                Qualifications
+              </h3>
+              {Array.isArray(teacherData.qualification) &&
+              teacherData.qualification.length > 0 ? (
+                <div className="space-y-3">
+                  {teacherData.qualification.map((qual) => (
+                    <div
+                      key={qual._id || qual.degree}
+                      className="bg-gray-50 p-3 rounded-lg"
+                    >
+                      <p className="font-medium text-gray-800">{qual.degree}</p>
+                      <p className="text-gray-600 text-sm">
+                        {qual.institution} • {qual.year}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No qualifications listed</p>
+              )}
+            </motion.div>
           </motion.div>
         </motion.div>
       ) : (
@@ -403,6 +459,50 @@ const TeacherProfile = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Profile Image Section */}
+            <div className="space-y-2">
+              <h4 className="text-lg font-medium text-gray-700 flex items-center gap-2">
+                <FiImage className="text-blue-600" size={18} />
+                Profile Image
+              </h4>
+              <div className="flex flex-col items-center sm:flex-row gap-4">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200">
+                  {newImageFile ? (
+                    <img
+                      src={newImageFile}
+                      alt="New Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : profileImage ? (
+                    <img
+                      src={profileImage}
+                      alt="Current Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                      <FiUser size={48} className="text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <label className="flex items-center justify-center w-full bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 rounded-lg p-3 cursor-pointer">
+                    <FiUpload size={18} className="mr-2" />
+                    <span>Upload New Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    Recommended: Square image, maximum size 5MB
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Phone Number Section */}
             <div className="space-y-2">
               <h4 className="text-lg font-medium text-gray-700 flex items-center gap-2">

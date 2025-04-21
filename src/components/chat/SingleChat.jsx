@@ -30,7 +30,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
 
-  const { selectedChat, setSelectedChat, notification, setNotification } = ChatState();
+  const { selectedChat, setSelectedChat, notification, setNotification } =
+    ChatState();
   const [user, setUser] = useState(null); // Initialize as null
 
   // Common emojis array organized in categories for better user experience
@@ -38,58 +39,238 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     {
       name: "Smileys",
       emojis: [
-        "😊", "😂", "🤣", "😍", "😘", "🥰", "😎", "🤔", "😇", "😉", "😋", "🤗", "😆", "😅",
-        "😛", "😜", "😝", "🤩", "😌", "😺", "😸", "😻", "😽", "😹", "🙃", "😏", "😈", "👿"
-      ]
+        "😊",
+        "😂",
+        "🤣",
+        "😍",
+        "😘",
+        "🥰",
+        "😎",
+        "🤔",
+        "😇",
+        "😉",
+        "😋",
+        "🤗",
+        "😆",
+        "😅",
+        "😛",
+        "😜",
+        "😝",
+        "🤩",
+        "😌",
+        "😺",
+        "😸",
+        "😻",
+        "😽",
+        "😹",
+        "🙃",
+        "😏",
+        "😈",
+        "👿",
+      ],
     },
     {
       name: "Gestures",
       emojis: [
-        "👍", "👏", "🙏", "🤝", "👋", "✌️", "👌", "🤘", "🤙", "👆", "👉", "👈",
-        "👇", "🖖", "🖐️", "✋", "👊", "✊", "🤞", "🫶", "🫱", "🫲", "🤟"
-      ]
+        "👍",
+        "👏",
+        "🙏",
+        "🤝",
+        "👋",
+        "✌️",
+        "👌",
+        "🤘",
+        "🤙",
+        "👆",
+        "👉",
+        "👈",
+        "👇",
+        "🖖",
+        "🖐️",
+        "✋",
+        "👊",
+        "✊",
+        "🤞",
+        "🫶",
+        "🫱",
+        "🫲",
+        "🤟",
+      ],
     },
     {
       name: "Emotions",
       emojis: [
-        "❤️", "🔥", "✨", "💯", "💪", "🎉", "👀", "💕", "💓", "💔", "😢", "😭",
-        "😡", "😠", "😤", "😬", "😞", "😔", "😟", "😩", "😫", "😨", "😰", "🥵", "🥶"
-      ]
+        "❤️",
+        "🔥",
+        "✨",
+        "💯",
+        "💪",
+        "🎉",
+        "👀",
+        "💕",
+        "💓",
+        "💔",
+        "😢",
+        "😭",
+        "😡",
+        "😠",
+        "😤",
+        "😬",
+        "😞",
+        "😔",
+        "😟",
+        "😩",
+        "😫",
+        "😨",
+        "😰",
+        "🥵",
+        "🥶",
+      ],
     },
     {
       name: "Cloud",
       emojis: [
-        "🥺", "😩", "😫", "😖", "😣", "☹️", "🤬", "🤯", "😳", "😱", "😓", "🫥", "😶",
-        "🤥", "🫠", "🤫", "🫡", "🫢", "👩‍❤️‍💋‍👨", "👨‍❤️‍👨", "💑", "👩‍❤️‍👩", "💏",
-        "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵",
-        "🙈", "🙉", "🙊", "🐒"
-      ]
+        "🥺",
+        "😩",
+        "😫",
+        "😖",
+        "😣",
+        "☹️",
+        "🤬",
+        "🤯",
+        "😳",
+        "😱",
+        "😓",
+        "🫥",
+        "😶",
+        "🤥",
+        "🫠",
+        "🤫",
+        "🫡",
+        "🫢",
+        "👩‍❤️‍💋‍👨",
+        "👨‍❤️‍👨",
+        "💑",
+        "👩‍❤️‍👩",
+        "💏",
+        "🐶",
+        "🐱",
+        "🐭",
+        "🐹",
+        "🐰",
+        "🦊",
+        "🐻",
+        "🐼",
+        "🐻‍❄️",
+        "🐨",
+        "🐯",
+        "🦁",
+        "🐮",
+        "🐷",
+        "🐸",
+        "🐵",
+        "🙈",
+        "🙉",
+        "🙊",
+        "🐒",
+      ],
     },
     {
       name: "Reactions",
       emojis: [
-        "🫠", "🫨", "🫣", "🫡", "🤯", "😵‍💫", "😤", "🥹", "💃", "🕺", "🕳️", "🚶‍♂️", "🏃‍♀️",
-        "🤷", "🤦", "🧍", "🧎", "🙇", "🧠", "🦴", "👁️‍🗨️", "🔁", "🔂", "🔄", "⏳", "⏱️"
-      ]
+        "🫠",
+        "🫨",
+        "🫣",
+        "🫡",
+        "🤯",
+        "😵‍💫",
+        "😤",
+        "🥹",
+        "💃",
+        "🕺",
+        "🕳️",
+        "🚶‍♂️",
+        "🏃‍♀️",
+        "🤷",
+        "🤦",
+        "🧍",
+        "🧎",
+        "🙇",
+        "🧠",
+        "🦴",
+        "👁️‍🗨️",
+        "🔁",
+        "🔂",
+        "🔄",
+        "⏳",
+        "⏱️",
+      ],
     },
     {
       name: "Food",
       emojis: [
-        "🍎", "🍌", "🍇", "🍓", "🍒", "🍉", "🥭", "🍍", "🥝", "🍑",
-        "🍔", "🍟", "🌭", "🍕", "🥪", "🌮", "🌯", "🥗", "🍱", "🍣"
-      ]
+        "🍎",
+        "🍌",
+        "🍇",
+        "🍓",
+        "🍒",
+        "🍉",
+        "🥭",
+        "🍍",
+        "🥝",
+        "🍑",
+        "🍔",
+        "🍟",
+        "🌭",
+        "🍕",
+        "🥪",
+        "🌮",
+        "🌯",
+        "🥗",
+        "🍱",
+        "🍣",
+      ],
     },
     {
       name: "Nature",
       emojis: [
-        "🌞", "🌝", "🌚", "🌛", "🌜", "🌟", "🌈", "☁️", "🌧️", "⛈️", "🌩️", "❄️", "🌊", "🌬️"
-      ]
+        "🌞",
+        "🌝",
+        "🌚",
+        "🌛",
+        "🌜",
+        "🌟",
+        "🌈",
+        "☁️",
+        "🌧️",
+        "⛈️",
+        "🌩️",
+        "❄️",
+        "🌊",
+        "🌬️",
+      ],
     },
     {
       name: "Weather",
       emojis: [
-        "☀️", "🌤️", "⛅", "🌥️", "☁️", "🌦️", "🌧️", "⛈️", "🌩️", "🌨️", "❄️", "🌪️", "🌫️", "🌈", "💨", "☔", "⚡"
-      ]
+        "☀️",
+        "🌤️",
+        "⛅",
+        "🌥️",
+        "☁️",
+        "🌦️",
+        "🌧️",
+        "⛈️",
+        "🌩️",
+        "🌨️",
+        "❄️",
+        "🌪️",
+        "🌫️",
+        "🌈",
+        "💨",
+        "☔",
+        "⚡",
+      ],
     },
     {
       name: "Daytime",
@@ -106,48 +287,107 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         "🛏️", // Bed (sleepy night)
         "🛌", // Person in bed
         "🧘", // Meditation (chill evening)
-        "🌤️", "🌞", "☀️", // Day/morning
-        "✨", "🪷" // Soft evening vibes
-      ]
+        "🌤️",
+        "🌞",
+        "☀️", // Day/morning
+        "✨",
+        "🪷", // Soft evening vibes
+      ],
     },
     {
       name: "Time",
       emojis: [
-        "⏰", "⏱️", "⏳", "⌛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚", "🕛"
-      ]
+        "⏰",
+        "⏱️",
+        "⏳",
+        "⌛",
+        "🕐",
+        "🕑",
+        "🕒",
+        "🕓",
+        "🕔",
+        "🕕",
+        "🕖",
+        "🕗",
+        "🕘",
+        "🕙",
+        "🕚",
+        "🕛",
+      ],
     },
     {
       name: "Objects",
       emojis: [
-        "📱", "💻", "🖥️", "🖱️", "⌨️", "💡", "🔦", "📷", "🎥", "🎧", "📚", "📖", "📝", "✏️"
-      ]
+        "📱",
+        "💻",
+        "🖥️",
+        "🖱️",
+        "⌨️",
+        "💡",
+        "🔦",
+        "📷",
+        "🎥",
+        "🎧",
+        "📚",
+        "📖",
+        "📝",
+        "✏️",
+      ],
     },
     {
       name: "Transport",
       emojis: [
-        "🚗", "🚕", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚚", "🚛", "🚜", "✈️", "🚀", "🛸", "🚁"
-      ]
+        "🚗",
+        "🚕",
+        "🚌",
+        "🚎",
+        "🏎️",
+        "🚓",
+        "🚑",
+        "🚒",
+        "🚚",
+        "🚛",
+        "🚜",
+        "✈️",
+        "🚀",
+        "🛸",
+        "🚁",
+      ],
     },
     {
       name: "Symbols",
       emojis: [
-        "✔️", "❌", "⚠️", "❗", "❓", "💤", "🆗", "🔞", "🚫", "✅", "➕", "➖", "➗", "✖️", "🔃"
-      ]
-    }
+        "✔️",
+        "❌",
+        "⚠️",
+        "❗",
+        "❓",
+        "💤",
+        "🆗",
+        "🔞",
+        "🚫",
+        "✅",
+        "➕",
+        "➖",
+        "➗",
+        "✖️",
+        "🔃",
+      ],
+    },
   ];
-  
+
   // Check if device is mobile
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     // Initial check
     checkIfMobile();
-    
+
     // Add event listener for window resize
     window.addEventListener("resize", checkIfMobile);
-    
+
     // Cleanup
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
@@ -165,7 +405,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     // Close emoji picker when clicking outside
     const handleClickOutside = (event) => {
-      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target)
+      ) {
         setShowEmojiPicker(false);
       }
     };
@@ -201,15 +444,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   // Check if chat is in admin-only mode and if user is an admin
   const checkAdminStatus = async () => {
     if (!selectedChat || !selectedChat._id) return;
-    
+
     try {
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       if (!userInfo) return;
-      
-      const { data } = await axios.post(`${ENDPOINT}/v1/chat/chat-admin-mode-find`, {
-        chatId: selectedChat
-      });
-      
+
+      const { data } = await axios.post(
+        `${ENDPOINT}/v1/chat/chat-admin-mode-find`,
+        {
+          chatId: selectedChat,
+        }
+      );
+
       setIsAdminOnlyMode(data.adminOnlyMode === true);
       setIsUserAdmin(data.groupAdmin && data.groupAdmin._id === userInfo._id);
     } catch (error) {
@@ -221,11 +467,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     if (!selectedChat || !selectedChat._id) return;
     try {
       setLoading(true);
-      const { data } = await axios.get(`${ENDPOINT}/v1/chat/${selectedChat._id}`);
+      const { data } = await axios.get(
+        `${ENDPOINT}/v1/chat/${selectedChat._id}`
+      );
       setMessages(data);
       setLoading(false);
       socket.emit("join chat", selectedChat._id);
-      
+
       // Check admin status when fetching messages
       await checkAdminStatus();
     } catch (error) {
@@ -236,26 +484,29 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (event) => {
     if (!selectedChat || !selectedChat._id) return;
-    
+
     // Check if user can send messages in admin-only mode
     if (isAdminOnlyMode && !isUserAdmin) {
       // User is not admin and chat is in admin-only mode
       return;
     }
-    
+
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     if (!userInfo || !userInfo._id) return;
-    
+
     if (event) {
       if (event.key === "Enter" && newMessage.trim()) {
         event.preventDefault();
         socket.emit("stop typing", selectedChat._id);
         try {
-          const { data } = await axios.post(`${ENDPOINT}/v1/chat/chat-messages`, {
-            ownId: userInfo._id,
-            content: newMessage,
-            chatId: selectedChat,
-          });
+          const { data } = await axios.post(
+            `${ENDPOINT}/v1/chat/chat-messages`,
+            {
+              ownId: userInfo._id,
+              content: newMessage,
+              chatId: selectedChat,
+            }
+          );
           setNewMessage("");
           setMessages((prev) => [...prev, data]);
           socket.emit("new message", data);
@@ -283,7 +534,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   // Handle emoji selection
   const handleEmojiClick = (emoji) => {
-    setNewMessage(prev => prev + emoji);
+    setNewMessage((prev) => prev + emoji);
     // Focus back on input after emoji selection
     if (inputRef.current) {
       inputRef.current.focus();
@@ -304,12 +555,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   useEffect(() => {
     const messageListener = (newMessageReceived) => {
       if (!newMessageReceived || !newMessageReceived.chat) return;
-      
-      if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
+
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare._id !== newMessageReceived.chat._id
+      ) {
         // If notification state is available
         if (notification) {
           // Check if notification with same ID already exists
-          if (!notification.find((n) => n && n._id === newMessageReceived._id)) {
+          if (
+            !notification.find((n) => n && n._id === newMessageReceived._id)
+          ) {
             setNotification([newMessageReceived, ...notification]);
             setFetchAgain(!fetchAgain);
           }
@@ -318,9 +574,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setMessages((prevMessages) => {
           // Make sure we have valid previous messages
           if (!prevMessages) return [newMessageReceived];
-          
+
           // Check if message already exists
-          const exists = prevMessages.some((msg) => msg && msg._id === newMessageReceived._id);
+          const exists = prevMessages.some(
+            (msg) => msg && msg._id === newMessageReceived._id
+          );
           return exists ? prevMessages : [...prevMessages, newMessageReceived];
         });
       }
@@ -332,10 +590,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
-    
+
     // Don't show typing indicator if user can't send messages
-    if (!socketConnected || !selectedChat || !selectedChat._id || (isAdminOnlyMode && !isUserAdmin)) return;
-    
+    if (
+      !socketConnected ||
+      !selectedChat ||
+      !selectedChat._id ||
+      (isAdminOnlyMode && !isUserAdmin)
+    )
+      return;
+
     if (!typing) {
       setTyping(true);
       socket.emit("typing", selectedChat._id);
@@ -364,12 +628,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   // Helper function to safely get sender info with null checks
   const getSafeSenderFull = () => {
-    if (!user || !selectedChat || !selectedChat.users || !Array.isArray(selectedChat.users)) return null;
+    if (
+      !user ||
+      !selectedChat ||
+      !selectedChat.users ||
+      !Array.isArray(selectedChat.users)
+    )
+      return null;
     return getSenderFull(user, selectedChat.users);
   };
 
   const getSafeSender = () => {
-    if (!user || !selectedChat || !selectedChat.users || !Array.isArray(selectedChat.users)) return "";
+    if (
+      !user ||
+      !selectedChat ||
+      !selectedChat.users ||
+      !Array.isArray(selectedChat.users)
+    )
+      return "";
     return getSender(user, selectedChat.users);
   };
 
@@ -404,25 +680,30 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                       />
                     </div>
                     {/* User Name */}
-                    <span className="truncate font-medium">{senderName || "User"}</span>
+                    <span className="truncate font-medium">
+                      {senderName || "User"}
+                    </span>
                     {senderFull && <ProfileModal user={senderFull} />}
                   </div>
                 </>
               ) : (
                 <>
                   <div className="flex items-center gap-1 sm:gap-2">
-                    <span className="truncate">{selectedChat.chatName ? selectedChat.chatName.toUpperCase() : "Group Chat"}</span>
+                    <span className="truncate">
+                      {selectedChat.chatName
+                        ? selectedChat.chatName.toUpperCase()
+                        : "Group Chat"}
+                    </span>
                     {/* Show admin-only mode indicator for group chats */}
                     {isAdminOnlyMode && (
-                       <span className="inline-flex items-center text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">
-                      {/* LockIcon: always visible */}
-                             <LockIcon className="w-3 h-3 mr-1" />
+                      <span className="inline-flex items-center text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">
+                        {/* LockIcon: always visible */}
+                        <LockIcon className="w-3 h-3 mr-1" />
 
-                              {/* Text: hidden on small screens, shown on sm and up */}
-                             <span className="hidden sm:inline">Admin Only</span>
-                            </span>
-                              )}
-
+                        {/* Text: hidden on small screens, shown on sm and up */}
+                        <span className="hidden sm:inline">Admin Only</span>
+                      </span>
+                    )}
                   </div>
                   <UpdateGroupChatModal
                     fetchMessages={fetchMessages}
@@ -443,7 +724,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           </div>
 
           {/* Chat Box */}
-          <div 
+          <div
             ref={chatContainerRef}
             className="flex flex-col justify-end p-1 sm:p-2 md:p-3 bg-[#E8E8E8] w-full h-full min-h-[300px] rounded-lg overflow-hidden"
           >
@@ -458,7 +739,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             {/* Typing animation */}
             {istyping && (
               <div className="mb-2 sm:mb-4 ml-0">
-                <Lottie options={defaultOptions} width={40} height={20} style={{ marginBottom: 10, marginLeft: 0 }} />
+                <Lottie
+                  options={defaultOptions}
+                  width={40}
+                  height={20}
+                  style={{ marginBottom: 10, marginLeft: 0 }}
+                />
               </div>
             )}
 
@@ -483,14 +769,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   >
                     <Smile className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
                   </button>
-                  
+
                   {/* Emoji Picker Dropdown (non-mobile only) */}
                   {showEmojiPicker && (
                     <div className="absolute bottom-12 left-0 bg-white p-2 rounded-lg shadow-lg border border-gray-300 z-20 w-[280px] sm:w-[320px] max-h-[200px] sm:max-h-[300px] overflow-auto">
                       <div className="flex flex-col space-y-2">
                         {emojiCategories.map((category, catIndex) => (
                           <div key={catIndex} className="mb-2">
-                            <h3 className="text-xs font-semibold text-gray-500 mb-1 px-1">{category.name}</h3>
+                            <h3 className="text-xs font-semibold text-gray-500 mb-1 px-1">
+                              {category.name}
+                            </h3>
                             <div className="grid grid-cols-7 sm:grid-cols-8 gap-1">
                               {category.emojis.map((emoji, emojiIndex) => (
                                 <button
@@ -510,24 +798,38 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   )}
                 </div>
               )}
-              
+
               {/* Input Field - disabled if user can't send messages */}
               <input
                 ref={inputRef}
                 type="text"
-                className={`flex-grow p-1.5 sm:p-2 text-xs sm:text-sm md:text-base rounded-md bg-[#E0E0E0] focus:outline-none focus:ring-1 focus:ring-blue-400 ${!canSendMessages ? 'opacity-60 cursor-not-allowed' : ''}`}
-                placeholder={canSendMessages ? "Enter a message..." : "Only admins can send messages"}
+                className={`flex-grow p-1.5 sm:p-2 text-xs sm:text-sm md:text-base rounded-md bg-[#E0E0E0] focus:outline-none focus:ring-1 focus:ring-blue-400 ${
+                  !canSendMessages ? "opacity-60 cursor-not-allowed" : ""
+                }`}
+                placeholder={
+                  canSendMessages
+                    ? "Enter a message..."
+                    : "Only admins can send messages"
+                }
                 value={newMessage}
                 onChange={typingHandler}
                 onKeyDown={canSendMessages ? sendMessage : null}
                 disabled={!canSendMessages}
               />
-              
+
               {/* Send Button - disabled if user can't send messages */}
               <button
                 onClick={() => canSendMessages && sendMessage()}
-                className={`p-1.5 sm:p-2 md:p-2.5 ${canSendMessages ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'} rounded-md transition duration-200`}
-                title={canSendMessages ? "Send Message" : "Only admins can send messages"}
+                className={`p-1.5 sm:p-2 md:p-2.5 ${
+                  canSendMessages
+                    ? "bg-green-500 hover:bg-green-600"
+                    : "bg-gray-400 cursor-not-allowed"
+                } rounded-md transition duration-200`}
+                title={
+                  canSendMessages
+                    ? "Send Message"
+                    : "Only admins can send messages"
+                }
                 disabled={!canSendMessages || !newMessage.trim()}
                 aria-label="Send message"
               >

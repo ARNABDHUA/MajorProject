@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
 import {
   FiUser,
   FiMail,
@@ -37,11 +38,11 @@ const TeacherProfile = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [newImageFile, setNewImageFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     // Retrieve data from localStorage
     const localData = localStorage.getItem("user");
-    const localImage = localStorage.getItem("image");
 
     if (localData) {
       try {
@@ -49,16 +50,16 @@ const TeacherProfile = () => {
         console.log("Teacher Data from Local Storage:", parsedData);
         setTeacherData(parsedData);
         setPhoneNumber(parsedData.phoneNumber || "");
+
+        // Set profile image if available
+        if (parsedData.image) {
+          setProfileImage(parsedData.image);
+        }
       } catch (err) {
         console.error("Error parsing teacher data:", err);
       }
     } else {
       console.log("No teacher data found in Local Storage.");
-    }
-
-    // Set profile image if available
-    if (localImage) {
-      setProfileImage(localImage);
     }
   }, []);
 
@@ -67,17 +68,19 @@ const TeacherProfile = () => {
     setError("");
     setSuccess("");
     setNewImageFile(null);
+    setImageFile(null);
   };
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const reader = new FileReader();
+      setImageFile(file);
+      console.log("File:----", file);
 
+      const reader = new FileReader();
       reader.onloadend = () => {
         setNewImageFile(reader.result);
       };
-
       reader.readAsDataURL(file);
     }
   };
@@ -89,14 +92,37 @@ const TeacherProfile = () => {
     setSuccess("");
 
     try {
-      // Build request object based on what's been filled out
-      const updateData = {};
+      // Get c_roll from teacher data
+      const c_roll = teacherData?.c_roll;
 
-      // Save new image to localStorage if available
-      if (newImageFile) {
-        localStorage.setItem("image", newImageFile);
-        setProfileImage(newImageFile);
+      if (!c_roll) {
+        setError("Teacher roll number not found");
+        setLoading(false);
+        return;
       }
+
+      // Build `FormData` if image is being uploaded
+      let formData = null;
+      let hasImageUpdate = false;
+
+      // When handling image upload section
+      if (imageFile) {
+        try {
+          formData = new FormData();
+          formData.append("image", imageFile);
+          hasImageUpdate = true;
+        } catch (err) {
+          console.error("Image preparation error:", err);
+          setError(
+            "Failed to prepare image for upload. Please try again with a different image."
+          );
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Build JSON data for other fields
+      const updateData = {};
 
       if (phoneNumber && phoneNumber !== teacherData.phoneNumber) {
         updateData.phoneNumber = phoneNumber;
@@ -107,6 +133,7 @@ const TeacherProfile = () => {
         newQualification.institution &&
         newQualification.year
       ) {
+        // Match these field names to what backend expects
         updateData.degree = newQualification.degree;
         updateData.institution = newQualification.institution;
         updateData.year = newQualification.year;
@@ -116,9 +143,8 @@ const TeacherProfile = () => {
         updateData.expertise = newExpertise;
       }
 
-      // Only make the API call if we have something to update (excluding image)
-      if (Object.keys(updateData).length === 0 && !newImageFile) {
-        // Instead of setting an error or exiting, just notify the user
+      // Only make the API call if we have something to update
+      if (Object.keys(updateData).length === 0 && !hasImageUpdate) {
         setSuccess("No changes to update");
         setLoading(false);
         setTimeout(() => {
@@ -128,53 +154,66 @@ const TeacherProfile = () => {
         return;
       }
 
-      // If we only have an image update, skip the API call
-      if (Object.keys(updateData).length === 0 && newImageFile) {
-        setSuccess("Profile image updated successfully!");
-        setLoading(false);
-        setTimeout(() => {
-          setIsEditing(false);
-          setSuccess("");
-        }, 1500);
-        return;
-      }
-
-      // Get c_roll from teacher data
-      const c_roll = teacherData?.c_roll;
-
-      if (!c_roll) {
-        setError("Teacher roll number not found");
-        setLoading(false);
-        return;
-      }
-
       console.log("Sending update data:", updateData);
 
-      const response = await fetch(
-        `https://e-college-data.onrender.com/v1/teachers/teachers-owndata/${c_roll}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updateData),
-        }
-      );
+      let response;
 
-      const result = await response.json();
-      console.log("API response:", result);
+      // If we have an image update, use FormData
+      if (hasImageUpdate) {
+        // Add other fields to FormData
+        Object.keys(updateData).forEach((key) => {
+          formData.append(key, updateData[key]);
+        });
 
-      if (response.ok) {
+        response = await axios.post(
+          `https://e-college-data.onrender.com/v1/teachers/teachers-owndata/${c_roll}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      } else {
+        // Regular JSON API call for non-image updates
+        response = await axios.post(
+          `https://e-college-data.onrender.com/v1/teachers/teachers-owndata/${c_roll}`,
+          updateData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+
+      console.log("API response:", response.data);
+
+      if (response.status === 200 || response.status === 201) {
         setSuccess("Profile updated successfully!");
+
         // Update local storage with new data
-        if (result.data) {
-          localStorage.setItem("teacherdata", JSON.stringify(result.data));
-          setTeacherData(result.data);
+        if (response.data.data) {
+          const updatedData = {
+            ...teacherData,
+            ...response.data.data,
+          };
+
+          // Save updated user data to localStorage
+          localStorage.setItem("user", JSON.stringify(updatedData));
+          setTeacherData(updatedData);
+
+          // If image was updated, update profile image
+          if (hasImageUpdate && response.data.data.image) {
+            setProfileImage(response.data.data.image);
+          }
         }
 
         // Reset form fields
         setNewQualification({ degree: "", institution: "", year: "" });
         setNewExpertise("");
+        setImageFile(null);
+        setNewImageFile(null);
 
         // Close edit mode after a short delay
         setTimeout(() => {
@@ -182,21 +221,129 @@ const TeacherProfile = () => {
           setSuccess("");
         }, 1500);
       } else {
-        setError(result.message || "Failed to update profile");
+        setError(response.data.message || "Failed to update profile");
       }
     } catch (err) {
       console.error("API error:", err);
       setError(
-        "Error connecting to server: " + (err.message || "Unknown error")
+        "Error connecting to server: " +
+          (err.response?.data?.message || err.message || "Unknown error")
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteQualification = (qualId) => {
-    // This would need an API endpoint to handle deletion
-    alert(`This would delete qualification with ID: ${qualId}`);
+  const handleDeleteQualification = async (qualDegree) => {
+    try {
+      setLoading(true);
+
+      const c_roll = teacherData?.c_roll;
+      if (!c_roll) {
+        setError("Teacher roll number not found");
+        setLoading(false);
+        return;
+      }
+
+      // Fixed structure - send degree directly without nesting in a data object
+      const response = await axios.post(
+        `https://e-college-data.onrender.com/v1/teachers/teachers-qualification/${c_roll}`,
+        { degree: qualDegree }, // Send degree directly as an object key
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Update local data by filtering out the deleted qualification
+        const updatedQualifications = teacherData.qualification.filter(
+          (qual) => qual.degree !== qualDegree
+        );
+
+        const updatedTeacherData = {
+          ...teacherData,
+          qualification: updatedQualifications,
+        };
+
+        // Update state and localStorage
+        setTeacherData(updatedTeacherData);
+        localStorage.setItem("user", JSON.stringify(updatedTeacherData));
+
+        setSuccess("Qualification deleted successfully!");
+
+        setTimeout(() => {
+          setSuccess("");
+        }, 1500);
+      } else {
+        setError(response.data.message || "Failed to delete qualification");
+      }
+    } catch (err) {
+      console.error("Delete qualification error:", err);
+      setError(
+        "Error deleting qualification: " +
+          (err.response?.data?.message || err.message || "Unknown error")
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteExpertise = async (expertise) => {
+    try {
+      setLoading(true);
+
+      const c_roll = teacherData?.c_roll;
+      if (!c_roll) {
+        setError("Teacher roll number not found");
+        setLoading(false);
+        return;
+      }
+
+      // Fix the request structure - send expertise directly without nesting in a data object
+      const response = await axios.post(
+        `https://e-college-data.onrender.com/v1/teachers/teachers-qualification/${c_roll}`,
+        { expertise }, // Send expertise directly as an object key
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Update local data by filtering out the deleted expertise
+        const updatedExpertise = teacherData.expertise.filter(
+          (exp) => exp !== expertise
+        );
+
+        const updatedTeacherData = {
+          ...teacherData,
+          expertise: updatedExpertise,
+        };
+
+        // Update state and localStorage
+        setTeacherData(updatedTeacherData);
+        localStorage.setItem("user", JSON.stringify(updatedTeacherData));
+
+        setSuccess("Expertise deleted successfully!");
+
+        setTimeout(() => {
+          setSuccess("");
+        }, 1500);
+      } else {
+        setError(response.data.message || "Failed to delete expertise");
+      }
+    } catch (err) {
+      console.error("Delete expertise error:", err);
+      setError(
+        "Error deleting expertise: " +
+          (err.response?.data?.message || err.message || "Unknown error")
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!teacherData) {
@@ -255,6 +402,28 @@ const TeacherProfile = () => {
           </motion.button>
         )}
       </motion.div>
+
+      {error && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-red-50 text-red-700 p-3 rounded-lg mb-4 flex items-center gap-2"
+        >
+          <FiX className="text-red-500" size={18} />
+          {error}
+        </motion.div>
+      )}
+
+      {success && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-green-50 text-green-700 p-3 rounded-lg mb-4 flex items-center gap-2"
+        >
+          <FiCheck className="text-green-500" size={18} />
+          {success}
+        </motion.div>
+      )}
 
       {!isEditing ? (
         <motion.div
@@ -436,28 +605,6 @@ const TeacherProfile = () => {
             </button>
           </div>
 
-          {error && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="bg-red-50 text-red-700 p-3 rounded-lg mb-4 flex items-center gap-2"
-            >
-              <FiX className="text-red-500" size={18} />
-              {error}
-            </motion.div>
-          )}
-
-          {success && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="bg-green-50 text-green-700 p-3 rounded-lg mb-4 flex items-center gap-2"
-            >
-              <FiCheck className="text-green-500" size={18} />
-              {success}
-            </motion.div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Profile Image Section */}
             <div className="space-y-2">
@@ -607,7 +754,7 @@ const TeacherProfile = () => {
                       </div>
                       <button
                         type="button"
-                        onClick={() => handleDeleteQualification(qual._id)}
+                        onClick={() => handleDeleteQualification(qual.degree)}
                         className="text-red-500 hover:text-red-700 p-1"
                       >
                         <FiTrash2 size={18} />
@@ -629,12 +776,19 @@ const TeacherProfile = () => {
               teacherData.expertise.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {teacherData.expertise.map((skill, index) => (
-                    <span
+                    <div
                       key={index}
-                      className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium"
+                      className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
                     >
-                      {skill}
-                    </span>
+                      <span>{skill}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteExpertise(skill)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <FiX size={14} />
+                      </button>
+                    </div>
                   ))}
                 </div>
               ) : (

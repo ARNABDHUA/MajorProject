@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaHome, FaUser } from "react-icons/fa";
+import { FaHome, FaUser, FaComment } from "react-icons/fa";
 import { FaRegNoteSticky } from "react-icons/fa6";
 import { MdCoPresent } from "react-icons/md";
+import Swal from "sweetalert2";
 
 import {
   FiBookOpen,
@@ -16,7 +17,6 @@ import {
   FiX,
 } from "react-icons/fi";
 import { SiKdenlive } from "react-icons/si";
-import { ConsoleLevel } from "@zegocloud/zego-uikit-prebuilt";
 
 // Sidebar menu items
 const menuItems = [
@@ -74,6 +74,12 @@ const menuItems = [
     icon: <MdCoPresent className="w-5 h-5" />,
     path: "/teacher-attendance",
   },
+  {
+    id: 10,
+    title: "Chat",
+    icon: <FaComment className="w-5 h-5" />,
+    path: "/teacher-chat",
+  },
 ];
 
 const Sidebar = ({
@@ -84,6 +90,7 @@ const Sidebar = ({
   const [isCollapsed, setIsCollapsed] = useState(isCollapsedProp);
   const [teacherData, setTeacherData] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Retrieve data from localStorage
@@ -104,7 +111,35 @@ const Sidebar = ({
       console.log("No teacher data found in Local Storage.");
     }
   }, []);
-  console.log("hi", teacherData?.name);
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out of your account",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Remove user data from localStorage
+        localStorage.removeItem("user");
+
+        // Show success message
+        Swal.fire({
+          title: "Logged out!",
+          text: "You have been successfully logged out",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        }).then(() => {
+          // Redirect to login page
+          navigate("/teacher-login");
+        });
+      }
+    });
+  };
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -181,9 +216,9 @@ const Sidebar = ({
           )}
         </div>
 
-        {/* Menu items */}
+        {/* Menu items with scrollbar */}
         <div className="py-4 flex flex-col h-[calc(100%-4rem)] justify-between">
-          <div className="space-y-1 px-3">
+          <div className="space-y-1 px-3 overflow-y-auto max-h-[calc(100%-80px)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -267,7 +302,8 @@ const Sidebar = ({
             </div>
 
             <button
-              className={`flex items-center w-full py-2.5 px-3 rounded-lg transition-all duration-200 text-gray-600 hover:bg-gray-100 ${
+              onClick={handleLogout}
+              className={`flex items-center w-full py-2.5 px-3 rounded-lg transition-all duration-200 text-gray-600 hover:bg-red-100 hover:text-red-600 ${
                 isCollapsed && !isMobile ? "justify-center" : ""
               }`}
             >

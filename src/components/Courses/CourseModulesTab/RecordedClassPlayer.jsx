@@ -38,7 +38,7 @@ const RecordedClassPlayer=()=> {
         setInitialLoading(false);
       }
     };
-
+    console.log("FARHAN AKHTAR");
     fetchInitialData();
   }, []);
 

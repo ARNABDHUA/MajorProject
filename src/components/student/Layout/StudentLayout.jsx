@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { FiMenu, FiUser } from "react-icons/fi";
+import { FiMenu } from "react-icons/fi";
 import StudentSidebar from "./StudentSidebar";
 
 const StudentLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 1024);
+  const [user, setUser] = useState(null);
   const location = useLocation();
+
+  // Get user data from localStorage
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
 
   // Handle resize events
   useEffect(() => {
@@ -85,13 +94,21 @@ const StudentLayout = () => {
                 </h2>
               </div>
 
-              {/* User profile */}
+              {/* User profile with actual user pic and name */}
               <div className="flex items-center">
-                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                  <FiUser className="w-4 h-4" />
-                </div>
+                {user && user.pic ? (
+                  <img
+                    src={user.pic}
+                    alt={user.name}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                    {user?.name?.charAt(0) || "U"}
+                  </div>
+                )}
                 <span className="hidden md:inline-block ml-3 font-medium text-gray-700">
-                  Student
+                  {user?.name || "Loading..."}
                 </span>
               </div>
             </div>

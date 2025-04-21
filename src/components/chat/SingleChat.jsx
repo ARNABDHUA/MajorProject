@@ -713,7 +713,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             {loading ? (
               <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 border-4 border-gray-300 border-t-teal-500 rounded-full animate-spin self-center m-auto" />
             ) : (
-              <div className="messages overflow-y-auto overflow-x-hidden max-h-[60vh] sm:max-h-[65vh] md:max-h-[70vh]">
+              <div className="messages overflow-y-auto overflow-x-hidden max-h-[70vh] sm:max-h-[65vh] md:max-h-[70vh]">
                 <ScrollableChat messages={messages} />
               </div>
             )}

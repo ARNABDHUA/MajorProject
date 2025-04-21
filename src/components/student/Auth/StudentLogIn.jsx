@@ -17,12 +17,17 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("user"));
-    const roles = data.role;
-    if (roles === "student") {
-      setUserx({ ...data });
+    const raw = localStorage.getItem("user");
+    try {
+      const data = JSON.parse(raw);
+      if (data && data.role === "student") {
+        setUserx({ ...data });
+      }
+    } catch (err) {
+      console.error("Failed to parse localStorage user:", err);
     }
   }, []);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,7 +100,7 @@ const Login = () => {
 
         // Scroll to top before navigating
         window.scrollTo(0, 0);
-        setTimeout(() => navigateAndScrollToTop("/"), 3000);
+        setTimeout(() => navigateAndScrollToTop("/"), 1000);
       } else {
         showPopup("Invalid email or password.", "error");
       }

@@ -69,9 +69,23 @@ const GroupChatModal = ({ children }) => {
     showToast(`Removed ${delUser.name || "user"}`, "", "info");
   };
 
+  // Validate that group name contains at least one alphabetic character
+  const validateGroupName = (name) => {
+    // Regular expression to check for at least one alphabetic character
+    const containsAlphabet = /[a-zA-Z]/.test(name);
+    return containsAlphabet;
+  };
+
   const handleSubmit = async () => {
+    // Check if group name and selected users are not empty
     if (!groupChatName || !selectedUsers.length) {
       showToast("Missing Fields", "Please enter a name and add users", "warning");
+      return;
+    }
+    
+    // Validate that group name contains at least one alphabetic character
+    if (!validateGroupName(groupChatName)) {
+      showToast("Invalid Group Name", "Group name must contain at least one alphabetic character", "error");
       return;
     }
 
@@ -90,6 +104,12 @@ const GroupChatModal = ({ children }) => {
     } catch (error) {
       showToast("Error", error.response?.data || error.message, "error");
     }
+  };
+
+  // Real-time validation feedback for group name input
+  const handleGroupNameChange = (e) => {
+    const value = e.target.value;
+    setGroupChatName(value);
   };
 
   // Enhanced animation variants
@@ -287,14 +307,22 @@ const GroupChatModal = ({ children }) => {
                   <div className="relative group">
                     <input
                       type="text"
-                      placeholder="Enter Group Name"
+                      placeholder="Enter Group Name (must contain at least one letter)"
                       value={groupChatName}
-                      onChange={(e) => setGroupChatName(e.target.value)}
-                      className="w-full px-4 py-3 pl-10 border-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 bg-white/70 backdrop-blur-sm group-hover:bg-white"
+                      onChange={handleGroupNameChange}
+                      className={`w-full px-4 py-3 pl-10 border-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-400 
+                        transition-all duration-200 bg-white/70 backdrop-blur-sm group-hover:bg-white
+                        ${groupChatName && !validateGroupName(groupChatName) ? 'border-red-300 focus:border-red-400 focus:ring-red-300' : 'border-gray-200 focus:border-blue-400'}`}
                     />
                     <svg className="absolute left-3 top-3 h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
+                    {/* Validation feedback message */}
+                    {groupChatName && !validateGroupName(groupChatName) && (
+                      <p className="mt-1 text-sm text-red-500">
+                        Group name must contain at least one alphabetic character
+                      </p>
+                    )}
                   </div>
 
                   <div className="relative group">
@@ -380,7 +408,11 @@ const GroupChatModal = ({ children }) => {
                     whileHover={{ scale: 1.05, boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.3)" }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleSubmit}
-                    className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center"
+                    className={`px-6 py-2.5 font-medium rounded-lg shadow-md transition-all duration-300 flex items-center
+                      ${(!groupChatName || !validateGroupName(groupChatName) || !selectedUsers.length) 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white hover:shadow-lg'}`}
+                    disabled={!groupChatName || !validateGroupName(groupChatName) || !selectedUsers.length}
                   >
                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />

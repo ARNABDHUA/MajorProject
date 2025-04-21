@@ -611,7 +611,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       !user ||
       !selectedChat ||
       !selectedChat.users ||
-      !Array.isArray(selectedChat.users)
+      !Array.isArray(selectedChat.users) ||
+      selectedChat.users.length < 2 // Added check for single-user groups
     )
       return null;
     return getSenderFull(user, selectedChat.users);
@@ -622,9 +623,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       !user ||
       !selectedChat ||
       !selectedChat.users ||
-      !Array.isArray(selectedChat.users)
+      !Array.isArray(selectedChat.users) ||
+      selectedChat.users.length < 2 // Added check for single-user groups
     )
-      return "";
+      return selectedChat?.chatName || "Chat"; // Fallback to chat name or "Chat"
     return getSender(user, selectedChat.users);
   };
 

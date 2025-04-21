@@ -192,8 +192,8 @@ const TeacherProfile = () => {
           );
           // You can use imageResponse if needed
           // console.log("Image response:", imageResponse.data);
-          localStorage.setItem("userInfo",
-          JSON.stringify(imageResponse.data.user))
+          // localStorage.setItem("userInfo",
+          // JSON.stringify(imageResponse.data.user))
         }
       } else {
         // Regular JSON API call for non-image updates

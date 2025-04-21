@@ -20,6 +20,7 @@ import {
   FiImage,
   FiUpload,
 } from "react-icons/fi";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
 
 const TeacherProfile = () => {
   const [teacherData, setTeacherData] = useState(null);
@@ -40,7 +41,7 @@ const TeacherProfile = () => {
   const [newImageFile, setNewImageFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [teacherMail, setTeacherMail] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     // Retrieve data from localStorage
     const localData = localStorage.getItem("user");
@@ -48,6 +49,9 @@ const TeacherProfile = () => {
     if (localData) {
       try {
         const parsedData = JSON.parse(localData);
+        if (parsedData.role !== "teacher") {
+          navigate("/teacher-login");
+        }
         // console.log("Teacher Data from Local Storage:", parsedData);
         const teacher_data = parsedData.email;
         setTeacherMail(teacher_data);

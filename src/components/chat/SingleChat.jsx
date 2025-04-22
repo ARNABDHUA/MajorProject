@@ -9,7 +9,7 @@ import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../../context/ChatProvider";
 import { getSender, getSenderFull } from "./config/ChatLogics";
-import { XCircle, Smile, LockIcon } from "lucide-react";
+import { XCircle, Smile, LockIcon, Paperclip, X, AlertTriangle, FileText, Image } from "lucide-react";
 import { FaArrowRight } from "react-icons/fa";
 
 const ENDPOINT = "https://e-college-data.onrender.com";
@@ -26,14 +26,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isAdminOnlyMode, setIsAdminOnlyMode] = useState(false);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
-  const [messagesLoaded, setMessagesLoaded] = useState(false); // New state to track if messages are loaded
+  const [messagesLoaded, setMessagesLoaded] = useState(false);
+  const [fileUploading, setFileUploading] = useState(false);
+  const [errorPopup, setErrorPopup] = useState({ show: false, message: "" });
+  const [uploadingProgress, setUploadingProgress] = useState(0);
+  
   const emojiPickerRef = useRef(null);
   const inputRef = useRef(null);
+  const fileInputRef = useRef(null);
   const chatContainerRef = useRef(null);
 
   const { selectedChat, setSelectedChat, notification, setNotification } =
     ChatState();
-  const [user, setUser] = useState(null); // Initialize as null
+  const [user, setUser] = useState(null);
 
   // Common emojis array organized in categories for better user experience
   const emojiCategories = [
@@ -371,6 +376,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     // Load user info from localStorage
     try {
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      // console.log("data check",userInfo)
       if (userInfo) {
         setUser(userInfo);
       }
@@ -445,7 +451,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       const { data } = await axios.get(`${ENDPOINT}/v1/chat/${selectedChat._id}`);
       setMessages(data);
       setLoading(false);
-      setMessagesLoaded(true); // Set messages as loaded
+      setMessagesLoaded(true);
       
       socket.emit("join chat", selectedChat._id);
 
@@ -454,7 +460,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     } catch (error) {
       console.error("Failed to Load the Messages", error);
       setLoading(false);
-      setMessagesLoaded(false); // Handle error case
+      setMessagesLoaded(false);
+      showError("Failed to load messages. Please try again.");
     }
   };
 
@@ -463,7 +470,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     // Check if user can send messages in admin-only mode
     if (isAdminOnlyMode && !isUserAdmin) {
-      // User is not admin and chat is in admin-only mode
       return;
     }
 
@@ -488,6 +494,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           socket.emit("new message", data);
         } catch (error) {
           console.error("Failed to send the Message", error);
+          showError("Failed to send message. Please try again.");
         }
       }
     } else if (newMessage.trim()) {
@@ -504,6 +511,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         socket.emit("new message", data);
       } catch (error) {
         console.error("Failed to send the Message", error);
+        showError("Failed to send message. Please try again.");
       }
     }
   };
@@ -519,6 +527,99 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     if (isMobile) {
       setShowEmojiPicker(false);
     }
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Check file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+    if (!validTypes.includes(file.type)) {
+      showError("Invalid file type. Please upload an image (JPEG, PNG, GIF) or PDF.");
+      return;
+    }
+    
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showError("File size exceeds 5MB limit.");
+      return;
+    }
+    
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (!userInfo || !userInfo.email || !selectedChat || !selectedChat._id) {
+      showError("Missing user or chat information.");
+      return;
+    }
+    
+    // Create FormData and append required parameters
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('email', userInfo.email);
+    formData.append('chatId', selectedChat._id);
+    
+    try {
+      setFileUploading(true);
+      setUploadingProgress(0);
+      
+      // Send to the correct API with progress tracking
+      const { data } = await axios.post(
+        `${ENDPOINT}/v1/chat/chat-isteacher-image`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: progressEvent => {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadingProgress(percentCompleted);
+          }
+        }
+      );
+      
+      // Add message to chat if the API returns a message object
+      if (data && data._id) {
+        setMessages((prev) => [...prev, data]);
+        
+        // Emit socket event if needed
+        socket.emit("new message", data);
+      } else {
+        // If the API doesn't return a message object, refresh messages
+        fetchMessages();
+      }
+      
+      setFileUploading(false);
+      setUploadingProgress(0);
+    } catch (error) {
+      console.error("File upload failed:", error);
+      setFileUploading(false);
+      setUploadingProgress(0);
+      
+      // Show error popup with specific message if available
+      const errorMessage = error.response?.data?.message || "File upload failed. Please try again.";
+      showError(errorMessage);
+    }
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+  
+  // Error handling function
+  const showError = (message) => {
+    setErrorPopup({
+      show: true,
+      message
+    });
+    
+    // Auto-close error after 5 seconds
+    setTimeout(() => {
+      setErrorPopup({ show: false, message: "" });
+    }, 5000);
   };
 
   useEffect(() => {
@@ -612,7 +713,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       !selectedChat ||
       !selectedChat.users ||
       !Array.isArray(selectedChat.users) ||
-      selectedChat.users.length < 2 // Added check for single-user groups
+      selectedChat.users.length < 2
     )
       return null;
     return getSenderFull(user, selectedChat.users);
@@ -624,9 +725,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       !selectedChat ||
       !selectedChat.users ||
       !Array.isArray(selectedChat.users) ||
-      selectedChat.users.length < 2 // Added check for single-user groups
+      selectedChat.users.length < 2
     )
-      return selectedChat?.chatName || "Chat"; // Fallback to chat name or "Chat"
+      return selectedChat?.chatName || "Chat";
     return getSender(user, selectedChat.users);
   };
 
@@ -636,6 +737,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   // Check if user can send messages
   const canSendMessages = !isAdminOnlyMode || isUserAdmin;
+  
+  // Check if user is a teacher
+  const isTeacher = user && user.isteacher === true;
+
+  // Function to get file icon based on file type
+  const getFileTypeIcon = (file) => {
+    if (!file) return null;
+    
+    if (file.type.startsWith('image/')) {
+      return <Image className="w-4 h-4 mr-1 text-blue-600" />;
+    } else if (file.type === 'application/pdf') {
+      return <FileText className="w-4 h-4 mr-1 text-red-600" />;
+    }
+    return null;
+  };
 
   return (
     <>
@@ -677,15 +793,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     </span>
                     {/* Show admin-only mode indicator for group chats */}
                     {isAdminOnlyMode && (
-                       <span className="inline-flex items-center text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">
-                      {/* LockIcon: always visible */}
-                             <LockIcon className="w-3 h-3 mr-1" />
-
-                              {/* Text: hidden on small screens, shown on sm and up */}
-                             <span className="hidden sm:inline">Admin Only</span>
-                            </span>
-                              )}
-
+                      <span className="inline-flex items-center text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded-md">
+                        <LockIcon className="w-3 h-3 mr-1" />
+                        <span className="hidden sm:inline">Admin Only</span>
+                      </span>
+                    )}
                   </div>
                   <UpdateGroupChatModal
                     fetchMessages={fetchMessages}
@@ -708,7 +820,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           {/* Chat Box */}
           <div
             ref={chatContainerRef}
-            className="flex flex-col justify-end p-1 sm:p-2 md:p-3 bg-[#E8E8E8] w-full h-full min-h-[300px] rounded-lg overflow-hidden"
+            className="flex flex-col justify-end p-1 sm:p-2 md:p-3 bg-[#E8E8E8] w-full h-full min-h-[300px] rounded-lg overflow-hidden relative"
           >
             {loading ? (
               <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 border-4 border-gray-300 border-t-teal-500 rounded-full animate-spin self-center m-auto" />
@@ -730,6 +842,22 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </div>
             )}
 
+            {/* File uploading indicator with progress */}
+            {fileUploading && (
+              <div className="mb-3 px-2">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-blue-700 font-medium">Uploading file...</span>
+                  <span className="text-xs text-blue-700">{uploadingProgress}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div 
+                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-in-out" 
+                    style={{ width: `${uploadingProgress}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
+
             {/* Admin-only mode message */}
             {isAdminOnlyMode && !isUserAdmin && messagesLoaded && (
               <div className="bg-gray-100 text-gray-700 p-2 rounded-md text-center text-sm mb-2">
@@ -738,9 +866,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </div>
             )}
 
-            {/* Input + Send Button (with conditional Emoji for non-mobile) */}
+            {/* Input + Send Button (with Upload for teachers) */}
             <div className="flex items-center gap-1 sm:gap-2 mt-2 sm:mt-3 relative">
-              {/* Only show emoji button on non-mobile devices and if user can send messages */}
+              {/* Emoji Button (non-mobile only) */}
               {!isMobile && canSendMessages && (
                 <div ref={emojiPickerRef} className="relative z-10">
                   <button
@@ -752,7 +880,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     <Smile className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
                   </button>
                   
-                  {/* Emoji Picker Dropdown (non-mobile only) */}
+                  {/* Emoji Picker Dropdown */}
                   {showEmojiPicker && (
                     <div className="absolute bottom-12 left-0 bg-white p-2 rounded-lg shadow-lg border border-gray-300 z-20 w-[280px] sm:w-[320px] max-h-[200px] sm:max-h-[300px] overflow-auto">
                       <div className="flex flex-col space-y-2">
@@ -779,7 +907,31 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 </div>
               )}
               
-              {/* Input Field - disabled if user can't send messages */}
+              {/* File Upload Button (for teachers only) */}
+              {isTeacher && canSendMessages && (
+                <div className="relative z-10">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    accept="image/jpeg,image/png,image/gif,application/pdf"
+                    disabled={fileUploading}
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`p-1.5 sm:p-2 ${fileUploading ? 'bg-blue-300 cursor-wait' : 'bg-blue-200 hover:bg-blue-300'} rounded-md transition duration-200 flex items-center justify-center`}
+                    title="Upload Image or PDF"
+                    aria-label="Upload file"
+                    disabled={fileUploading}
+                  >
+                    <Paperclip className={`w-4 h-4 sm:w-5 sm:h-5 ${fileUploading ? 'text-blue-500' : 'text-blue-700'}`} />
+                    <span className="sr-only md:not-sr-only md:ml-1 md:text-xs">Upload</span>
+                  </button>
+                </div>
+              )}
+              
+              {/* Input Field */}
               <input
                 ref={inputRef}
                 type="text"
@@ -791,7 +943,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 disabled={!canSendMessages}
               />
               
-              {/* Send Button - disabled if user can't send messages */}
+              {/* Send Button */}
               <button
                 onClick={() => canSendMessages && sendMessage()}
                 className={`p-1.5 sm:p-2 md:p-2.5 ${canSendMessages ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'} rounded-md transition duration-200`}
@@ -803,6 +955,23 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </button>
             </div>
           </div>
+          
+          {/* Error Popup */}
+          {errorPopup.show && (
+            <div className="fixed bottom-6 right-6 left-6 sm:left-auto sm:w-80 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-md shadow-md flex items-start justify-between z-50 animate-fade-in">
+              <div className="flex items-center">
+                <AlertTriangle className="w-5 h-5 mr-2 flex-shrink-0" />
+                <p className="text-sm">{errorPopup.message}</p>
+              </div>
+              <button 
+                className="ml-2 flex-shrink-0" 
+                onClick={() => setErrorPopup({ show: false, message: "" })}
+                aria-label="Close error message"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex items-center justify-center h-full text-center px-3">

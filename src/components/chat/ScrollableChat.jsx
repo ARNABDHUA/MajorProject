@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ScrollableFeed from "react-scrollable-feed";
 import {
   isLastMessage,
@@ -7,14 +7,101 @@ import {
   isSameUser,
 } from "./config/ChatLogics";
 
-const ScrollableChat = ({ messages }) => {
+import axios from "axios";
+
+const ScrollableChat = ({ messages, onMessageDeleted }) => {
   const [user, setUser] = useState();
   const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [longPressedMessage, setLongPressedMessage] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [localMessages, setLocalMessages] = useState(messages);
+  const longPressTimerRef = useRef(null);
+  const touchStartTimeRef = useRef(0);
+
+  // Update local messages when the prop changes
+  useEffect(() => {
+    setLocalMessages(messages);
+  }, [messages]);
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     setUser(userInfo);
   }, []);
+
+  // Check if a message is deleted
+  const isDeletedMessage = (message) => {
+    return message.content === "This message was deleted";
+  };
+
+  const handleMouseDown = (message) => {
+    // Only enable deletion for user's own messages that are not already deleted
+    if (message.sender._id !== user?._id || isDeletedMessage(message)) return;
+    
+    touchStartTimeRef.current = Date.now();
+    longPressTimerRef.current = setTimeout(() => {
+      setLongPressedMessage(message);
+      setShowDeleteConfirm(true);
+    }, 1000); // 1 second long press
+  };
+
+  const handleMouseUp = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+  };
+
+  const handleTouchStart = (message) => {
+    // Only enable deletion for user's own messages that are not already deleted
+    if (message.sender._id !== user?._id || isDeletedMessage(message)) return;
+    
+    touchStartTimeRef.current = Date.now();
+    longPressTimerRef.current = setTimeout(() => {
+      setLongPressedMessage(message);
+      setShowDeleteConfirm(true);
+    }, 1000); // 1 second long press
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+  };
+
+  const handleDeleteMessage = async () => {
+    if (!longPressedMessage) return;
+    
+    try {
+      const response = await axios.post("https://e-college-data.onrender.com/v1/chat/delete-message", {
+        messageId: longPressedMessage._id,
+        ownId: user._id,
+      });
+  
+      if (response) {
+        setShowDeleteConfirm(false);
+        setLongPressedMessage(null);
+        
+        // Update the local state to reflect deletion
+        const updatedMessages = localMessages.map(m => 
+          m._id === longPressedMessage._id 
+            ? { ...m, content: "This message was deleted" }
+            : m
+        );
+        
+        setLocalMessages(updatedMessages);
+        
+        // Notify parent component about deletion if callback exists
+        if (typeof onMessageDeleted === 'function') {
+          onMessageDeleted(longPressedMessage._id);
+        }
+      } else {
+        console.error("Failed to delete message");
+        alert("Failed to delete message");
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      alert("Error deleting message. Please try again.");
+    }
+  };
 
   const formatTimestamp = (isoString) => {
     const messageDate = new Date(isoString);
@@ -195,6 +282,10 @@ const ScrollableChat = ({ messages }) => {
           {content}
         </a>
       );
+    } else if (content === "This message was deleted") {
+      return (
+        <span className="italic text-gray-500">{content}</span>
+      );
     } else {
       return content;
     }
@@ -202,13 +293,15 @@ const ScrollableChat = ({ messages }) => {
 
   return (
     <>
-      <ScrollableFeed className="px-2 sm:px-3 md:px-4 lg:px-6">
-        {messages &&
-          messages.map((m, i) => {
+      <ScrollableFeed className="px-2 sm:px-3 md:px-4 lg:px-6 scrollable-feed">
+        {localMessages &&
+          localMessages.map((m, i) => {
             const isMine = m.sender._id === user?._id;
-            const showSenderInfo = !isSameUser(messages, m, i, user?._id) && !isMine;
-            const isConsecutiveMessage = isSameUser(messages, m, i, user?._id);
+            const showSenderInfo = !isSameUser(localMessages, m, i, user?._id) && !isMine;
+            const isConsecutiveMessage = isSameUser(localMessages, m, i, user?._id);
             const isSpecialContent = isImageUrl(m.content) || isPdfUrl(m.content);
+            const isDeleted = isDeletedMessage(m);
+            const canDelete = isMine && !isDeleted;
 
             return (
               <div className="flex flex-col w-full" key={m._id}>
@@ -239,9 +332,17 @@ const ScrollableChat = ({ messages }) => {
                         : "max-w-[75%] sm:max-w-[70%] md:max-w-[60%] lg:max-w-[50%]"
                     } shadow-md ${
                       isMine
-                        ? "bg-blue-100 text-gray-800 rounded-t-2xl rounded-bl-2xl rounded-br-md"
-                        : "bg-green-100 text-gray-800 rounded-t-2xl rounded-br-2xl rounded-bl-md"
-                    } ${showSenderInfo ? "" : isMine ? "rounded-tr-md" : "rounded-tl-md"}`}
+                        ? `bg-blue-100 text-gray-800 rounded-t-2xl rounded-bl-2xl rounded-br-md ${isDeleted ? "bg-opacity-50" : ""}`
+                        : `bg-green-100 text-gray-800 rounded-t-2xl rounded-br-2xl rounded-bl-md ${isDeleted ? "bg-opacity-50" : ""}`
+                    } ${showSenderInfo ? "" : isMine ? "rounded-tr-md" : "rounded-tl-md"} ${
+                      canDelete ? "touch-manipulation cursor-pointer" : ""
+                    }`}
+                    onMouseDown={canDelete ? () => handleMouseDown(m) : undefined}
+                    onMouseUp={canDelete ? handleMouseUp : undefined}
+                    onMouseLeave={canDelete ? handleMouseUp : undefined}
+                    onTouchStart={canDelete ? () => handleTouchStart(m) : undefined}
+                    onTouchEnd={canDelete ? handleTouchEnd : undefined}
+                    onTouchCancel={canDelete ? handleTouchEnd : undefined}
                   >
                     {!isMine && showSenderInfo && (
                       <div className="px-2 sm:px-3 pt-1 sm:pt-2 pb-1 border-b border-green-200">
@@ -299,6 +400,34 @@ const ScrollableChat = ({ messages }) => {
                   e.target.src = "https://via.placeholder.com/800x600?text=Image+Failed+to+Load";
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-2 sm:mb-3">Delete Message</h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Are you sure you want to delete this message? This action cannot be undone.</p>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setLongPressedMessage(null);
+                }}
+                className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs sm:text-sm font-medium rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteMessage}
+                className="px-3 py-2 sm:px-4 sm:py-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-medium rounded-md transition-colors"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ScrollableFeed from "react-scrollable-feed";
 import {
   isLastMessage,
@@ -7,14 +7,92 @@ import {
   isSameUser,
 } from "./config/ChatLogics";
 
-const ScrollableChat = ({ messages }) => {
+import axios from "axios";
+
+const ScrollableChat = ({ messages, onMessageDeleted }) => {
   const [user, setUser] = useState();
   const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [localMessages, setLocalMessages] = useState(messages);
+  const [deleteResponse, setDeleteResponse] = useState(null);
+  const [showResponse, setShowResponse] = useState(false);
+
+  // Update local messages when the prop changes
+  useEffect(() => {
+    setLocalMessages(messages);
+  }, [messages]);
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     setUser(userInfo);
   }, []);
+
+  // Check if a message is deleted
+  const isDeletedMessage = (message) => {
+    return message.content === "This message was deleted";
+  };
+
+  const handleDeleteClick = (message) => {
+    // Only enable deletion for user's own messages that are not already deleted
+    if (message.sender._id !== user?._id || isDeletedMessage(message)) return;
+    
+    setSelectedMessage(message);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteMessage = async () => {
+    if (!selectedMessage) return;
+    
+    try {
+      const response = await axios.post("https://e-college-data.onrender.com/v1/chat/delete-message", {
+        messageId: selectedMessage._id,
+        ownId: user._id,
+      });
+  
+      if (response) {
+        setShowDeleteConfirm(false);
+        
+        // Display response data
+        setDeleteResponse(response.data);
+        setShowResponse(true);
+        
+        // Auto-hide response after 3 seconds
+        setTimeout(() => {
+          setShowResponse(false);
+          setDeleteResponse(null);
+        }, 3000);
+        
+        // Update the local state to reflect deletion
+        const updatedMessages = localMessages.map(m => 
+          m._id === selectedMessage._id 
+            ? { ...m, content: "This message was deleted" }
+            : m
+        );
+        
+        setLocalMessages(updatedMessages);
+        setSelectedMessage(null);
+        
+        // Notify parent component about deletion if callback exists
+        if (typeof onMessageDeleted === 'function') {
+          onMessageDeleted(selectedMessage._id);
+        }
+      } else {
+        console.error("Failed to delete message");
+        alert("Failed to delete message");
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      setDeleteResponse({ error: "Error deleting message. Please try again." });
+      setShowResponse(true);
+      
+      // Auto-hide error after 3 seconds
+      setTimeout(() => {
+        setShowResponse(false);
+        setDeleteResponse(null);
+      }, 3000);
+    }
+  };
 
   const formatTimestamp = (isoString) => {
     const messageDate = new Date(isoString);
@@ -195,6 +273,15 @@ const ScrollableChat = ({ messages }) => {
           {content}
         </a>
       );
+    } else if (content === "This message was deleted") {
+      return (
+        <div className="flex items-center justify-center text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          <span className="italic text-gray-400 text-xs sm:text-sm font-light">This message was deleted</span>
+        </div>
+      );
     } else {
       return content;
     }
@@ -202,13 +289,15 @@ const ScrollableChat = ({ messages }) => {
 
   return (
     <>
-      <ScrollableFeed className="px-2 sm:px-3 md:px-4 lg:px-6">
-        {messages &&
-          messages.map((m, i) => {
+      <ScrollableFeed className="px-2 sm:px-3 md:px-4 lg:px-6 scrollable-feed">
+        {localMessages &&
+          localMessages.map((m, i) => {
             const isMine = m.sender._id === user?._id;
-            const showSenderInfo = !isSameUser(messages, m, i, user?._id) && !isMine;
-            const isConsecutiveMessage = isSameUser(messages, m, i, user?._id);
+            const showSenderInfo = !isSameUser(localMessages, m, i, user?._id) && !isMine;
+            const isConsecutiveMessage = isSameUser(localMessages, m, i, user?._id);
             const isSpecialContent = isImageUrl(m.content) || isPdfUrl(m.content);
+            const isDeleted = isDeletedMessage(m);
+            const canDelete = isMine && !isDeleted;
 
             return (
               <div className="flex flex-col w-full" key={m._id}>
@@ -233,16 +322,29 @@ const ScrollableChat = ({ messages }) => {
                   )}
 
                   <div
-                    className={`flex flex-col ${
+                    className={`flex flex-col relative ${
                       isSpecialContent 
                         ? "max-w-[85%] sm:max-w-[75%] md:max-w-[70%] lg:max-w-[60%]" 
                         : "max-w-[75%] sm:max-w-[70%] md:max-w-[60%] lg:max-w-[50%]"
                     } shadow-md ${
                       isMine
-                        ? "bg-blue-100 text-gray-800 rounded-t-2xl rounded-bl-2xl rounded-br-md"
-                        : "bg-green-100 text-gray-800 rounded-t-2xl rounded-br-2xl rounded-bl-md"
+                        ? `${isDeleted ? "bg-gray-100" : "bg-blue-100"} text-gray-800 rounded-t-2xl rounded-bl-2xl rounded-br-md`
+                        : `${isDeleted ? "bg-gray-100" : "bg-green-100"} text-gray-800 rounded-t-2xl rounded-br-2xl rounded-bl-md`
                     } ${showSenderInfo ? "" : isMine ? "rounded-tr-md" : "rounded-tl-md"}`}
                   >
+                    {/* Vertical triple dot menu for user's own messages that aren't deleted */}
+                    {canDelete && (
+                      <button 
+                        onClick={() => handleDeleteClick(m)}
+                        className="absolute top-1 right-1 w-6 h-6 rounded-full hover:bg-gray-200 flex items-center justify-center transition-colors z-10"
+                        aria-label="Message options"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                        </svg>
+                      </button>
+                    )}
+                    
                     {!isMine && showSenderInfo && (
                       <div className="px-2 sm:px-3 pt-1 sm:pt-2 pb-1 border-b border-green-200">
                         <span className="block text-xs md:text-sm font-semibold text-purple-800">
@@ -257,8 +359,9 @@ const ScrollableChat = ({ messages }) => {
                     <div className={`
                       px-2 py-1 sm:px-3 sm:py-2 text-xs md:text-sm
                       ${isSpecialContent ? 'p-1 sm:p-2' : ''}
+                      ${canDelete ? 'pr-8 md:pr-10' : ''} 
                     `}>
-                      <div className="break-words block max-h-[200px] sm:max-h-[250px] overflow-auto custom-scroll">
+                      <div className={`break-words block max-h-[200px] sm:max-h-[250px] overflow-auto custom-scroll ${isDeleted ? 'py-1' : ''}`}>
                         {renderContent(m.content)}
                       </div>
                      
@@ -272,6 +375,27 @@ const ScrollableChat = ({ messages }) => {
             );
           })}
       </ScrollableFeed>
+
+      {/* API Response Toast Notification */}
+      {showResponse && deleteResponse && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm">
+          {deleteResponse.error ? (
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <span>{deleteResponse.error}</span>
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>{deleteResponse.message || "Message deleted successfully"}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Fullscreen Image Modal */}
       {fullscreenImage && (
@@ -299,6 +423,34 @@ const ScrollableChat = ({ messages }) => {
                   e.target.src = "https://via.placeholder.com/800x600?text=Image+Failed+to+Load";
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-xs sm:max-w-sm md:max-w-md p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-2 sm:mb-3">Delete Message</h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Are you sure you want to delete this message? This action cannot be undone.</p>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setSelectedMessage(null);
+                }}
+                className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs sm:text-sm font-medium rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteMessage}
+                className="px-3 py-2 sm:px-4 sm:py-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-medium rounded-md transition-colors"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>

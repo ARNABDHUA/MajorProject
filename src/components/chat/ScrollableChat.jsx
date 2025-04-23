@@ -17,11 +17,23 @@ const ScrollableChat = ({ messages, onMessageDeleted }) => {
   const [localMessages, setLocalMessages] = useState(messages);
   const [deleteResponse, setDeleteResponse] = useState(null);
   const [showResponse, setShowResponse] = useState(false);
+  // Track deleted message IDs
+  const [deletedMessageIds, setDeletedMessageIds] = useState({});
 
-  // Update local messages when the prop changes
+  // Update local messages when the prop changes, but preserve deleted message status
   useEffect(() => {
-    setLocalMessages(messages);
-  }, [messages]);
+    if (!messages) return;
+    
+    // Map through incoming messages and replace content for deleted ones
+    const updatedMessages = messages.map(message => {
+      if (deletedMessageIds[message._id]) {
+        return { ...message, content: "This message was deleted" };
+      }
+      return message;
+    });
+    
+    setLocalMessages(updatedMessages);
+  }, [messages, deletedMessageIds]);
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -30,7 +42,7 @@ const ScrollableChat = ({ messages, onMessageDeleted }) => {
 
   // Check if a message is deleted
   const isDeletedMessage = (message) => {
-    return message.content === "This message was deleted";
+    return message.content === "This message was deleted" || deletedMessageIds[message._id];
   };
 
   const handleDeleteClick = (message) => {
@@ -62,6 +74,12 @@ const ScrollableChat = ({ messages, onMessageDeleted }) => {
           setShowResponse(false);
           setDeleteResponse(null);
         }, 3000);
+        
+        // Update the deletedMessageIds state
+        setDeletedMessageIds(prev => ({
+          ...prev,
+          [selectedMessage._id]: true
+        }));
         
         // Update the local state to reflect deletion
         const updatedMessages = localMessages.map(m => 

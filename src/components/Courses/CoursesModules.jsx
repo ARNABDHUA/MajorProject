@@ -18,6 +18,7 @@ import cpp from "/images/cpp.png";
 import dbms from "/images/dbms.png";
 import Routine from "./CourseModulesTab/Routine";
 import RecordedClassPlayer from "./CourseModulesTab/RecordedClassPlayer";
+import { makeUseVisualState } from "framer-motion";
 //In backend we have to get every data
 const courses = [
   {
@@ -444,6 +445,7 @@ const courses = [
 
 const CoursesModules = () => {
   const [paymentStatus, setPaymentStatus] = useState(false);
+  const [role, setRole] = useState("");
   const { id } = useParams();
 
   useEffect(() => {
@@ -451,6 +453,8 @@ const CoursesModules = () => {
       const userData = localStorage.getItem("user");
       if (userData) {
         const user = JSON.parse(userData);
+        console.log("userData", user.role);
+        setRole(user.role);
         setPaymentStatus(user.payment || false);
       }
     } catch (error) {
@@ -479,7 +483,11 @@ const CoursesModules = () => {
         </div>
       );
     } else if (activeTab === "Recorded Classes") {
-      return <div className="px-4 md:px-7 py-2"><RecordedClassPlayer/></div>;
+      return (
+        <div className="px-4 md:px-7 py-2">
+          <RecordedClassPlayer />
+        </div>
+      );
     } else if (activeTab === "Routine") {
       return (
         <div className="px-4 md:px-7 py-2">
@@ -517,6 +525,7 @@ const CoursesModules = () => {
               Already paid
             </div>
           ) : (
+            // role === "student" &&
             <button className="bg-yellow-500 text-black font-semibold w-full rounded-lg h-12 mt-4 hover:bg-yellow-600 transition">
               <Link to="Enrollment-course">Enroll Course</Link>
             </button>

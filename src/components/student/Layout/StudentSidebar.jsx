@@ -10,6 +10,7 @@ import {
   FaQuestionCircle,
   FaComments,
   FaUserEdit,
+  FaLock,
 } from "react-icons/fa";
 import {
   FiHome,
@@ -27,48 +28,56 @@ const menuItems = [
     title: "Profile",
     icon: <FiHome className="w-5 h-5" />,
     path: "/student-profile",
+    requiresPayment: false, // Always accessible
   },
   {
     id: 2,
     title: "My Courses",
     icon: <FaGraduationCap className="w-5 h-5" />,
     path: "/student-courses",
+    requiresPayment: true,
   },
   {
     id: 3,
     title: "Payment Info",
     icon: <FaRegCreditCard className="w-5 h-5" />,
     path: "/student-payments",
+    requiresPayment: false, // Always accessible to make payments
   },
   {
     id: 4,
     title: "Attendance",
     icon: <FaCalendarCheck className="w-5 h-5" />,
     path: "/student-attendance",
+    requiresPayment: true,
   },
   {
     id: 5,
     title: "Quiz",
     icon: <FaQuestionCircle className="w-5 h-5" />,
     path: "/student-quiz",
+    requiresPayment: true,
   },
   {
     id: 6,
     title: "Chat Room",
     icon: <FaComments className="w-5 h-5" />,
     path: "/student-chat",
+    requiresPayment: true,
   },
   {
     id: 7,
     title: "Edit Profile",
     icon: <FaUserEdit className="w-5 h-5" />,
     path: "/student-edit-profile",
+    requiresPayment: false, // Always accessible
   },
   {
     id: 8,
     title: "Live Class",
     icon: <SiKdenlive className="w-5 h-5" />,
     path: "/student-live-class",
+    requiresPayment: true,
   },
 ];
 
@@ -79,6 +88,7 @@ const StudentSidebar = ({
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(isCollapsedProp);
   const [studentData, setStudentData] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -89,6 +99,14 @@ const StudentSidebar = ({
       try {
         const parsedData = JSON.parse(localData);
         setStudentData(parsedData);
+
+        // Check if payment property exists and set status
+        if (parsedData && parsedData.hasOwnProperty("payment")) {
+          // Convert to boolean in case it's stored as string
+          setPaymentStatus(
+            parsedData.payment === true || parsedData.payment === "true"
+          );
+        }
       } catch (err) {
         console.error("Error parsing student data:", err);
       }
@@ -97,6 +115,22 @@ const StudentSidebar = ({
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  // Handle click on locked menu items
+  const handleLockedItemClick = (e) => {
+    e.preventDefault();
+    Swal.fire({
+      title: "Payment Required",
+      text: "Please complete your payment to access this feature",
+      icon: "warning",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Go to Payment",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "/";
+      }
+    });
   };
 
   // Sidebar variants for animation
@@ -200,29 +234,55 @@ const StudentSidebar = ({
         <div className="flex flex-col h-full">
           <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
             <div className="space-y-1 px-3 py-4">
+              {!paymentStatus && (
+                <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-xs text-yellow-700">
+                    Some features are locked. Please complete your payment to
+                    access all features.
+                  </p>
+                </div>
+              )}
+
               {menuItems.map((item) => {
                 const isActive = location.pathname === item.path;
-                return (
-                  <NavLink
-                    key={item.id}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      `flex items-center py-3 px-3 rounded-lg transition-all duration-200 ${
+                const isLocked = item.requiresPayment && !paymentStatus;
+
+                // Determine the appropriate element and props
+                const ElementType = isLocked ? "div" : NavLink;
+                const elementProps = isLocked
+                  ? {
+                      onClick: handleLockedItemClick,
+                      className: `flex items-center py-3 px-3 rounded-lg transition-all duration-200 ${
                         isActive
-                          ? "bg-blue-500 text-white shadow-md"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`
+                          ? "bg-gray-300 text-gray-500"
+                          : "text-gray-400 hover:bg-gray-100"
+                      } cursor-not-allowed opacity-70`,
                     }
-                    onClick={isMobile ? onCloseMobile : undefined}
-                  >
+                  : {
+                      to: item.path,
+                      className: ({ isActive }) =>
+                        `flex items-center py-3 px-3 rounded-lg transition-all duration-200 ${
+                          isActive
+                            ? "bg-blue-500 text-white shadow-md"
+                            : "text-gray-600 hover:bg-gray-100"
+                        }`,
+                      onClick: isMobile ? onCloseMobile : undefined,
+                    };
+
+                return (
+                  <ElementType key={item.id} {...elementProps}>
                     <motion.div
                       className={`${isCollapsed && !isMobile ? "mx-auto" : ""}`}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: isLocked ? 1 : 1.1 }}
+                      whileTap={{ scale: isLocked ? 1 : 0.95 }}
                     >
                       {React.cloneElement(item.icon, {
                         className: `w-5 h-5 ${
-                          isActive ? "text-white" : "text-gray-500"
+                          isActive && !isLocked
+                            ? "text-white"
+                            : isLocked
+                            ? "text-gray-400"
+                            : "text-gray-500"
                         }`,
                       })}
                     </motion.div>
@@ -236,13 +296,20 @@ const StudentSidebar = ({
                         }
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.2 }}
-                        className="ml-3 font-medium"
+                        className={`ml-3 font-medium ${
+                          isLocked ? "text-gray-400" : ""
+                        }`}
                       >
                         {item.title}
                       </motion.span>
                     )}
 
-                    {isActive && !isCollapsed && !isMobile && (
+                    {/* Lock icon for locked items */}
+                    {isLocked && (
+                      <FaLock className="ml-auto w-3 h-3 text-gray-400" />
+                    )}
+
+                    {isActive && !isCollapsed && !isMobile && !isLocked && (
                       <motion.div
                         className="w-1.5 h-1.5 rounded-full bg-white ml-auto"
                         layoutId="activeIndicator"
@@ -253,10 +320,30 @@ const StudentSidebar = ({
                         }}
                       />
                     )}
-                  </NavLink>
+                  </ElementType>
                 );
               })}
             </div>
+          </div>
+
+          {/* Payment status indicator */}
+          <div className="px-4 py-2">
+            {(!isCollapsed || isMobile) && (
+              <div
+                className={`text-xs flex items-center ${
+                  paymentStatus ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full mr-2 ${
+                    paymentStatus ? "bg-green-500" : "bg-red-500"
+                  }`}
+                ></div>
+                <span>
+                  {paymentStatus ? "Payment Complete" : "Payment Required"}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Logout button and user info at bottom */}

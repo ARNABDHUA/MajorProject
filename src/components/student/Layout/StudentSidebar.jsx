@@ -188,7 +188,10 @@ const StudentSidebar = ({
         initial={isMobile ? "hidden" : isCollapsed ? "collapsed" : "expanded"}
         animate={isMobile ? "visible" : isCollapsed ? "collapsed" : "expanded"}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        style={{ overflowX: "hidden" }}
+        style={{
+          overflowX: "hidden",
+          width: isMobile ? "100%" : undefined, // Always full width on mobile
+        }}
       >
         {/* Header section */}
         <motion.div
@@ -255,17 +258,26 @@ const StudentSidebar = ({
             <div className="space-y-1 px-3 py-4">
               {/* Payment warning notification */}
               <AnimatePresence>
-                {!paymentStatus && showText && (
+                {showText && (
                   <motion.div
-                    className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg"
+                    className={`mb-3 p-2 rounded-lg border ${
+                      !paymentStatus
+                        ? "bg-yellow-50 border-yellow-200"
+                        : "bg-green-50 border-green-200"
+                    }`}
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <p className="text-xs text-yellow-700">
-                      Some features are locked. Please complete your payment to
-                      access all features.
+                    <p
+                      className={`text-xs ${
+                        !paymentStatus ? "text-yellow-700" : "text-green-700"
+                      }`}
+                    >
+                      {!paymentStatus
+                        ? "Some features are locked. Please complete your payment to access all features."
+                        : "Payment successful. All features are unlocked. Enjoy the full access now!"}
                     </p>
                   </motion.div>
                 )}
@@ -301,7 +313,7 @@ const StudentSidebar = ({
                         <AnimatePresence>
                           {showText && (
                             <motion.span
-                              className="ml-3 font-medium text-gray-400 whitespace-nowrap"
+                              className="ml-3 font-medium text-gray-400 whitespace-nowrap flex-grow"
                               variants={textVariants}
                               initial="hidden"
                               animate="visible"
@@ -315,7 +327,7 @@ const StudentSidebar = ({
                         <AnimatePresence>
                           {showText && (
                             <motion.div
-                              className="ml-auto"
+                              className="flex-shrink-0"
                               variants={textVariants}
                               initial="hidden"
                               animate="visible"
@@ -330,7 +342,7 @@ const StudentSidebar = ({
                       <NavLink
                         to={item.path}
                         className={({ isActive }) =>
-                          `flex items-center py-3 px-3 rounded-lg transition-all duration-200 ${
+                          `flex items-center justify-between py-3 px-3 rounded-lg transition-all duration-200 ${
                             isActive
                               ? "bg-blue-500 text-white shadow-md"
                               : "text-gray-600 hover:bg-gray-100"
@@ -340,39 +352,41 @@ const StudentSidebar = ({
                       >
                         {({ isActive }) => (
                           <>
-                            <motion.div
-                              className={
-                                isCollapsed && !isMobile ? "mx-auto" : ""
-                              }
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
-                            >
-                              {React.cloneElement(item.icon, {
-                                className: `w-5 h-5 ${
-                                  isActive ? "text-white" : "text-gray-500"
-                                }`,
-                              })}
-                            </motion.div>
+                            <div className="flex items-center flex-grow">
+                              <motion.div
+                                className={
+                                  isCollapsed && !isMobile ? "mx-auto" : ""
+                                }
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                              >
+                                {React.cloneElement(item.icon, {
+                                  className: `w-5 h-5 ${
+                                    isActive ? "text-white" : "text-gray-500"
+                                  }`,
+                                })}
+                              </motion.div>
 
-                            <AnimatePresence>
-                              {showText && (
-                                <motion.span
-                                  className={`ml-3 font-medium whitespace-nowrap ${
-                                    isActive ? "text-white" : ""
-                                  }`}
-                                  variants={textVariants}
-                                  initial="hidden"
-                                  animate="visible"
-                                  exit="hidden"
-                                >
-                                  {item.title}
-                                </motion.span>
-                              )}
-                            </AnimatePresence>
+                              <AnimatePresence>
+                                {showText && (
+                                  <motion.span
+                                    className={`ml-3 font-medium whitespace-nowrap ${
+                                      isActive ? "text-white" : ""
+                                    }`}
+                                    variants={textVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="hidden"
+                                  >
+                                    {item.title}
+                                  </motion.span>
+                                )}
+                              </AnimatePresence>
+                            </div>
 
                             {isActive && showText && (
                               <motion.div
-                                className="w-1.5 h-1.5 rounded-full bg-white ml-auto"
+                                className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0"
                                 layoutId="activeIndicator"
                                 transition={{
                                   type: "spring",
@@ -380,6 +394,10 @@ const StudentSidebar = ({
                                   damping: 30,
                                 }}
                               />
+                            )}
+                            {/* Add an empty space to maintain consistent width */}
+                            {showText && !isActive && (
+                              <div className="w-1.5 h-1.5 invisible flex-shrink-0" />
                             )}
                           </>
                         )}
@@ -462,10 +480,10 @@ const StudentSidebar = ({
                       animate="visible"
                       exit="hidden"
                     >
-                      <p className="text-sm font-medium text-gray-700 truncate">
+                      <p className="text-sm font-medium text-gray-700 truncate max-w-[140px]">
                         {studentData?.name || "Student Name"}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-gray-500 truncate max-w-[140px]">
                         {studentData?.email || "student@example.com"}
                       </p>
                     </motion.div>
@@ -479,8 +497,7 @@ const StudentSidebar = ({
               <motion.button
                 className={`flex items-center w-full py-2.5 px-3 rounded-lg text-gray-600 ${
                   isCollapsed && !isMobile ? "justify-center" : ""
-                }`}
-                whileHover={{ backgroundColor: "rgba(243, 244, 246, 1)" }}
+                } hover:bg-gray-100`}
                 whileTap={{ backgroundColor: "rgba(229, 231, 235, 1)" }}
                 onClick={handleLogout}
               >

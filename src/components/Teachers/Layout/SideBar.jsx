@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHome, FaUser, FaComment } from "react-icons/fa";
@@ -89,30 +89,33 @@ const Sidebar = ({
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(isCollapsedProp);
   const [teacherData, setTeacherData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Load teacher data - with proper error handling
   useEffect(() => {
-    // Retrieve data from localStorage
-    const localData = localStorage.getItem("user");
-
-    if (localData) {
-      try {
+    setIsLoading(true);
+    try {
+      const localData = localStorage.getItem("user");
+      if (localData) {
         const parsedData = JSON.parse(localData);
         setTeacherData(parsedData);
-        console.log(
-          "Teacher Data from Local Storage profile section:",
-          parsedData
-        );
-      } catch (err) {
-        console.error("Error parsing teacher data:", err);
+        setIsLoading(false);
+      } else {
+        // Set null but don't show error for logged out state
+        setTeacherData(null);
+        setIsLoading(false);
       }
-    } else {
-      console.log("No teacher data found in Local Storage.");
+    } catch (err) {
+      console.error("Error parsing teacher data:", err);
+      setError("Failed to load user data");
+      setIsLoading(false);
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     Swal.fire({
       title: "Are you sure?",
       text: "You will be logged out of your account",
@@ -123,10 +126,8 @@ const Sidebar = ({
       confirmButtonText: "Yes, log me out!",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Remove user data from localStorage
         localStorage.removeItem("user");
 
-        // Show success message
         Swal.fire({
           title: "Logged out!",
           text: "You have been successfully logged out",
@@ -134,189 +135,267 @@ const Sidebar = ({
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
-          // Redirect to login page
           navigate("/teacher-login");
         });
       }
     });
-  };
+  }, [navigate]);
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  const toggleCollapse = useCallback(() => {
+    setIsCollapsed((prev) => !prev);
+  }, []);
 
-  // Sidebar variants for animation
+  // Sidebar animation variants
   const sidebarVariants = {
     expanded: { width: "16rem" },
     collapsed: { width: "5rem" },
   };
 
-  // Mobile sidebar variants
   const mobileSidebarVariants = {
     hidden: { x: "-100%" },
-    visible: { x: 0 },
+    visible: {
+      x: 0,
+      transition: { type: "spring", stiffness: 300, damping: 30 },
+    },
+    exit: { x: "-100%", transition: { duration: 0.2 } },
+  };
+
+  const contentVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0 },
+  };
+
+  // Check if user should see logout (teachers always see it, some students might not)
+  const shouldShowLogout = () => {
+    // If teacher, show logout
+    if (teacherData?.role === "teacher") return true;
+
+    // If student with paid status, show logout
+    if (
+      teacherData?.role === "student" &&
+      teacherData?.paymentStatus === "paid"
+    )
+      return true;
+
+    // Default case - if no role specified or unknown user type, still show logout for safety
+    if (!teacherData?.role) return true;
+
+    // For unpaid students, don't show logout
+    return false;
   };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <motion.div
-        className={`h-full bg-white text-gray-700 shadow-xl ${
-          isMobile ? "w-64" : ""
+        className={`h-full bg-white text-gray-700 shadow-xl flex flex-col relative ${
+          isMobile ? "fixed top-0 left-0 z-50 w-64" : ""
         }`}
         variants={isMobile ? mobileSidebarVariants : sidebarVariants}
         initial={isMobile ? "hidden" : isCollapsed ? "collapsed" : "expanded"}
         animate={isMobile ? "visible" : isCollapsed ? "collapsed" : "expanded"}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        exit={isMobile ? "exit" : undefined}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
-        {/* Sidebar header with logo and toggle/close button */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-          <motion.div
-            initial={false}
-            animate={{ opacity: isCollapsed && !isMobile ? 0 : 1 }}
-            transition={{ duration: 0.2 }}
-            className="flex items-center"
-          >
-            <div className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">
-                <Link to="/">E</Link>
-              </span>
-            </div>
+        {/* Header with logo and toggle button */}
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 flex-shrink-0">
+          <Link to="/" className="flex items-center focus:outline-none">
+            <motion.div
+              className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="text-white font-bold text-lg">E</span>
+            </motion.div>
+
             {(!isCollapsed || isMobile) && (
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
                 className="ml-3 font-semibold text-lg text-teal-600"
               >
-                <Link to="/">ECollege</Link>
+                ECollege
               </motion.span>
             )}
-          </motion.div>
+          </Link>
 
           {isMobile ? (
-            <button
+            <motion.button
               onClick={onCloseMobile}
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none"
               aria-label="Close sidebar"
+              whileHover={{ scale: 1.1, backgroundColor: "#f3f4f6" }}
+              whileTap={{ scale: 0.95 }}
             >
               <FiX className="w-5 h-5 text-gray-600" />
-            </button>
+            </motion.button>
           ) : (
-            <button
+            <motion.button
               onClick={toggleCollapse}
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none"
               aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              whileHover={{ scale: 1.1, backgroundColor: "#f3f4f6" }}
+              whileTap={{ scale: 0.95 }}
             >
               {isCollapsed ? (
                 <FiChevronRight className="w-5 h-5 text-gray-600" />
               ) : (
                 <FiChevronLeft className="w-5 h-5 text-gray-600" />
               )}
-            </button>
+            </motion.button>
           )}
         </div>
 
-        {/* Menu items with scrollbar */}
-        <div className="py-4 flex flex-col h-[calc(100%-4rem)] justify-between">
-          <div className="space-y-1 px-3 overflow-y-auto max-h-[calc(100%-80px)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-            {menuItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <NavLink
-                  key={item.id}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `flex items-center py-3 px-3 rounded-lg transition-all duration-200 ${
-                      isActive
-                        ? "bg-teal-500 text-white shadow-md"
-                        : "text-gray-600 hover:bg-gray-100"
-                    }`
-                  }
-                  onClick={isMobile ? onCloseMobile : undefined}
-                >
-                  <motion.div
-                    className={`${isCollapsed && !isMobile ? "mx-auto" : ""}`}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {React.cloneElement(item.icon, {
-                      className: `w-5 h-5 ${
-                        isActive ? "text-white" : "text-gray-500"
-                      }`,
-                    })}
-                  </motion.div>
-
-                  {(!isCollapsed || isMobile) && (
-                    <motion.span
-                      initial={
-                        isCollapsed && !isMobile
-                          ? { opacity: 0 }
-                          : { opacity: 1 }
+        {/* Menu items with fixed height and proper scrolling */}
+        <div className="flex flex-col h-full overflow-hidden">
+          <motion.div
+            className="py-4 px-3 flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent no-scrollbar"
+            variants={contentVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <div className="space-y-1">
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <motion.div key={item.id} variants={itemVariants}>
+                    <NavLink
+                      to={item.path}
+                      className={({ isActive }) =>
+                        `flex items-center py-3 px-3 rounded-lg transition-all duration-200 ${
+                          isActive
+                            ? "bg-teal-500 text-white shadow-md"
+                            : "text-gray-600 hover:bg-gray-100"
+                        }`
                       }
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                      className="ml-3 font-medium"
+                      onClick={isMobile ? onCloseMobile : undefined}
                     >
-                      {item.title}
-                    </motion.span>
-                  )}
+                      <motion.div
+                        className={isCollapsed && !isMobile ? "mx-auto" : ""}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {React.cloneElement(item.icon, {
+                          className: `w-5 h-5 ${
+                            isActive ? "text-white" : "text-gray-500"
+                          }`,
+                        })}
+                      </motion.div>
 
-                  {isActive && !isCollapsed && !isMobile && (
-                    <motion.div
-                      className="w-1.5 h-1.5 rounded-full bg-white ml-auto"
-                      layoutId="activeIndicator"
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                </NavLink>
-              );
-            })}
-          </div>
+                      {(!isCollapsed || isMobile) && (
+                        <motion.span
+                          initial={false}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="ml-3 font-medium"
+                        >
+                          {item.title}
+                        </motion.span>
+                      )}
 
-          {/* Logout button at bottom */}
-          <div className="mt-auto px-3 pb-4">
-            <div
-              className={`px-3 py-2 ${!isCollapsed || isMobile ? "mb-2" : ""}`}
-            >
-              {(!isCollapsed || isMobile) && (
-                <div className="border-t border-gray-200 pt-2">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center">
-                      <FaUser className="w-4 h-4 text-teal-600" />
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-700">
-                        {teacherData?.name || "Loading..."}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {teacherData?.email || "Loading..."}
-                      </p>
-                    </div>
+                      {isActive && !isCollapsed && !isMobile && (
+                        <motion.div
+                          className="w-1.5 h-1.5 rounded-full bg-white ml-auto"
+                          layoutId="activeIndicator"
+                          transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                    </NavLink>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* User profile and logout section - fixed at bottom */}
+          <div className="mt-auto border-t border-gray-200 px-3 pt-2 pb-4 flex-shrink-0">
+            {/* User profile info */}
+            {(!isCollapsed || isMobile) && !isLoading && teacherData && (
+              <motion.div
+                className="mb-2 px-3 py-2"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="flex items-center">
+                  <motion.div
+                    className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center"
+                    whileHover={{ scale: 1.1, backgroundColor: "#5eead4" }}
+                  >
+                    <FaUser className="w-4 h-4 text-teal-600" />
+                  </motion.div>
+                  <div className="ml-3 overflow-hidden">
+                    <p className="text-sm font-medium text-gray-700 truncate">
+                      {teacherData?.name || "Guest User"}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {teacherData?.email || "guest@ecollege.edu"}
+                    </p>
                   </div>
                 </div>
-              )}
-            </div>
-
-            <button
-              onClick={handleLogout}
-              className={`flex items-center w-full py-2.5 px-3 rounded-lg transition-all duration-200 text-gray-600 hover:bg-red-100 hover:text-red-600 ${
-                isCollapsed && !isMobile ? "justify-center" : ""
-              }`}
-            >
-              <motion.div
-                whileHover={{ rotate: 15 }}
-                transition={{ duration: 0.2 }}
-              >
-                <FiLogOut className="w-5 h-5" />
               </motion.div>
-              {(!isCollapsed || isMobile) && (
-                <span className="ml-3 font-medium">Logout</span>
-              )}
-            </button>
+            )}
+
+            {/* Show loading state while data is being fetched */}
+            {isLoading && (!isCollapsed || isMobile) && (
+              <div className="mb-2 px-3 py-2">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
+                  <div className="ml-3">
+                    <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-2 w-32 bg-gray-200 rounded mt-2 animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Only show logout button if appropriate */}
+            {(!teacherData || shouldShowLogout()) && (
+              <motion.button
+                onClick={handleLogout}
+                className={`flex items-center w-full py-2.5 px-3 rounded-lg transition-all duration-200 text-gray-600 hover:bg-red-100 hover:text-red-600 focus:outline-none ${
+                  isCollapsed && !isMobile ? "justify-center" : ""
+                }`}
+                whileHover={{ backgroundColor: "#fee2e2" }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <motion.div
+                  whileHover={{ rotate: 15 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FiLogOut className="w-5 h-5" />
+                </motion.div>
+                {(!isCollapsed || isMobile) && (
+                  <motion.span
+                    className="ml-3 font-medium"
+                    initial={false}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Logout
+                  </motion.span>
+                )}
+              </motion.button>
+            )}
           </div>
         </div>
       </motion.div>

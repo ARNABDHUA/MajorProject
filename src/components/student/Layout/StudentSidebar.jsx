@@ -74,9 +74,9 @@ const menuItems = [
   },
   {
     id: 8,
-    title: "Live Class",
+    title: "Class Assesment",
     icon: <SiKdenlive />,
-    path: "/student-live-class",
+    path: "/class-assesment",
     requiresPayment: true,
   },
 ];

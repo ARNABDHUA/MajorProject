@@ -183,7 +183,7 @@ const StudentSidebar = ({
   return (
     <AnimatePresence>
       <motion.div
-        className="h-full bg-white text-gray-700 shadow-xl flex flex-col"
+        className="max-h-screen h-screen bg-white text-gray-700 shadow-xl flex flex-col"
         variants={isMobile ? mobileSidebarVariants : sidebarVariants}
         initial={isMobile ? "hidden" : isCollapsed ? "collapsed" : "expanded"}
         animate={isMobile ? "visible" : isCollapsed ? "collapsed" : "expanded"}

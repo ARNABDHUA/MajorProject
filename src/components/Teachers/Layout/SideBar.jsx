@@ -15,6 +15,7 @@ import {
   FiChevronLeft,
   FiSettings,
   FiX,
+  FiHome,
 } from "react-icons/fi";
 import { SiKdenlive } from "react-icons/si";
 
@@ -23,7 +24,7 @@ const menuItems = [
   {
     id: 1,
     title: "Profile",
-    icon: <FaHome className="w-5 h-5" />,
+    icon: <FiHome className="w-5 h-5" />,
     path: "/teacher-home",
   },
   {
@@ -89,30 +90,24 @@ const Sidebar = ({
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(isCollapsedProp);
   const [teacherData, setTeacherData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Load teacher data - with proper error handling
+  // Load teacher data from localStorage once on component mount
   useEffect(() => {
-    setIsLoading(true);
-    try {
-      const localData = localStorage.getItem("user");
-      if (localData) {
-        const parsedData = JSON.parse(localData);
-        setTeacherData(parsedData);
-        setIsLoading(false);
-      } else {
-        // Set null but don't show error for logged out state
-        setTeacherData(null);
-        setIsLoading(false);
+    const loadUserData = () => {
+      try {
+        const localData = localStorage.getItem("user");
+        if (localData) {
+          const parsedData = JSON.parse(localData);
+          setTeacherData(parsedData);
+        }
+      } catch (err) {
+        console.error("Error loading teacher data:", err);
       }
-    } catch (err) {
-      console.error("Error parsing teacher data:", err);
-      setError("Failed to load user data");
-      setIsLoading(false);
-    }
+    };
+
+    loadUserData();
   }, []);
 
   const handleLogout = useCallback(() => {
@@ -129,8 +124,8 @@ const Sidebar = ({
         localStorage.removeItem("user");
 
         Swal.fire({
-          title: "Logged out!",
-          text: "You have been successfully logged out",
+          title: "Logged Out!",
+          text: "You have been successfully logged out.",
           icon: "success",
           timer: 1500,
           showConfirmButton: false,
@@ -145,7 +140,7 @@ const Sidebar = ({
     setIsCollapsed((prev) => !prev);
   }, []);
 
-  // Sidebar animation variants
+  // Animation variants
   const sidebarVariants = {
     expanded: { width: "16rem" },
     collapsed: { width: "5rem" },
@@ -153,126 +148,122 @@ const Sidebar = ({
 
   const mobileSidebarVariants = {
     hidden: { x: "-100%" },
-    visible: {
-      x: 0,
-      transition: { type: "spring", stiffness: 300, damping: 30 },
-    },
-    exit: { x: "-100%", transition: { duration: 0.2 } },
+    visible: { x: 0 },
   };
 
-  const contentVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.1,
-      },
-    },
+  const textVariants = {
+    visible: { opacity: 1, transition: { delay: 0.1 } },
+    hidden: { opacity: 0, transition: { duration: 0.1 } },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, x: -10 },
-    visible: { opacity: 1, x: 0 },
-  };
+  // Fix: Always show text on mobile
+  const showText = !isCollapsed || isMobile;
 
-  // Check if user should see logout (teachers always see it, some students might not)
-  const shouldShowLogout = () => {
-    // If teacher, show logout
-    if (teacherData?.role === "teacher") return true;
-
-    // If student with paid status, show logout
-    if (
-      teacherData?.role === "student" &&
-      teacherData?.paymentStatus === "paid"
-    )
-      return true;
-
-    // Default case - if no role specified or unknown user type, still show logout for safety
-    if (!teacherData?.role) return true;
-
-    // For unpaid students, don't show logout
-    return false;
-  };
+  // Fix: Make sure onCloseMobile is defined
+  const handleCloseMobile = useCallback(() => {
+    if (onCloseMobile && typeof onCloseMobile === "function") {
+      onCloseMobile();
+    }
+  }, [onCloseMobile]);
 
   return (
-    <AnimatePresence mode="wait">
+    <>
+      {/* Mobile Overlay */}
+      {isMobile && (
+        <motion.div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={handleCloseMobile}
+        />
+      )}
+
+      {/* Sidebar Container */}
       <motion.div
-        className={`h-full bg-white text-gray-700 shadow-xl flex flex-col relative ${
-          isMobile ? "fixed top-0 left-0 z-50 w-64" : ""
+        className={`h-screen ${
+          isMobile ? "fixed top-0 left-0 z-50 shadow-2xl" : "relative"
         }`}
         variants={isMobile ? mobileSidebarVariants : sidebarVariants}
         initial={isMobile ? "hidden" : isCollapsed ? "collapsed" : "expanded"}
         animate={isMobile ? "visible" : isCollapsed ? "collapsed" : "expanded"}
-        exit={isMobile ? "exit" : undefined}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        style={{
+          width: isMobile ? "100%" : "auto", // Changed from 85% to 100%
+          maxWidth: isMobile ? "none" : "auto", // Changed from 300px to none
+        }}
       >
-        {/* Header with logo and toggle button */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 flex-shrink-0">
-          <Link to="/" className="flex items-center focus:outline-none">
-            <motion.div
-              className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="text-white font-bold text-lg">E</span>
-            </motion.div>
-
-            {(!isCollapsed || isMobile) && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="ml-3 font-semibold text-lg text-teal-600"
-              >
-                ECollege
-              </motion.span>
-            )}
-          </Link>
-
-          {isMobile ? (
-            <motion.button
-              onClick={onCloseMobile}
-              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none"
-              aria-label="Close sidebar"
-              whileHover={{ scale: 1.1, backgroundColor: "#f3f4f6" }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FiX className="w-5 h-5 text-gray-600" />
-            </motion.button>
-          ) : (
-            <motion.button
-              onClick={toggleCollapse}
-              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none"
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              whileHover={{ scale: 1.1, backgroundColor: "#f3f4f6" }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isCollapsed ? (
-                <FiChevronRight className="w-5 h-5 text-gray-600" />
-              ) : (
-                <FiChevronLeft className="w-5 h-5 text-gray-600" />
-              )}
-            </motion.button>
-          )}
-        </div>
-
-        {/* Menu items with fixed height and proper scrolling */}
-        <div className="flex flex-col h-full overflow-hidden">
+        <div className="flex flex-col h-full bg-white text-gray-700 shadow-xl overflow-hidden">
+          {/* Header section */}
           <motion.div
-            className="py-4 px-3 flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent no-scrollbar"
-            variants={contentVariants}
-            initial="hidden"
-            animate="visible"
+            className="flex items-center justify-between h-16 px-4 border-b border-gray-200 flex-shrink-0 bg-white"
+            layout="position"
           >
-            <div className="space-y-1">
-              {menuItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
-                  <motion.div key={item.id} variants={itemVariants}>
+            <div className="flex items-center">
+              <motion.div
+                className="w-8 h-8 rounded-lg bg-teal-500 flex items-center justify-center"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link to="/" className="text-white font-bold text-lg">
+                  E
+                </Link>
+              </motion.div>
+
+              <AnimatePresence>
+                {showText && (
+                  <motion.span
+                    className="ml-3 font-semibold text-lg text-teal-600 whitespace-nowrap"
+                    variants={textVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                  >
+                    <Link to="/">ECollege</Link>
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {isMobile ? (
+              <motion.button
+                onClick={handleCloseMobile}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500"
+                aria-label="Close sidebar"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <FiX className="w-5 h-5 text-gray-600" />
+              </motion.button>
+            ) : (
+              <motion.button
+                onClick={toggleCollapse}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500"
+                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                {isCollapsed ? (
+                  <FiChevronRight className="w-5 h-5 text-gray-600" />
+                ) : (
+                  <FiChevronLeft className="w-5 h-5 text-gray-600" />
+                )}
+              </motion.button>
+            )}
+          </motion.div>
+
+          {/* Main content area with scrolling */}
+          <div className="flex flex-col flex-grow overflow-hidden">
+            {/* Menu items with fixed height and proper scrolling */}
+            <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent overflow-x-hidden">
+              <nav className="space-y-1 px-3 py-4">
+                {/* Menu items */}
+                {menuItems.map((item) => {
+                  const isActive = location.pathname === item.path;
+
+                  return (
                     <NavLink
+                      key={item.id}
                       to={item.path}
                       className={({ isActive }) =>
                         `flex items-center py-3 px-3 rounded-lg transition-all duration-200 ${
@@ -281,125 +272,171 @@ const Sidebar = ({
                             : "text-gray-600 hover:bg-gray-100"
                         }`
                       }
-                      onClick={isMobile ? onCloseMobile : undefined}
+                      onClick={isMobile ? handleCloseMobile : undefined}
                     >
-                      <motion.div
-                        className={isCollapsed && !isMobile ? "mx-auto" : ""}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {React.cloneElement(item.icon, {
-                          className: `w-5 h-5 ${
-                            isActive ? "text-white" : "text-gray-500"
-                          }`,
-                        })}
-                      </motion.div>
+                      {({ isActive }) => (
+                        <>
+                          <motion.div
+                            className={
+                              isCollapsed && !isMobile ? "mx-auto" : ""
+                            }
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            {React.cloneElement(item.icon, {
+                              className: `w-5 h-5 ${
+                                isActive ? "text-white" : "text-gray-500"
+                              }`,
+                            })}
+                          </motion.div>
 
-                      {(!isCollapsed || isMobile) && (
-                        <motion.span
-                          initial={false}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -10 }}
-                          transition={{ duration: 0.2 }}
-                          className="ml-3 font-medium"
-                        >
-                          {item.title}
-                        </motion.span>
-                      )}
+                          <AnimatePresence>
+                            {showText && (
+                              <motion.span
+                                className={`ml-3 font-medium whitespace-nowrap ${
+                                  isActive ? "text-white" : ""
+                                }`}
+                                variants={textVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="hidden"
+                              >
+                                {item.title}
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
 
-                      {isActive && !isCollapsed && !isMobile && (
-                        <motion.div
-                          className="w-1.5 h-1.5 rounded-full bg-white ml-auto"
-                          layoutId="activeIndicator"
-                          transition={{
-                            type: "spring",
-                            stiffness: 300,
-                            damping: 30,
-                          }}
-                        />
+                          {isActive && showText && (
+                            <motion.div
+                              className="w-1.5 h-1.5 rounded-full bg-white ml-auto"
+                              layoutId="activeIndicator"
+                              transition={{
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 30,
+                              }}
+                            />
+                          )}
+                        </>
                       )}
                     </NavLink>
-                  </motion.div>
-                );
-              })}
+                  );
+                })}
+              </nav>
             </div>
-          </motion.div>
 
-          {/* User profile and logout section - fixed at bottom */}
-          <div className="mt-auto border-t border-gray-200 px-3 pt-2 pb-4 flex-shrink-0">
-            {/* User profile info */}
-            {(!isCollapsed || isMobile) && !isLoading && teacherData && (
-              <motion.div
-                className="mb-2 px-3 py-2"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
+            {/* Footer section - fixed at bottom */}
+            <motion.div
+              className="flex-shrink-0 border-t border-gray-200 pt-2 bg-gray-50"
+              layout="position"
+            >
+              {/* Status indicator for teachers */}
+              <AnimatePresence>
+                {showText && teacherData?.role && (
+                  <motion.div
+                    className="px-4 py-2"
+                    variants={textVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                  >
+                    <div className="text-xs flex items-center text-teal-600">
+                      <motion.div
+                        className="w-2 h-2 rounded-full mr-2 bg-teal-500"
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [1, 0.8, 1],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatDelay: 1,
+                        }}
+                      />
+                      <span>Active Teacher</span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* User info */}
+              <div className="px-3 py-2">
                 <div className="flex items-center">
                   <motion.div
-                    className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center"
-                    whileHover={{ scale: 1.1, backgroundColor: "#5eead4" }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <FaUser className="w-4 h-4 text-teal-600" />
+                    {teacherData?.pic ? (
+                      <img
+                        src={teacherData.pic}
+                        alt="Profile"
+                        className="w-8 h-8 rounded-full object-cover border-2 border-teal-100"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center">
+                        <FaUser className="w-4 h-4 text-teal-600" />
+                      </div>
+                    )}
                   </motion.div>
-                  <div className="ml-3 overflow-hidden">
-                    <p className="text-sm font-medium text-gray-700 truncate">
-                      {teacherData?.name || "Guest User"}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {teacherData?.email || "guest@ecollege.edu"}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
 
-            {/* Show loading state while data is being fetched */}
-            {isLoading && (!isCollapsed || isMobile) && (
-              <div className="mb-2 px-3 py-2">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
-                  <div className="ml-3">
-                    <div className="h-3 w-24 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-2 w-32 bg-gray-200 rounded mt-2 animate-pulse"></div>
-                  </div>
+                  <AnimatePresence>
+                    {showText && (
+                      <motion.div
+                        className="ml-3 overflow-hidden"
+                        variants={textVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                      >
+                        <p className="text-sm font-medium text-gray-700 truncate">
+                          {teacherData?.name || "Teacher Name"}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {teacherData?.email || "teacher@example.com"}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
-            )}
 
-            {/* Only show logout button if appropriate */}
-            {(!teacherData || shouldShowLogout()) && (
-              <motion.button
-                onClick={handleLogout}
-                className={`flex items-center w-full py-2.5 px-3 rounded-lg transition-all duration-200 text-gray-600 hover:bg-red-100 hover:text-red-600 focus:outline-none ${
-                  isCollapsed && !isMobile ? "justify-center" : ""
-                }`}
-                whileHover={{ backgroundColor: "#fee2e2" }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <motion.div
-                  whileHover={{ rotate: 15 }}
-                  transition={{ duration: 0.2 }}
+              {/* Logout button */}
+              <div className="px-3 pb-4">
+                <motion.button
+                  className={`flex items-center w-full py-2.5 px-3 rounded-lg text-gray-600 hover:bg-red-50 ${
+                    isCollapsed && !isMobile ? "justify-center" : ""
+                  }`}
+                  whileHover={{ backgroundColor: "rgba(254, 226, 226, 1)" }}
+                  whileTap={{ backgroundColor: "rgba(254, 202, 202, 1)" }}
+                  onClick={handleLogout}
                 >
-                  <FiLogOut className="w-5 h-5" />
-                </motion.div>
-                {(!isCollapsed || isMobile) && (
-                  <motion.span
-                    className="ml-3 font-medium"
-                    initial={false}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
+                  <motion.div
+                    whileHover={{ rotate: 15 }}
                     transition={{ duration: 0.2 }}
                   >
-                    Logout
-                  </motion.span>
-                )}
-              </motion.button>
-            )}
+                    <FiLogOut className="w-5 h-5 text-red-500" />
+                  </motion.div>
+
+                  <AnimatePresence>
+                    {showText && (
+                      <motion.span
+                        className="ml-3 font-medium whitespace-nowrap text-red-500"
+                        variants={textVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                      >
+                        Logout
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              </div>
+            </motion.div>
           </div>
         </div>
       </motion.div>
-    </AnimatePresence>
+    </>
   );
 };
 

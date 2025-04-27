@@ -53,12 +53,13 @@ const EnrollCourse = () => {
     // Get user data from localStorage safely
     try {
       const storedUser = localStorage.getItem("user");
-      const userEmail = storedUser.email;
-      setEmail(userEmail);
-      setRole(storedUser.role);
+
       setCourseCode(id);
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
+        const userEmail = parsedUser.email;
+        setEmail(userEmail);
+        setRole(parsedUser.role);
         setUserData(parsedUser);
 
         // If user already has graduation or post-graduation data, show those sections

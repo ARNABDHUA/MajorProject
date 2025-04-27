@@ -20,6 +20,7 @@ import {
   FiImage,
   FiUpload,
 } from "react-icons/fi";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
 
 const TeacherProfile = () => {
   const [teacherData, setTeacherData] = useState(null);
@@ -39,7 +40,8 @@ const TeacherProfile = () => {
   const [loading, setLoading] = useState(false);
   const [newImageFile, setNewImageFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-
+  const [teacherMail, setTeacherMail] = useState(null);
+  const navigate = useNavigate();
   useEffect(() => {
     // Retrieve data from localStorage
     const localData = localStorage.getItem("user");
@@ -47,7 +49,12 @@ const TeacherProfile = () => {
     if (localData) {
       try {
         const parsedData = JSON.parse(localData);
-        console.log("Teacher Data from Local Storage:", parsedData);
+        if (parsedData.role !== "teacher") {
+          navigate("/teacher-login");
+        }
+        // console.log("Teacher Data from Local Storage:", parsedData);
+        const teacher_data = parsedData.email;
+        setTeacherMail(teacher_data);
         setTeacherData(parsedData);
         setPhoneNumber(parsedData.phoneNumber || "");
 
@@ -75,7 +82,7 @@ const TeacherProfile = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setImageFile(file);
-      console.log("File:----", file);
+      // console.log("File:----", file);
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -174,6 +181,24 @@ const TeacherProfile = () => {
             },
           }
         );
+        // console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkk", response.data);
+        if (response.data) {
+          // console.log("hhhhhhhhhhhhhhhh", teacherMail);
+          // Fixed: Define 'imageResponse' instead of using undeclared 'res'
+          const imageResponse = await axios.post(
+            `https://e-college-data.onrender.com/v1/chat/teacherimageget`,
+            { email: teacherMail },
+            {
+              headers: {
+                "Content-Type": "application/json", // Fixed: Changed to application/json for this request
+              },
+            }
+          );
+          // You can use imageResponse if needed
+          // console.log("Image response:", imageResponse.data);
+          // localStorage.setItem("userInfo",
+          // JSON.stringify(imageResponse.data.user))
+        }
       } else {
         // Regular JSON API call for non-image updates
         response = await axios.post(
@@ -824,10 +849,11 @@ const TeacherProfile = () => {
                       <path
                         className="opacity-75"
                         fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        // The code continues from where it left off - completing the loading indicator path
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-1.647z"
                       ></path>
                     </svg>
-                    <span>Updating...</span>
+                    <span>Saving...</span>
                   </>
                 ) : (
                   <>

@@ -3,6 +3,7 @@ import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import image from "/images/robot.gif";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function TeacherLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,9 +15,21 @@ export default function TeacherLogin() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [userx, setUserx] = useState(null);
   const [popup, setPopup] = useState({ message: "", type: "", visible: false });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const raw = localStorage.getItem("user");
+    try {
+      const data = JSON.parse(raw);
+      if (data && data.role === "teacher") {
+        setUserx({ ...data });
+      }
+    } catch (err) {
+      console.error("Failed to parse localStorage user:", err);
+    }
+  }, []);
   // Validate form inputs (password strength)
   const validateForm = () => {
     const passwordRegex =
@@ -48,6 +61,11 @@ export default function TeacherLogin() {
     setTimeout(() => setPopup({ message: "", type: "", visible: false }), 3000);
   };
 
+  const navigateAndScrollToTop = (path) => {
+    window.scrollTo(0, 0); // Scroll to top first
+    navigate(path);
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,23 +81,38 @@ export default function TeacherLogin() {
         "https://e-college-data.onrender.com/v1/teachers/teachers-login",
         formData
       );
-
       if (response.data) {
         const { token, user } = response.data;
-        // Option 1: Keep using "item" but be consistent
-        localStorage.setItem("item", token);
-        // Option 2: Change to "token" to match what TeacherProtectedRoute expects
-        // localStorage.setItem("token", token);
-
-        // Make sure the user object has a role property or enough data to infer role
-        const userData = {
-          ...user,
-          role: "teacher", // Explicitly set role to ensure consistency
-        };
+        const teacher_email=user.email
+        const userData = { ...user, role: "teacher" };
+        localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(userData));
+        console.log("User Data:", userData);
 
         showPopup("Signin Successful! Redirecting...", "success");
-        setTimeout(() => navigate("/teacher-home"), 3000);
+
+        // Inner API call only happens after successful outer API call
+        try {
+          const chatUser = await axios.post(
+            "https://e-college-data.onrender.com/v1/chat/chat-user-data",
+            { email: teacher_email }
+          );
+          console.log("Chat user added successfully:");
+          if (chatUser.data) {
+            localStorage.setItem(
+              "userInfo",
+              JSON.stringify(chatUser.data.user)
+            );
+          }
+        } catch (chatError) {
+          console.error("Chat user registration error:", chatError);
+          // Optionally show a warning that chat registration failed but account was created
+          showPopup("Account created but chat registration failed", "warning");
+        }
+
+        // Scroll to top before navigating
+        window.scrollTo(0, 0);
+        setTimeout(() => navigateAndScrollToTop("/teacher-home"), 1000);
       } else {
         showPopup("Invalid email or password.", "error");
       }
@@ -104,8 +137,15 @@ export default function TeacherLogin() {
     }
   };
 
+  useEffect(() => {
+    if (userx) {
+      navigate("/teacher-home");
+    }
+  }, [userx]);
+
   return (
-    <div className="flex mx-5 mt-8 justify-center items-center bg-gray-50">
+    <div>
+  { !userx && (<div className="flex mx-5 mt-8 justify-center items-center bg-gray-50">
       {/* Left side - GIF */}
       <div className="hidden lg:flex lg:w-1/2 bg-blue-50 justify-center items-center p-8">
         <div className="flex flex-col items-center">
@@ -232,6 +272,7 @@ export default function TeacherLogin() {
           </div>
         </div>
       </div>
+    </div>)}
     </div>
   );
 }

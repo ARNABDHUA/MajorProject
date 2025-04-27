@@ -676,7 +676,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                               ? "Are you sure you want to leave this group?" 
                               : windowWidth < 380
                                 ? `Remove ${confirmRemove.name}?`
-                                : `Are you sure you want to remove ${confirmRemove.name} from this group?`
+                                : `remove${confirmRemove.name} from this group?`
                             }
                           </p>
                           

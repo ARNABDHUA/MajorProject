@@ -157,6 +157,14 @@ const DisplaySetup = () => {
                   </TeacherProtectedRoute>
                 }
               />
+               <Route
+                path="teacher-chat"
+                element={
+                  <ProtectedRoute allowedRoles={["teacher"]}>
+                    <Chatpage />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
             {/* Admin */}
             <Route path="/admin" element={<Admin />} />

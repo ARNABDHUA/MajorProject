@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { AlertCircle, Home, RefreshCw, HelpCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import {
   FiUser,
@@ -16,7 +17,7 @@ import {
 } from "react-icons/fi";
 import axios from "axios";
 import { ChatState } from "../../../context/ChatProvider";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, redirect, useNavigate, useParams } from "react-router-dom";
 
 const EnrollCourse = () => {
   const { id } = useParams();
@@ -27,6 +28,8 @@ const EnrollCourse = () => {
   const [hasPostGraduation, setHasPostGraduation] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [role, setRole] = useState("");
   const [formData, setFormData] = useState({
     tenth_year: "",
     tenth_marks: "",
@@ -51,11 +54,13 @@ const EnrollCourse = () => {
     // Get user data from localStorage safely
     try {
       const storedUser = localStorage.getItem("user");
-      const userEmail = storedUser.email;
-      setEmail(userEmail);
+
       setCourseCode(id);
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
+        const userEmail = parsedUser.email;
+        setEmail(userEmail);
+        setRole(parsedUser.role);
         setUserData(parsedUser);
 
         // If user already has graduation or post-graduation data, show those sections
@@ -273,398 +278,205 @@ const EnrollCourse = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-6 flex justify-center">
-      <div className="w-full max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-lg shadow-lg p-8"
-        >
-          <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-            Educational Profile & Course Enrollment
-          </h1>
+  return role === "student" ? (
+    <div>
+      <div className="min-h-screen bg-gray-50 p-6 flex justify-center">
+        <div className="w-full max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-lg shadow-lg p-8"
+          >
+            <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+              Educational Profile & Course Enrollment
+            </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Information */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                Personal Information
-              </h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Personal Information */}
+              <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+                  Personal Information
+                </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Name */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Name
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                      <FiUser />
-                    </span>
-                    <motion.input
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      whileBlur="blur"
-                      type="text"
-                      value={userData.name}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
-                      placeholder="Full Name"
-                      disabled
-                    />
-                  </div>
-                </div>
-
-                {/* Gender */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Gender
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                      <FiUser />
-                    </span>
-                    <motion.input
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      whileBlur="blur"
-                      type="text"
-                      value={userData.gender}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
-                      disabled
-                    />
-                  </div>
-                </div>
-
-                {/* Email */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                      <FiMail />
-                    </span>
-                    <motion.input
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      whileBlur="blur"
-                      type="email"
-                      value={userData.email}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
-                      placeholder="Email Address"
-                      disabled
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4 mt-4">
-                {/* Phone */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                      <FiPhone />
-                    </span>
-                    <motion.input
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      whileBlur="blur"
-                      value={userData.phoneNumber}
-                      type="tel"
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
-                      placeholder="Phone Number"
-                      disabled
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Course Enrollment Details */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                Course Enrollment Details
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {/* Course Code */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Course Code *
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                      <FiBookmark />
-                    </span>
-                    <motion.input
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      whileBlur="blur"
-                      type="text"
-                      disabled
-                      name="course_code"
-                      value={courseCode}
-                      onChange={handleInputChange}
-                      className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.course_code
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                      placeholder="e.g. CS101"
-                    />
-                  </div>
-                  {errors.course_code && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.course_code}
-                    </p>
-                  )}
-                </div>
-
-                {/* Rank */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Entrance Rank *
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                      <FiStar />
-                    </span>
-                    <motion.input
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      whileBlur="blur"
-                      type="number"
-                      min="1"
-                      name="rank"
-                      value={formData.rank}
-                      onChange={handleInputChange}
-                      className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.rank ? "border-red-500" : "border-gray-300"
-                      }`}
-                      placeholder="Your rank in entrance exam"
-                    />
-                  </div>
-                  {errors.rank && (
-                    <p className="text-red-500 text-xs mt-1">{errors.rank}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Education Details */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                Educational Details
-              </h2>
-
-              {/* 10th Standard */}
-              <div className="mb-6">
-                <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                  <FiBook className="mr-2" /> 10th Standard *
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Name */}
                   <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Passout Year *
+                      Name
                     </label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiCalendar />
+                        <FiUser />
                       </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="number"
-                        min="1980"
-                        max="2025"
-                        name="tenth_year"
-                        value={formData.tenth_year}
-                        onChange={handleInputChange}
-                        className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.tenth_year
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                        placeholder="YYYY"
-                      />
-                    </div>
-                    {errors.tenth_year && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.tenth_year}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Percentage *
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiPercent />
-                      </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="100"
-                        name="tenth_marks"
-                        value={formData.tenth_marks}
-                        onChange={handleInputChange}
-                        className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.tenth_marks
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                        placeholder="Percentage"
-                      />
-                    </div>
-                    {errors.tenth_marks && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.tenth_marks}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* 12th Standard */}
-              <div className="mb-6">
-                <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                  <FiBook className="mr-2" /> 12th Standard *
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Passout Year *
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiCalendar />
-                      </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="number"
-                        min="1980"
-                        max="2025"
-                        name="twelfth_year"
-                        value={formData.twelfth_year}
-                        onChange={handleInputChange}
-                        className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.twelfth_year
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                        placeholder="YYYY"
-                      />
-                    </div>
-                    {errors.twelfth_year && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.twelfth_year}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Percentage *
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiPercent />
-                      </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="100"
-                        name="twelfth_marks"
-                        value={formData.twelfth_marks}
-                        onChange={handleInputChange}
-                        className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.twelfth_marks
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                        placeholder="Percentage"
-                      />
-                    </div>
-                    {errors.twelfth_marks && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.twelfth_marks}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Graduation Toggle */}
-              <div className="mb-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="hasGraduation"
-                    className="mr-2 h-4 w-4 text-blue-600"
-                    checked={hasGraduation}
-                    onChange={() => setHasGraduation(!hasGraduation)}
-                  />
-                  <label
-                    htmlFor="hasGraduation"
-                    className="text-lg font-medium text-gray-700"
-                  >
-                    I have graduation details
-                  </label>
-                </div>
-              </div>
-
-              {/* Graduation Details (Optional) */}
-              {hasGraduation && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="mb-6"
-                >
-                  <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                    <FiBook className="mr-2" /> Graduation Details
-                  </h3>
-                  <div className="grid grid-cols-1 gap-4 mb-4">
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Degree/Course Name
-                      </label>
                       <motion.input
                         variants={inputVariants}
                         whileFocus="focus"
                         whileBlur="blur"
                         type="text"
-                        name="ug_name"
-                        value={formData.ug_name}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="e.g. B.Sc. Computer Science"
+                        value={userData.name}
+                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                        placeholder="Full Name"
+                        disabled
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                  {/* Gender */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Gender
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                        <FiUser />
+                      </span>
+                      <motion.input
+                        variants={inputVariants}
+                        whileFocus="focus"
+                        whileBlur="blur"
+                        type="text"
+                        value={userData.gender}
+                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                        disabled
+                      />
+                    </div>
+                  </div>
+
+                  {/* Email */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                        <FiMail />
+                      </span>
+                      <motion.input
+                        variants={inputVariants}
+                        whileFocus="focus"
+                        whileBlur="blur"
+                        type="email"
+                        value={userData.email}
+                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                        placeholder="Email Address"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-4 mt-4">
+                  {/* Phone */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone Number
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                        <FiPhone />
+                      </span>
+                      <motion.input
+                        variants={inputVariants}
+                        whileFocus="focus"
+                        whileBlur="blur"
+                        value={userData.phoneNumber}
+                        type="tel"
+                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                        placeholder="Phone Number"
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Course Enrollment Details */}
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+                  Course Enrollment Details
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  {/* Course Code */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Course Code *
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                        <FiBookmark />
+                      </span>
+                      <motion.input
+                        variants={inputVariants}
+                        whileFocus="focus"
+                        whileBlur="blur"
+                        type="text"
+                        disabled
+                        name="course_code"
+                        value={courseCode}
+                        onChange={handleInputChange}
+                        className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          errors.course_code
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                        placeholder="e.g. CS101"
+                      />
+                    </div>
+                    {errors.course_code && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.course_code}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Rank */}
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Entrance Rank *
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                        <FiStar />
+                      </span>
+                      <motion.input
+                        variants={inputVariants}
+                        whileFocus="focus"
+                        whileBlur="blur"
+                        type="number"
+                        min="1"
+                        name="rank"
+                        value={formData.rank}
+                        onChange={handleInputChange}
+                        className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                          errors.rank ? "border-red-500" : "border-gray-300"
+                        }`}
+                        placeholder="Your rank in entrance exam"
+                      />
+                    </div>
+                    {errors.rank && (
+                      <p className="text-red-500 text-xs mt-1">{errors.rank}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Education Details */}
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+                  Educational Details
+                </h2>
+
+                {/* 10th Standard */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
+                    <FiBook className="mr-2" /> 10th Standard *
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="relative">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Start Year
+                        Passout Year *
                       </label>
                       <div className="relative">
                         <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
@@ -677,42 +489,27 @@ const EnrollCourse = () => {
                           type="number"
                           min="1980"
                           max="2025"
-                          name="ug_start"
-                          value={formData.ug_start}
+                          name="tenth_year"
+                          value={formData.tenth_year}
                           onChange={handleInputChange}
-                          className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.tenth_year
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
                           placeholder="YYYY"
                         />
                       </div>
+                      {errors.tenth_year && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.tenth_year}
+                        </p>
+                      )}
                     </div>
 
                     <div className="relative">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        End Year
-                      </label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                          <FiCalendar />
-                        </span>
-                        <motion.input
-                          variants={inputVariants}
-                          whileFocus="focus"
-                          whileBlur="blur"
-                          type="number"
-                          min="1980"
-                          max="2030"
-                          name="ug_end"
-                          value={formData.ug_end}
-                          onChange={handleInputChange}
-                          className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="YYYY"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Percentage
+                        Percentage *
                       </label>
                       <div className="relative">
                         <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
@@ -726,72 +523,35 @@ const EnrollCourse = () => {
                           step="0.01"
                           min="0"
                           max="100"
-                          name="ug_marks"
-                          value={formData.ug_marks}
+                          name="tenth_marks"
+                          value={formData.tenth_marks}
                           onChange={handleInputChange}
-                          className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.tenth_marks
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
                           placeholder="Percentage"
                         />
                       </div>
+                      {errors.tenth_marks && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.tenth_marks}
+                        </p>
+                      )}
                     </div>
                   </div>
-                </motion.div>
-              )}
-
-              {/* Post Graduation Toggle */}
-              <div className="mb-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="hasPostGraduation"
-                    className="mr-2 h-4 w-4 text-blue-600"
-                    checked={hasPostGraduation}
-                    onChange={() => setHasPostGraduation(!hasPostGraduation)}
-                  />
-                  <label
-                    htmlFor="hasPostGraduation"
-                    className="text-lg font-medium text-gray-700"
-                  >
-                    I have post-graduation/other course details
-                  </label>
                 </div>
-              </div>
 
-              {/* Post Graduation Details (Optional) */}
-              {hasPostGraduation && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="mb-6"
-                >
+                {/* 12th Standard */}
+                <div className="mb-6">
                   <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                    <FiBook className="mr-2" /> Post-Graduation/Other Course
-                    Details
+                    <FiBook className="mr-2" /> 12th Standard *
                   </h3>
-                  <div className="grid grid-cols-1 gap-4 mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="relative">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Course Name
-                      </label>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="text"
-                        name="other_course"
-                        value={formData.other_course}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="e.g. M.Tech, MBA, Ph.D"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Start Year
+                        Passout Year *
                       </label>
                       <div className="relative">
                         <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
@@ -804,42 +564,27 @@ const EnrollCourse = () => {
                           type="number"
                           min="1980"
                           max="2025"
-                          name="other_course_start"
-                          value={formData.other_course_start}
+                          name="twelfth_year"
+                          value={formData.twelfth_year}
                           onChange={handleInputChange}
-                          className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.twelfth_year
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
                           placeholder="YYYY"
                         />
                       </div>
+                      {errors.twelfth_year && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.twelfth_year}
+                        </p>
+                      )}
                     </div>
 
                     <div className="relative">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        End Year
-                      </label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                          <FiCalendar />
-                        </span>
-                        <motion.input
-                          variants={inputVariants}
-                          whileFocus="focus"
-                          whileBlur="blur"
-                          type="number"
-                          min="1980"
-                          max="2030"
-                          name="other_course_end"
-                          value={formData.other_course_end}
-                          onChange={handleInputChange}
-                          className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="YYYY"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Percentage
+                        Percentage *
                       </label>
                       <div className="relative">
                         <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
@@ -853,41 +598,372 @@ const EnrollCourse = () => {
                           step="0.01"
                           min="0"
                           max="100"
-                          name="other_course_marks"
-                          value={formData.other_course_marks}
+                          name="twelfth_marks"
+                          value={formData.twelfth_marks}
                           onChange={handleInputChange}
-                          className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.twelfth_marks
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
                           placeholder="Percentage"
                         />
                       </div>
+                      {errors.twelfth_marks && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.twelfth_marks}
+                        </p>
+                      )}
                     </div>
                   </div>
-                </motion.div>
-              )}
+                </div>
+
+                {/* Graduation Toggle */}
+                <div className="mb-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="hasGraduation"
+                      className="mr-2 h-4 w-4 text-blue-600"
+                      checked={hasGraduation}
+                      onChange={() => setHasGraduation(!hasGraduation)}
+                    />
+                    <label
+                      htmlFor="hasGraduation"
+                      className="text-lg font-medium text-gray-700"
+                    >
+                      I have graduation details
+                    </label>
+                  </div>
+                </div>
+
+                {/* Graduation Details (Optional) */}
+                {hasGraduation && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mb-6"
+                  >
+                    <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
+                      <FiBook className="mr-2" /> Graduation Details
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 mb-4">
+                      <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Degree/Course Name
+                        </label>
+                        <motion.input
+                          variants={inputVariants}
+                          whileFocus="focus"
+                          whileBlur="blur"
+                          type="text"
+                          name="ug_name"
+                          value={formData.ug_name}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="e.g. B.Sc. Computer Science"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Start Year
+                        </label>
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                            <FiCalendar />
+                          </span>
+                          <motion.input
+                            variants={inputVariants}
+                            whileFocus="focus"
+                            whileBlur="blur"
+                            type="number"
+                            min="1980"
+                            max="2025"
+                            name="ug_start"
+                            value={formData.ug_start}
+                            onChange={handleInputChange}
+                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="YYYY"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          End Year
+                        </label>
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                            <FiCalendar />
+                          </span>
+                          <motion.input
+                            variants={inputVariants}
+                            whileFocus="focus"
+                            whileBlur="blur"
+                            type="number"
+                            min="1980"
+                            max="2030"
+                            name="ug_end"
+                            value={formData.ug_end}
+                            onChange={handleInputChange}
+                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="YYYY"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Percentage
+                        </label>
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                            <FiPercent />
+                          </span>
+                          <motion.input
+                            variants={inputVariants}
+                            whileFocus="focus"
+                            whileBlur="blur"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            name="ug_marks"
+                            value={formData.ug_marks}
+                            onChange={handleInputChange}
+                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Percentage"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Post Graduation Toggle */}
+                <div className="mb-4">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="hasPostGraduation"
+                      className="mr-2 h-4 w-4 text-blue-600"
+                      checked={hasPostGraduation}
+                      onChange={() => setHasPostGraduation(!hasPostGraduation)}
+                    />
+                    <label
+                      htmlFor="hasPostGraduation"
+                      className="text-lg font-medium text-gray-700"
+                    >
+                      I have post-graduation/other course details
+                    </label>
+                  </div>
+                </div>
+
+                {/* Post Graduation Details (Optional) */}
+                {hasPostGraduation && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mb-6"
+                  >
+                    <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
+                      <FiBook className="mr-2" /> Post-Graduation/Other Course
+                      Details
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 mb-4">
+                      <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Course Name
+                        </label>
+                        <motion.input
+                          variants={inputVariants}
+                          whileFocus="focus"
+                          whileBlur="blur"
+                          type="text"
+                          name="other_course"
+                          value={formData.other_course}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="e.g. M.Tech, MBA, Ph.D"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Start Year
+                        </label>
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                            <FiCalendar />
+                          </span>
+                          <motion.input
+                            variants={inputVariants}
+                            whileFocus="focus"
+                            whileBlur="blur"
+                            type="number"
+                            min="1980"
+                            max="2025"
+                            name="other_course_start"
+                            value={formData.other_course_start}
+                            onChange={handleInputChange}
+                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="YYYY"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          End Year
+                        </label>
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                            <FiCalendar />
+                          </span>
+                          <motion.input
+                            variants={inputVariants}
+                            whileFocus="focus"
+                            whileBlur="blur"
+                            type="number"
+                            min="1980"
+                            max="2030"
+                            name="other_course_end"
+                            value={formData.other_course_end}
+                            onChange={handleInputChange}
+                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="YYYY"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Percentage
+                        </label>
+                        <div className="relative">
+                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                            <FiPercent />
+                          </span>
+                          <motion.input
+                            variants={inputVariants}
+                            whileFocus="focus"
+                            whileBlur="blur"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            name="other_course_marks"
+                            value={formData.other_course_marks}
+                            onChange={handleInputChange}
+                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Percentage"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <motion.button
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md flex items-center justify-center"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <FiLoader className="animate-spin mr-2" /> Enrolling in
+                    Course...
+                  </>
+                ) : (
+                  <>
+                    <FiCheck className="mr-2" /> Submit and Enroll
+                  </>
+                )}
+              </motion.button>
+            </form>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
+      {/* Background decorative elements */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-bl-full"></div>
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-50 rounded-tr-full"></div>
+
+      <div className="w-full max-w-lg relative z-10">
+        {/* Main card */}
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
+          {/* Blue accent header */}
+          <div className="h-3 bg-blue-600"></div>
+
+          <div className="p-8">
+            {/* Status icon */}
+            <div className="flex justify-center mb-6">
+              <div className="p-4 bg-blue-100 rounded-full">
+                <AlertCircle size={48} className="text-blue-600" />
+              </div>
             </div>
 
-            {/* Submit Button */}
-            <motion.button
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md flex items-center justify-center"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <FiLoader className="animate-spin mr-2" /> Enrolling in
-                  Course...
-                </>
-              ) : (
-                <>
-                  <FiCheck className="mr-2" /> Submit and Enroll
-                </>
-              )}
-            </motion.button>
-          </form>
-        </motion.div>
+            {/* Error title and message */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-800 mb-3">
+                Account Not Found
+              </h1>
+              <p className="text-gray-600 text-lg">
+                We couldn't verify your account credentials. Please check your
+                information and try again.
+              </p>
+            </div>
+
+            {/* Horizontal rule */}
+            <div className="border-t border-gray-200 my-6"></div>
+
+            {/* Action buttons */}
+            <div className="space-y-4">
+              <button className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-300 flex items-center justify-center shadow-md">
+                <RefreshCw className="h-5 w-5 mr-2" />
+                Try Again
+              </button>
+
+              <button
+                className="w-full py-4 px-6 bg-white border-2 border-blue-600 hover:bg-blue-50 text-blue-600 font-medium rounded-lg transition duration-300 flex items-center justify-center"
+                onClick={() => navigate("/")}
+              >
+                <Home className="h-5 w-5 mr-2" />
+                Return to Login Page
+              </button>
+            </div>
+
+            {/* Error code badge */}
+            <div className="mt-8 flex justify-center">
+              <span className="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-600 flex items-center">
+                <HelpCircle className="h-4 w-4 mr-2 text-blue-600" />
+                Error Code: AUTH_INVALID_401
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer message */}
+        <div className="mt-6 text-center">
+          <p className="text-gray-500">
+            If this issue persists, please try again later or use a different
+            browser.
+          </p>
+        </div>
       </div>
     </div>
   );

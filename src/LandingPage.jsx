@@ -5,8 +5,7 @@ import CoursesAndExam from "./components/LandingPage/CoursesAndExam";
 import HeroSection from "./components/LandingPage/HeroSection";
 
 const LandingPage = () => {
-  console.log("Sourin");
-  console.log("Dhua");
+
   return (
     <div>
       <HeroSection />

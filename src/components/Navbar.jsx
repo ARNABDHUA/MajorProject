@@ -7,7 +7,8 @@ import { IoClose } from "react-icons/io5";
 import { FaChevronDown, FaUserCircle } from "react-icons/fa";
 import { MdDashboard, MdLogout } from "react-icons/md";
 import Swal from "sweetalert2";
-import logo from "/images/Logo.svg";
+// import logo from "/images/Logo.svg";
+import logo from "/images/Ecollgelogo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,6 +52,10 @@ const Navbar = () => {
 
   const linkVariants = {
     hover: { color: "#3B82F6", transition: { duration: 0.2 } },
+  };
+
+  const logoVariants = {
+    hover: { scale: 1.02, transition: { duration: 0.2 } },
   };
 
   const handleSignOut = () => {
@@ -171,19 +176,29 @@ const Navbar = () => {
   };
 
   return (
-    <div className="sticky top-0 z-1000 bg-white shadow-md">
-      <div className="relative py-4 px-4 lg:px-8">
+    <div className="sticky top-0 z-50 bg-white shadow-md">
+      <div className="relative py-2 px-4 lg:px-8">
         {/* Desktop view */}
         <div className="flex justify-between items-center">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
+            whileHover={logoVariants.hover}
+            className="flex items-center"
+            onClick={() => navigate("/")}
           >
-            <img src={logo} alt="Logo" className="w-36 h-auto" />
+            <div className="flex-shrink-0 cursor-pointer overflow-hidden">
+              {/* Responsive logo sizing */}
+              <img 
+                src={logo} 
+                alt="ECollege Logo" 
+                className="h-12 md:h-14 lg:h-16 w-auto object-contain rounded-full" 
+              />
+            </div>
           </motion.div>
 
-          <div className="hidden md:flex">
+          <div className="hidden md:flex flex-1 justify-center">
             <ul className="flex space-x-6 items-center">
               <motion.li variants={linkVariants} whileHover="hover">
                 <NavLink

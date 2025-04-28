@@ -11,7 +11,8 @@ const ChatProvider = ({ children }) => {
   const [chats, setChats] = useState();
   const [courseCode, setCourseCode] = useState();
   const [email, setEmail] = useState();
-  const [attendance_id,setAttendance_id]=useState(null);
+  const [attendance_id, setAttendance_id] = useState(null);
+  const [teacherAttandance, setTeacherAttandance] = useState([]);
 
   const history = useNavigate();
   // useEffect(() => {
@@ -43,7 +44,9 @@ const ChatProvider = ({ children }) => {
         email,
         setEmail,
         attendance_id,
-        setAttendance_id
+        setAttendance_id,
+        teacherAttandance,
+        setTeacherAttandance,
       }}
     >
       {children}

@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { APP_ID, SECRET } from "./CallConfig.js";
+import { ChatState } from "../../../context/ChatProvider";
+import axios from "axios";
 
 function Room() {
   const { roomId } = useParams();
@@ -13,11 +15,19 @@ function Room() {
   const [callType, setCallType] = useState("");
   const [error, setError] = useState(null);
   const initializingRef = useRef(false);
+  const [userData, setUserData] = useState([]);
 
+  //context api call
+  const {
+    attendance_id,
+    setAttendance_id,
+    teacherAttandance,
+    setTeacherAttandance,
+  } = ChatState();
   // Attendance tracking state
   const [attendanceData, setAttendanceData] = useState({});
   const attendanceTimeRef = useRef(null);
-  const minimumAttendanceTime = 20 * 60 * 1000; // 20 minutes in milliseconds
+  const minimumAttendanceTime = 10 * 60 * 1000; // 20 minutes in milliseconds
 
   // Room expiration state
   const [roomExpired, setRoomExpired] = useState(false);
@@ -55,6 +65,12 @@ function Room() {
       return false;
     }
   }
+  useEffect(() => {
+    const teacherAttandanceId = localStorage.getItem("teacherAtten");
+    setAttendance_id(teacherAttandanceId);
+    const userDetails = JSON.parse(localStorage.getItem("user"));
+    setUserData(userDetails);
+  }, []);
 
   // Process attendance data
   const processAttendance = (userName, joinTime, leaveTime) => {
@@ -409,6 +425,34 @@ function Room() {
             !attendanceData[name]?.success
           ) {
             console.log("SUCCESS - Minimum attendance requirement met!");
+            console.log("Arnab sdhai", attendance_id);
+            const updateAttendanceRecord = async () => {
+              try {
+                const response = await axios.post(
+                  `https://e-college-data.onrender.com/v1/teachers/teachers-attendance-end`,
+                  {
+                    attendance_id: attendance_id,
+                  }
+                );
+                console.log("Attendance record updated:", response.data);
+                if (response.data) {
+                  const teacherData = response.data.data.attendance;
+                  localStorage.setItem(
+                    "teacherAttendanceData",
+                    JSON.stringify(teacherData)
+                  );
+                  // console.log(
+                  //   "Attendance details:",
+                  //   response.data.data.attendance
+                  // );
+                }
+              } catch (error) {
+                console.error("Failed to update attendance record:", error);
+              }
+            };
+
+            // Call the async function
+            if (userData.role === "teacher") updateAttendanceRecord();
             setAttendanceData((prev) => ({
               ...prev,
               [name]: {
@@ -418,7 +462,7 @@ function Room() {
             }));
           }
         }
-      }, 1000); // Every second
+      }, 60000); // Every second
 
       return () => clearInterval(intervalId);
     }

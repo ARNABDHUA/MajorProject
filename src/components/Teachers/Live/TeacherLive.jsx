@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { ChatState } from "../../../context/ChatProvider";
 // Day mapping for consistent day representation
 const dayMapping = {
   Sunday: "Day 0",
@@ -21,6 +21,9 @@ const LiveClassScheduler = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [paperCode, setPaperCode] = useState([]);
+  const [cRoll, setCRoll] = useState();
+
+  const { user, setUser, attendance_id, setAttendance_id } = ChatState();
 
   // Added state for success and error messages
   const [successMessage, setSuccessMessage] = useState("");
@@ -38,6 +41,7 @@ const LiveClassScheduler = () => {
           // Retrieve user data from localStorage
           const data = localStorage.getItem("user");
           const ok = JSON.parse(data);
+          setCRoll(ok.c_roll);
 
           setPaperCode(ok.teacher_course);
         }
@@ -66,9 +70,11 @@ const LiveClassScheduler = () => {
       // Add random number to roomCode for uniqueness
       const randomNum = generateRandomNumber();
       const roomCode = `${courseId}-sem${sem}-${paperCode}-${randomNum}`;
-      
+
       // Add type parameter to match the format in the second file (Teacherlive.js)
-      const uniqueUrl = `${baseUrl}/room/${roomCode}?type=group-call&subject=${encodeURIComponent(paperCode)}&timestamp=${Date.now()}&course=${courseId}&semester=${sem}&paperCode=${paperCode}&random=${randomNum}`;
+      const uniqueUrl = `${baseUrl}/room/${roomCode}?type=group-call&subject=${encodeURIComponent(
+        paperCode
+      )}&timestamp=${Date.now()}&course=${courseId}&semester=${sem}&paperCode=${paperCode}&random=${randomNum}`;
 
       return uniqueUrl;
     } catch (error) {
@@ -180,7 +186,7 @@ const LiveClassScheduler = () => {
     try {
       // Store user data in localStorage to match Teacherlive.js pattern
       const userData = JSON.parse(localStorage.getItem("user") || "{}");
-      
+
       // Update localStorage with room information, now including the random ID
       localStorage.setItem(
         "user",
@@ -200,23 +206,39 @@ const LiveClassScheduler = () => {
       );
 
       if (response.data) {
+        const AttendenceResponse = await axios.post(
+          `https://e-college-data.onrender.com/v1/teachers/teachers-attendance-start`,
+          {
+            c_roll: cRoll,
+            paper_code: formData.paper_code,
+            course_code: formData.course_id,
+          }
+        );
+        if (AttendenceResponse.data) {
+          const aId = AttendenceResponse.data.data.attendance_id;
+          setAttendance_id(AttendenceResponse.data.data.attendance_id);
+          const setDataTest = localStorage.setItem("teacherAtten", aId);
+        }
         console.log("Success:", response.data.message);
         setSuccessMessage(response.data.message || "Updated successfully!");
         setShowSuccessModal(true);
       }
     } catch (error) {
       console.error("API Error:", error);
-      
+
       // Improved error handling to show specific error messages
       if (error.response) {
         // Server responded with an error
-        const errorMsg = error.response.data.message || 
-                         error.response.data.error || 
-                         "Failed to update time slot!";
+        const errorMsg =
+          error.response.data.message ||
+          error.response.data.error ||
+          "Failed to update time slot!";
         setErrorMessage(errorMsg);
       } else if (error.request) {
         // Request was made but no response received
-        setErrorMessage("No response from server. Please check your network connection.");
+        setErrorMessage(
+          "No response from server. Please check your network connection."
+        );
       } else {
         // Something happened in setting up the request
         setErrorMessage("Error in request setup. Please try again.");
@@ -243,7 +265,8 @@ const LiveClassScheduler = () => {
           Class Scheduled Successfully!
         </h2>
         <p className="text-gray-600 mb-6">
-          {successMessage || "Your live class has been scheduled. Click 'Open Class' to join the virtual classroom."}
+          {successMessage ||
+            "Your live class has been scheduled. Click 'Open Class' to join the virtual classroom."}
         </p>
         <div className="flex justify-between space-x-4">
           <button

@@ -64,6 +64,7 @@ import ChatProvider from "./context/ChatProvider";
 import Chatpage from "./components/chat/pages/Chatpage";
 import EnrollCourse from "./components/Courses/CourseModulesTab/EnrollCourse";
 import Payment from "./components/Payment";
+import ForgotPassword from "./components/student/Auth/ForgotPassword";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -157,7 +158,7 @@ const DisplaySetup = () => {
                   </TeacherProtectedRoute>
                 }
               />
-               <Route
+              <Route
                 path="teacher-chat"
                 element={
                   <ProtectedRoute allowedRoles={["teacher"]}>
@@ -168,6 +169,7 @@ const DisplaySetup = () => {
             </Route>
             {/* Admin */}
             <Route path="/admin" element={<Admin />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/payment"
               element={

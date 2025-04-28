@@ -79,18 +79,18 @@ const MyCourses = () => {
   return (
     <div>
       {payment && (
-        <div> 
-          <div className="text-xl font-bold mb-4">Your current course</div>
-          <div>
+        <div className="bg-gray-100 min-h-screen py-8"> 
+          <div className="text-3xl font-medium max-w-4xl mx-auto py-5 px-7 rounded-lg shadow-md overflow-hidden text-white bg-blue-600 ">Your current course</div>
+          <div className="">
             {myCourse.length > 0 ? (
               myCourse.map((c, index) => (
-                <div key={index} className="bg-blue-100 p-4 mb-2 rounded"> 
-                  <h3 className="font-bold text-lg">{c.name}</h3>
-                  <img src="" alt="" />
-                  <p className="text-sm text-gray-600">Code: {c.code}</p>
-                  <p className="text-sm text-gray-600">Duration: {c.duration}</p>
-                  <p className="mt-2">{c.description}</p>
-                  <p className="mt-2 text-sm">Instructor: {c.instructor}</p>
+                <div key={index} className="max-w-4xl mx-auto px-7 py-8 mt-10 bg-white rounded-lg shadow-md overflow-hidden"> 
+                  <h3 className="font-bold text-2xl pb-4  text-gray-700">{c.name}</h3>
+                  <p className="text-l text-gray-600 ">Code: {c.code}</p>
+                  <p className="text-l mt-2 text-gray-600">Duration:  {c.duration}</p>
+                  <p className="mt-2 text-l text-gray-600">{c.description}</p>
+                  <p className="mt-2 text-l text-gray-600">Instructor: {c.instructor}</p>
+                  <button className="mt-12 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 border border-blue-700 rounded">go to the course</button>
                   
                 </div>
               ))

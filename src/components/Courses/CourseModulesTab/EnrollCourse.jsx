@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { AlertCircle, Home, RefreshCw, HelpCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import {
   FiUser,
@@ -897,97 +898,71 @@ const EnrollCourse = () => {
       </div>
     </div>
   ) : (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md relative">
-        {/* Decorative elements */}
-        <div className="absolute -top-20 -left-20 w-40 h-40 bg-red-500 rounded-full opacity-10 blur-xl"></div>
-        <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-orange-400 rounded-full opacity-10 blur-xl"></div>
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
+      {/* Background decorative elements */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-bl-full"></div>
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-50 rounded-tr-full"></div>
 
-        {/* Card */}
-        <div className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-sm relative z-10">
-          {/* Red accent bar */}
-          <div className="h-2 bg-gradient-to-r from-red-500 to-orange-500"></div>
+      <div className="w-full max-w-lg relative z-10">
+        {/* Main card */}
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
+          {/* Blue accent header */}
+          <div className="h-3 bg-blue-600"></div>
 
           <div className="p-8">
-            {/* Icon */}
-            <div className="mx-auto w-20 h-20 rounded-full bg-gray-900/50 flex items-center justify-center mb-6 border border-gray-700">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 text-red-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
+            {/* Status icon */}
+            <div className="flex justify-center mb-6">
+              <div className="p-4 bg-blue-100 rounded-full">
+                <AlertCircle size={48} className="text-blue-600" />
+              </div>
             </div>
 
-            {/* Error Title */}
-            <h2 className="text-2xl font-bold text-white text-center mb-2">
-              Invalid User
-            </h2>
+            {/* Error title and message */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-800 mb-3">
+                Account Not Found
+              </h1>
+              <p className="text-gray-600 text-lg">
+                We couldn't verify your account credentials. Please check your
+                information and try again.
+              </p>
+            </div>
 
-            {/* Error Message */}
-            <p className="text-gray-400 text-center mb-8">
-              We couldn't verify your account credentials. Please check your
-              information and try again.
-            </p>
+            {/* Horizontal rule */}
+            <div className="border-t border-gray-200 my-6"></div>
 
-            {/* Divider */}
-            <div className="border-t border-gray-700 my-6"></div>
-
-            {/* Options */}
+            {/* Action buttons */}
             <div className="space-y-4">
+              <button className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-300 flex items-center justify-center shadow-md">
+                <RefreshCw className="h-5 w-5 mr-2" />
+                Try Again
+              </button>
+
               <button
-                className="w-full py-3 px-4 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-medium rounded-lg transition duration-300 flex items-center justify-center"
+                className="w-full py-4 px-6 bg-white border-2 border-blue-600 hover:bg-blue-50 text-blue-600 font-medium rounded-lg transition duration-300 flex items-center justify-center"
                 onClick={() => navigate("/")}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Return to Home
-              </button>
-
-              <button className="w-full py-3 px-4 bg-transparent border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white font-medium rounded-lg transition duration-300">
-                Contact Support
+                <Home className="h-5 w-5 mr-2" />
+                Return to Login Page
               </button>
             </div>
 
-            {/* Additional Help */}
-            <div className="mt-6 text-center">
-              <span className="text-gray-500 text-sm">Need help? </span>
-              <a
-                href="#"
-                className="text-red-400 hover:text-red-300 text-sm transition duration-300"
-              >
-                View our documentation
-              </a>
+            {/* Error code badge */}
+            <div className="mt-8 flex justify-center">
+              <span className="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-600 flex items-center">
+                <HelpCircle className="h-4 w-4 mr-2 text-blue-600" />
+                Error Code: AUTH_INVALID_401
+              </span>
             </div>
           </div>
-
-          {/* Bottom accent */}
-          <div className="h-1 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800"></div>
         </div>
 
-        {/* Error code */}
-        <div className="mt-4 text-center">
-          <span className="px-3 py-1 bg-gray-800 border border-gray-700 rounded-full text-xs text-gray-400">
-            Error Code: AUTH_INVALID_401
-          </span>
+        {/* Footer message */}
+        <div className="mt-6 text-center">
+          <p className="text-gray-500">
+            If this issue persists, please try again later or use a different
+            browser.
+          </p>
         </div>
       </div>
     </div>

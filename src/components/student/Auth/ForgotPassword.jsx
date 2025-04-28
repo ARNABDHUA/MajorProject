@@ -9,6 +9,7 @@ import {
   Phone,
   ArrowRight,
   CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 
 const pageVariants = {
@@ -36,20 +37,114 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Mock database entry for verification
+  const mockUserData = {
+    name: "John Doe",
+    email: "john.doe@gmail.com",
+    phone: "5551234567",
+  };
+
+  // Validation functions
+  const validateEmail = (email) => {
+    // Check if email ends with @gmail.com
+    if (!email.endsWith("@gmail.com")) {
+      return "Email must end with @gmail.com";
+    }
+
+    // Check if email contains a 10-digit number
+    const tenDigitNumberRegex = /\b\d{10}\b/;
+    if (tenDigitNumberRegex.test(email)) {
+      return "Email should not contain a 10-digit number";
+    }
+
+    return "";
+  };
+
+  const validateName = (name) => {
+    // Check if name contains numbers
+    if (/\d/.test(name)) {
+      return "Name must not contain any numbers";
+    }
+
+    // Check name length
+    if (name.length <= 4) {
+      return "Name must be more than 4 characters long";
+    }
+
+    return "";
+  };
+
+  const validatePhone = (phone) => {
+    // Check if phone contains only digits
+    if (!/^\d+$/.test(phone)) {
+      return "Phone number should only contain digits";
+    }
+
+    // Check if phone number is exactly 10 digits
+    if (phone.length !== 10) {
+      return "Phone number must be exactly 10 digits long";
+    }
+
+    return "";
+  };
+
+  // Check if provided credentials match stored data
+  const validateCredentials = () => {
+    // Compare case-insensitive emails (without considering @gmail.com)
+    const userEmailPrefix = email.split("@")[0].toLowerCase();
+    const storedEmailPrefix = mockUserData.email.split("@")[0].toLowerCase();
+
+    if (
+      name.toLowerCase() !== mockUserData.name.toLowerCase() ||
+      userEmailPrefix !== storedEmailPrefix
+    ) {
+      return "Name and email don't match our records";
+    }
+
+    return "";
+  };
+
   const handleEmailSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
+    // Run all validations
+    const nameError = validateName(name);
+    const emailError = validateEmail(email);
+    const phoneError = validatePhone(phone);
+
+    if (nameError) {
+      setError(nameError);
+      setLoading(false);
+      return;
+    }
+
+    if (emailError) {
+      setError(emailError);
+      setLoading(false);
+      return;
+    }
+
+    if (phoneError) {
+      setError(phoneError);
+      setLoading(false);
+      return;
+    }
+
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
-      // Mock check if email exists - for demo purposes
-      if (email === "nonexistent@example.com") {
-        setError("No user found with this email.");
-      } else {
-        setCurrentStep(2);
+
+      // Check if credentials match
+      const credentialError = validateCredentials();
+      if (credentialError) {
+        setError(credentialError);
+        return;
       }
+
+      // Otherwise proceed to next step
+      setCurrentStep(2);
     }, 1500);
   };
 
@@ -176,6 +271,9 @@ const ForgotPassword = () => {
                       required
                     />
                   </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Must be more than 4 characters with no numbers
+                  </p>
                 </div>
 
                 <div>
@@ -191,10 +289,13 @@ const ForgotPassword = () => {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="5551234567"
                       required
                     />
                   </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Numbers only, no spaces or special characters
+                  </p>
                 </div>
 
                 <div>
@@ -210,19 +311,26 @@ const ForgotPassword = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="your@email.com"
+                      placeholder="your@gmail.com"
                       required
                     />
                   </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Must end with @gmail.com and no 10-digit numbers
+                  </p>
                 </div>
 
                 {error && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm"
+                    className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm flex items-start"
                   >
-                    {error}
+                    <AlertCircle
+                      size={16}
+                      className="text-red-500 mr-2 mt-0.5 flex-shrink-0"
+                    />
+                    <span>{error}</span>
                   </motion.div>
                 )}
 
@@ -298,9 +406,13 @@ const ForgotPassword = () => {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm"
+                    className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm flex items-start"
                   >
-                    {error}
+                    <AlertCircle
+                      size={16}
+                      className="text-red-500 mr-2 mt-0.5 flex-shrink-0"
+                    />
+                    <span>{error}</span>
                   </motion.div>
                 )}
 
@@ -474,9 +586,13 @@ const ForgotPassword = () => {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm"
+                    className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm flex items-start"
                   >
-                    {error}
+                    <AlertCircle
+                      size={16}
+                      className="text-red-500 mr-2 mt-0.5 flex-shrink-0"
+                    />
+                    <span>{error}</span>
                   </motion.div>
                 )}
 

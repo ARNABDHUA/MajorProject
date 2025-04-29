@@ -64,7 +64,7 @@ const Schedule = () => {
       setLoading(true);
 
       // Get teacher data from local storage or use defaults if not available
-      const teacherData = JSON.parse(localStorage.getItem("teacherData")) || {};
+      const teacherData = JSON.parse(localStorage.getItem("user")) || {};
       const paperCodes = teacherData.teacher_course || ["MCA-101", "MCA-104"];
 
       // Make API request to fetch schedule data

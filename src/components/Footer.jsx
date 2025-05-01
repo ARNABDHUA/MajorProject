@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
   const navigate = useNavigate();
-  
+
   // Function to handle navigation and scroll to top
   const handleNavigation = (path) => {
     navigate(path);
     window.scrollTo(0, 0); // This scrolls the window to the top
   };
-  
+
   return (
     <footer className="py-12 bg-white">
       <div className="container mx-auto grid gap-10 grid-cols-1 sm:grid-cols-12 px-6 lg:px-16">
@@ -161,10 +161,10 @@ const Footer = () => {
             <p className="text-black mt-3 text-sm">
               Email:{" "}
               <a
-                href="mailto:arnabdhua74@gmail.com"
+                href="mailto:ecollege.helper@gmail.com"
                 className="text-blue-500 hover:underline"
               >
-                arnabdhua74@gmail.com
+                ecollege.helper@gmail.com
               </a>
             </p>
           </div>

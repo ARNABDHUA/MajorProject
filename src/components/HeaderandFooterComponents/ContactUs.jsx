@@ -122,7 +122,7 @@ const ContactUs = () => {
             fill out the form, and we will get back to you promptly.
           </h6>
           <form
-            action="https://formspree.io/f/xnnqyjnj"
+            action="https://formspree.io/f/xnndjeeq"
             onSubmit={handleSubmit(onSubmit)}
             method="POST"
             className="flex flex-col space-y-4 mt-4"

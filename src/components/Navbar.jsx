@@ -117,7 +117,7 @@ const Navbar = () => {
           <AnimatePresence>
             {userMenuOpen && (
               <motion.div
-                className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50"
+                className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-1000"
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
@@ -176,7 +176,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="sticky top-0 z-50 bg-white shadow-md">
+    <div className="sticky top-0  bg-white shadow-md z-1000">
       <div className="relative py-2 px-4 lg:px-8">
         {/* Desktop view */}
         <div className="flex justify-between items-center">
@@ -190,10 +190,10 @@ const Navbar = () => {
           >
             <div className="flex-shrink-0 cursor-pointer overflow-hidden">
               {/* Responsive logo sizing */}
-              <img 
-                src={logo} 
-                alt="ECollege Logo" 
-                className="h-12 md:h-14 lg:h-16 w-auto object-contain rounded-full" 
+              <img
+                src={logo}
+                alt="ECollege Logo"
+                className="h-12 md:h-14 lg:h-16 w-auto object-contain rounded-full"
               />
             </div>
           </motion.div>

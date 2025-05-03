@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaHome, FaUser, FaComment } from "react-icons/fa";
 import { FaRegNoteSticky } from "react-icons/fa6";
 import { MdCoPresent } from "react-icons/md";
+import { MdQuiz } from "react-icons/md";
+import { BiSolidVideoRecording } from "react-icons/bi";
 import Swal from "sweetalert2";
 
 import {
@@ -80,6 +82,18 @@ const menuItems = [
     title: "Chat",
     icon: <FaComment className="w-5 h-5" />,
     path: "/teacher-chat",
+  },
+  {
+    id: 11,
+    title: "Upload Recorded Class",
+    icon: <BiSolidVideoRecording className="w-5 h-5" />,
+    path: "/upload-recorded-class",
+  },
+  {
+    id: 12,
+    title: "Quiz",
+    icon: <MdQuiz className="w-5 h-5" />,
+    path: "/teacher-quiz",
   },
 ];
 

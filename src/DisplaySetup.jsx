@@ -65,6 +65,11 @@ import Chatpage from "./components/chat/pages/Chatpage";
 import EnrollCourse from "./components/Courses/CourseModulesTab/EnrollCourse";
 import Payment from "./components/Payment";
 import ForgotPassword from "./components/student/Auth/ForgotPassword";
+import ClassAssesment from "./components/student/Pages/ClassAssesment";
+import Assistant from "./components/student/Pages/Assistant";
+import Marks from "./components/student/Pages/Marks";
+import UploadRecordedClass from "./components/Teachers/Pages/UploadRecordedClass";
+import TeacherQuiz from "./components/Teachers/Pages/TeacherQuiz";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -106,6 +111,22 @@ const DisplaySetup = () => {
                 element={
                   <TeacherProtectedRoute allowedRoles={["teacher"]}>
                     <Student />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/upload-recorded-class"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <UploadRecordedClass />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/teacher-quiz"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <TeacherQuiz />
                   </TeacherProtectedRoute>
                 }
               />
@@ -233,6 +254,31 @@ const DisplaySetup = () => {
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <EditProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/class-assesment"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <ClassAssesment />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/student-marks"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <Marks />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/class-assistant"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <Assistant />
                   </ProtectedRoute>
                 }
               />

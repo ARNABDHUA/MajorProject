@@ -70,6 +70,7 @@ import Assistant from "./components/student/Pages/Assistant";
 import Marks from "./components/student/Pages/Marks";
 import UploadRecordedClass from "./components/Teachers/Pages/UploadRecordedClass";
 import TeacherQuiz from "./components/Teachers/Pages/TeacherQuiz";
+import AdminLayout from "./components/Admin/Layout/AdminLayout";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -189,7 +190,10 @@ const DisplaySetup = () => {
               />
             </Route>
             {/* Admin */}
-            <Route path="/admin" element={<Admin />} />
+            <Route element={<AdminLayout />}>
+              <Route path="/admin" element={<Admin />} />
+            </Route>
+
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/payment"

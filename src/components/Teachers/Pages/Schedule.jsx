@@ -23,13 +23,16 @@ import {
  * - React Icons for improved visual hierarchy
  * - Responsive layout for all screen sizes
  * - Clear status indicators for class states
+ * - Default to current day tab
+ * - Properly disabled buttons for ended classes
+ * - Updated color coding for class status
  */
 const Schedule = () => {
   // State variables
   const [schedule, setSchedule] = useState([]); // Stores the schedule data
   const [loading, setLoading] = useState(true); // Controls loading state
   const [error, setError] = useState(null); // Stores any error messages
-  const [activeDay, setActiveDay] = useState(0); // Tracks the currently selected day tab (0-4)
+  const [activeDay, setActiveDay] = useState(null); // Tracks the currently selected day tab (0-4)
   const [refreshing, setRefreshing] = useState(false); // Controls refresh animation
 
   // Animation variants for Framer Motion
@@ -49,6 +52,20 @@ const Schedule = () => {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
   };
+
+  // Set initial active day based on current day of week
+  useEffect(() => {
+    const today = new Date().getDay(); // 0 (Sunday) through 6 (Saturday)
+
+    // Only set activeDay for weekdays (Monday-Friday)
+    // Monday = 1 in Date.getDay() but we need 0 for our array indexing
+    if (today >= 1 && today <= 5) {
+      setActiveDay(today - 1); // Convert to 0-indexed (Monday = 0, Friday = 4)
+    } else {
+      // For weekend (Saturday/Sunday), don't select any day by default
+      setActiveDay(null);
+    }
+  }, []);
 
   // Load schedule data when component mounts
   useEffect(() => {
@@ -263,35 +280,38 @@ const Schedule = () => {
     const status = getClassStatus(classItem);
 
     // Define status configuration for styling and content
+    // Updated color coding as per requirement:
+    // - Live classes should be blue
+    // - Completed classes should be green
     const statusConfig = {
       live: {
-        borderColor: "border-green-500",
-        bgColor: "bg-white",
-        icon: <FiVideo className="text-green-500" />,
+        borderColor: "border-blue-500",
+        bgColor: "bg-blue-50",
+        icon: <FiVideo className="text-blue-500" />,
         label: "Live Now",
-        labelColor: "bg-green-100 text-green-800",
+        labelColor: "bg-blue-100 text-blue-800",
         iconPulse: true,
       },
       today: {
-        borderColor: "border-blue-500",
-        bgColor: "bg-white",
-        icon: <FiClock className="text-blue-500" />,
-        label: "Today",
-        labelColor: "bg-blue-100 text-blue-800",
-      },
-      upcoming: {
         borderColor: "border-purple-500",
         bgColor: "bg-white",
-        icon: <FiCalendar className="text-purple-500" />,
-        label: "Upcoming",
+        icon: <FiClock className="text-purple-500" />,
+        label: "Today",
         labelColor: "bg-purple-100 text-purple-800",
       },
-      past: {
-        borderColor: "border-gray-300",
+      upcoming: {
+        borderColor: "border-indigo-500",
         bgColor: "bg-white",
-        icon: <FiCheck className="text-gray-500" />,
+        icon: <FiCalendar className="text-indigo-500" />,
+        label: "Upcoming",
+        labelColor: "bg-indigo-100 text-indigo-800",
+      },
+      past: {
+        borderColor: "border-green-500",
+        bgColor: "bg-green-50",
+        icon: <FiCheck className="text-green-500" />,
         label: "Completed",
-        labelColor: "bg-gray-100 text-gray-600",
+        labelColor: "bg-green-100 text-green-800",
       },
       unscheduled: {
         borderColor: "border-gray-300",
@@ -305,27 +325,27 @@ const Schedule = () => {
     // Button configuration based on status
     const buttonConfig = {
       live: {
-        classes: "bg-green-500 hover:bg-green-600 text-white shadow-lg",
+        classes: "bg-blue-500 hover:bg-blue-600 text-white shadow-lg",
         disabled: false,
         text: "Join Live Class",
       },
       today: {
-        classes: "bg-blue-500 hover:bg-blue-600 text-white shadow-md",
+        classes: "bg-purple-500 hover:bg-purple-600 text-white shadow-md",
         disabled: false,
         text: "View Class Link",
       },
       upcoming: {
-        classes: "bg-gray-500 hover:bg-gray-600 text-white shadow-sm",
-        disabled: true,
-        text: "Not Active Yet",
+        classes: "bg-indigo-500 hover:bg-indigo-600 text-white shadow-sm",
+        disabled: false,
+        text: "View Details",
       },
       past: {
-        classes: "bg-gray-300 text-gray-600 shadow-none",
+        classes: "bg-gray-300 text-gray-600 cursor-not-allowed opacity-60",
         disabled: true,
         text: "Class Ended",
       },
       unscheduled: {
-        classes: "bg-gray-300 text-gray-600 shadow-none",
+        classes: "bg-gray-300 text-gray-600 cursor-not-allowed opacity-60",
         disabled: true,
         text: "No Link Available",
       },
@@ -338,11 +358,11 @@ const Schedule = () => {
       <motion.div
         key={idx}
         variants={cardVariants}
-        className={`mb-4 border-l-4 rounded-lg shadow-md p-4 ${config.borderColor} ${config.bgColor}`}
+        className={`mb-5 border-l-4 rounded-lg shadow-lg p-5 ${config.borderColor} ${config.bgColor}`}
       >
-        <div className="flex items-center mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center mb-4">
           {/* Course icon/image */}
-          <div className="w-14 h-14 mr-4 rounded-full overflow-hidden bg-white flex items-center justify-center shadow-sm border border-gray-100">
+          <div className="w-14 h-14 mb-3 sm:mb-0 sm:mr-4 rounded-full overflow-hidden bg-white flex items-center justify-center shadow-sm border border-gray-100">
             {classItem.image ? (
               <img
                 src={
@@ -361,8 +381,8 @@ const Schedule = () => {
           </div>
 
           {/* Course title and code */}
-          <div className="flex-1">
-            <h4 className="font-medium text-gray-900 text-lg">
+          <div className="flex-1 mb-3 sm:mb-0">
+            <h4 className="font-semibold text-gray-900 text-lg">
               {classItem.paper || "Untitled Course"}
             </h4>
             <div className="flex items-center text-sm text-gray-600">
@@ -393,7 +413,7 @@ const Schedule = () => {
         </div>
 
         {/* Class details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-4 bg-gray-50 p-3 rounded-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-4 bg-gray-50 p-4 rounded-lg shadow-sm">
           <div className="flex items-start">
             <FiBook className="mr-2 mt-1 text-gray-500" />
             <div>
@@ -421,21 +441,31 @@ const Schedule = () => {
           </div>
         </div>
 
-        {/* Join class button */}
+        {/* Join class button - with properly disabled non-active buttons */}
         {classItem.is_live && (
           <div className="flex justify-end">
-            <motion.a
-              href={classItem.is_live}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors ${btnConfig.classes}`}
-              disabled={btnConfig.disabled}
-              whileHover={{ scale: btnConfig.disabled ? 1 : 1.05 }}
-              whileTap={{ scale: btnConfig.disabled ? 1 : 0.95 }}
-            >
-              <FiVideo className="mr-2" />
-              {btnConfig.text}
-            </motion.a>
+            {btnConfig.disabled ? (
+              // Properly disabled button with no interaction
+              <div
+                className={`inline-flex items-center px-5 py-2 rounded-full text-sm font-medium ${btnConfig.classes}`}
+              >
+                <FiVideo className="mr-2" />
+                {btnConfig.text}
+              </div>
+            ) : (
+              // Active button with hover effects
+              <motion.a
+                href={classItem.is_live}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors ${btnConfig.classes}`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiVideo className="mr-2" />
+                {btnConfig.text}
+              </motion.a>
+            )}
           </div>
         )}
       </motion.div>
@@ -444,6 +474,7 @@ const Schedule = () => {
 
   /**
    * Renders day tabs for navigation with smooth animations
+   * Now handles null activeDay state for weekends
    */
   const renderDayTabs = () => {
     const days = [
@@ -455,7 +486,7 @@ const Schedule = () => {
     ];
 
     return (
-      <div className="mb-6 border-b border-gray-100">
+      <div className="mb-6 border-b border-gray-200">
         <div className="flex overflow-x-auto scrollbar-hide">
           {days.map((day, index) => (
             <motion.button
@@ -487,6 +518,33 @@ const Schedule = () => {
     if (loading) return renderLoading();
     if (error) return renderError();
     if (!schedule.length) return renderEmpty();
+
+    // If activeDay is null (weekend), show a message to select a day
+    if (activeDay === null) {
+      return (
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          {/* Day navigation tabs */}
+          {renderDayTabs()}
+
+          {/* Weekend message */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="py-16 text-center"
+          >
+            <div className="inline-flex justify-center items-center w-20 h-20 rounded-full bg-blue-100 mb-4">
+              <FiCalendar size={32} className="text-blue-500" />
+            </div>
+            <h3 className="text-xl font-medium text-gray-800 mb-2">
+              It's the weekend!
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Please select a weekday from the tabs above to view your schedule.
+            </p>
+          </motion.div>
+        </div>
+      );
+    }
 
     // Get classes for the active day
     const dayKey = `day${activeDay + 1}`;
@@ -544,12 +602,14 @@ const Schedule = () => {
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
             My Teaching Schedule
           </h2>
-          <p className="text-gray-600">View and manage your upcoming classes</p>
+          <p className="text-gray-600 mb-4">
+            View and manage your upcoming classes
+          </p>
 
           {/* Refresh button */}
           <motion.button
             onClick={refreshSchedule}
-            className="mt-4 inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm transition-colors"
+            className="mt-2 inline-flex items-center justify-center px-5 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             disabled={loading || refreshing}

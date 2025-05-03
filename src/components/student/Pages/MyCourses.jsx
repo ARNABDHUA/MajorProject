@@ -105,7 +105,7 @@ const MyCourses = () => {
                   <p className="text-l mt-2 text-gray-600">Duration:  {c.duration}</p>
                   <p className="mt-2 text-l text-gray-600">{c.description}</p>
                   <p className="mt-2 text-l text-gray-600">Instructor: {c.instructor}</p>
-                  <button className="mt-12 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 border border-blue-700 rounded" onClick={()=>handlepath()}>go to the course</button>
+                  <button className="mt-12 w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 border border-blue-700 rounded" onClick={()=>handlepath()}>go to the course</button>
                   
                 </div>
               ))

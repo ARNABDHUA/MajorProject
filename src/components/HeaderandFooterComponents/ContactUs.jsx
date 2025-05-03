@@ -23,24 +23,26 @@ const ContactUs = () => {
 
   const items = [
     {
-      title: "Customer Support",
-      address: "Chicago HQ Estica Cop. Macomb, MI 48042",
+      title: "Admission Office",
+      address:
+        "TECHNO INDIA CHINGRIGHATA CAMPUS - LB 10, EM Bypass, Sector 3,Chingrighata,",
       phone: "(423) 733-8222",
-      email: "example@email.com",
+      email: "ecollege.helper@gmail.com",
       bg: "bg-[#066ac9] text-white",
     },
     {
-      title: "Contact Address",
-      address: "2492 Centennial NW, Acworth, GA, 30102",
+      title: "Campus Address",
+      address: "EM-4/1, Sector-V, Salt Lake, Kolkata-700091, WB",
       phone: "+896-789-546",
-      email: "example@email.com",
+      email: "ecollege.helper@gmail.com",
       bg: "bg-white shadow-md",
     },
     {
       title: "Main Office Address",
-      address: "2002 Horton Ford Rd, Eidson, TN, 37731",
+      address:
+        "Techno India, TECHNO INDIA : EM-4/1, Sector V, Bidhannagar, Kolkata, West Bengal 700091",
       phone: "(678) 324-1251",
-      email: "example@email.com",
+      email: "ecollege.helper@gmail.com",
       bg: "bg-white shadow-md",
     },
   ];

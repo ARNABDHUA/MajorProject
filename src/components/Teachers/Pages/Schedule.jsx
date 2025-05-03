@@ -7,7 +7,6 @@ import {
   FiBook,
   FiVideo,
   FiAlertCircle,
-  FiCheck,
   FiLoader,
   FiRefreshCw,
   FiBookOpen,
@@ -22,10 +21,9 @@ import {
  * - Framer Motion animations for smooth transitions
  * - React Icons for improved visual hierarchy
  * - Responsive layout for all screen sizes
- * - Clear status indicators for class states
  * - Default to current day tab
  * - Properly disabled buttons for ended classes
- * - Updated color coding for class status
+ * - Simple class displays
  */
 const Schedule = () => {
   // State variables
@@ -173,23 +171,6 @@ const Schedule = () => {
   };
 
   /**
-   * Calculates class status (upcoming, live, past)
-   * @param {Object} classItem - Class data object
-   * @returns {string} Status of the class
-   */
-  const getClassStatus = (classItem) => {
-    if (!classItem || !classItem.date) return "unscheduled";
-
-    const today = new Date().toISOString().split("T")[0];
-
-    if (classItem.date < today) return "past";
-    if (classItem.date > today) return "upcoming";
-
-    // Class is today - check if it's live
-    return isClassLive(classItem) ? "live" : "today";
-  };
-
-  /**
    * Renders loading state with animation
    */
   const renderLoading = () => (
@@ -272,93 +253,19 @@ const Schedule = () => {
   );
 
   /**
-   * Renders a single class card with appropriate styling based on status
+   * Renders a single class card
    * @param {Object} classItem - Class data object
    * @param {number} idx - Index of the class
    */
   const renderClassCard = (classItem, idx) => {
-    const status = getClassStatus(classItem);
-
-    // Define status configuration for styling and content
-    // Updated color coding as per requirement:
-    // - Live classes should be blue
-    // - Completed classes should be green
-    const statusConfig = {
-      live: {
-        borderColor: "border-blue-500",
-        bgColor: "bg-blue-50",
-        icon: <FiVideo className="text-blue-500" />,
-        label: "Live Now",
-        labelColor: "bg-blue-100 text-blue-800",
-        iconPulse: true,
-      },
-      today: {
-        borderColor: "border-purple-500",
-        bgColor: "bg-white",
-        icon: <FiClock className="text-purple-500" />,
-        label: "Today",
-        labelColor: "bg-purple-100 text-purple-800",
-      },
-      upcoming: {
-        borderColor: "border-indigo-500",
-        bgColor: "bg-white",
-        icon: <FiCalendar className="text-indigo-500" />,
-        label: "Upcoming",
-        labelColor: "bg-indigo-100 text-indigo-800",
-      },
-      past: {
-        borderColor: "border-green-500",
-        bgColor: "bg-green-50",
-        icon: <FiCheck className="text-green-500" />,
-        label: "Completed",
-        labelColor: "bg-green-100 text-green-800",
-      },
-      unscheduled: {
-        borderColor: "border-gray-300",
-        bgColor: "bg-white",
-        icon: <FiCalendar className="text-gray-400" />,
-        label: "Unscheduled",
-        labelColor: "bg-gray-100 text-gray-600",
-      },
-    };
-
-    // Button configuration based on status
-    const buttonConfig = {
-      live: {
-        classes: "bg-blue-500 hover:bg-blue-600 text-white shadow-lg",
-        disabled: false,
-        text: "Join Live Class",
-      },
-      today: {
-        classes: "bg-purple-500 hover:bg-purple-600 text-white shadow-md",
-        disabled: false,
-        text: "View Class Link",
-      },
-      upcoming: {
-        classes: "bg-indigo-500 hover:bg-indigo-600 text-white shadow-sm",
-        disabled: false,
-        text: "View Details",
-      },
-      past: {
-        classes: "bg-gray-300 text-gray-600 cursor-not-allowed opacity-60",
-        disabled: true,
-        text: "Class Ended",
-      },
-      unscheduled: {
-        classes: "bg-gray-300 text-gray-600 cursor-not-allowed opacity-60",
-        disabled: true,
-        text: "No Link Available",
-      },
-    };
-
-    const config = statusConfig[status];
-    const btnConfig = buttonConfig[status];
+    // Determine if class is live for join button
+    const isLive = isClassLive(classItem);
 
     return (
       <motion.div
         key={idx}
         variants={cardVariants}
-        className={`mb-5 border-l-4 rounded-lg shadow-lg p-5 ${config.borderColor} ${config.bgColor}`}
+        className="mb-5 border-l-4 border-blue-500 rounded-lg shadow-lg p-5 bg-white"
       >
         <div className="flex flex-col sm:flex-row sm:items-center mb-4">
           {/* Course icon/image */}
@@ -390,26 +297,6 @@ const Schedule = () => {
               {classItem.paper_code || "No code"}
             </div>
           </div>
-
-          {/* Status indicator */}
-          <div className="flex items-center">
-            <span
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${config.labelColor}`}
-            >
-              {config.iconPulse ? (
-                <motion.span
-                  animate={{ opacity: [1, 0.4, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="mr-1.5"
-                >
-                  {config.icon}
-                </motion.span>
-              ) : (
-                <span className="mr-1.5">{config.icon}</span>
-              )}
-              {config.label}
-            </span>
-          </div>
         </div>
 
         {/* Class details */}
@@ -440,34 +327,6 @@ const Schedule = () => {
             </div>
           </div>
         </div>
-
-        {/* Join class button - with properly disabled non-active buttons */}
-        {classItem.is_live && (
-          <div className="flex justify-end">
-            {btnConfig.disabled ? (
-              // Properly disabled button with no interaction
-              <div
-                className={`inline-flex items-center px-5 py-2 rounded-full text-sm font-medium ${btnConfig.classes}`}
-              >
-                <FiVideo className="mr-2" />
-                {btnConfig.text}
-              </div>
-            ) : (
-              // Active button with hover effects
-              <motion.a
-                href={classItem.is_live}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex items-center px-5 py-2 rounded-full text-sm font-medium transition-colors ${btnConfig.classes}`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FiVideo className="mr-2" />
-                {btnConfig.text}
-              </motion.a>
-            )}
-          </div>
-        )}
       </motion.div>
     );
   };

@@ -71,6 +71,8 @@ import Marks from "./components/student/Pages/Marks";
 import UploadRecordedClass from "./components/Teachers/Pages/UploadRecordedClass";
 import TeacherQuiz from "./components/Teachers/Pages/TeacherQuiz";
 import AdminLayout from "./components/Admin/Layout/AdminLayout";
+import RoutineScheduling from "./components/Teachers/Pages/RoutineScheduling";
+import TeacherClassAssesment from "./components/Teachers/Pages/TeacherClassAssesment";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -155,22 +157,6 @@ const DisplaySetup = () => {
                   </TeacherProtectedRoute>
                 }
               />
-              <Route
-                path="/teacher-reports"
-                element={
-                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                    <Reports />
-                  </TeacherProtectedRoute>
-                }
-              />
-              <Route
-                path="/teacher-settings"
-                element={
-                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                    <Settings />
-                  </TeacherProtectedRoute>
-                }
-              />
 
               <Route
                 path="/teacher-attendance"
@@ -185,6 +171,22 @@ const DisplaySetup = () => {
                 element={
                   <ProtectedRoute allowedRoles={["teacher"]}>
                     <Chatpage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/schedule-class"
+                element={
+                  <ProtectedRoute allowedRoles={["teacher"]}>
+                    <RoutineScheduling />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/teacher-assesment"
+                element={
+                  <ProtectedRoute allowedRoles={["teacher"]}>
+                    <TeacherClassAssesment />
                   </ProtectedRoute>
                 }
               />

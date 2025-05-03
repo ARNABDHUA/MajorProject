@@ -104,6 +104,31 @@ const ForgotPassword = () => {
     return "";
   };
 
+  // Password validation function
+  const validatePassword = (password) => {
+    // Check if password is more than 8 characters
+    if (password.length < 8) {
+      return "Password must be at least 8 characters long";
+    }
+
+    // Check if password contains at least one uppercase letter
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter";
+    }
+
+    // Check if password contains at least one lowercase letter
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one lowercase letter";
+    }
+
+    // Check if password contains at least one special character
+    if (!/[!@#$%^&*]/.test(password)) {
+      return "Password must contain at least one special character";
+    }
+
+    return "";
+  };
+
   const handleEmailSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -182,6 +207,14 @@ const ForgotPassword = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    // Validate the password
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
+      setLoading(false);
+      return;
+    }
 
     // Check if passwords match
     if (password !== confirmPassword) {
@@ -552,26 +585,26 @@ const ForgotPassword = () => {
                       </li>
                       <li
                         className={`flex items-center ${
-                          /[0-9]/.test(password) ? "text-green-600" : ""
+                          /[a-z]/.test(password) ? "text-green-600" : ""
                         }`}
                       >
                         <div
                           className={`w-1.5 h-1.5 rounded-full mr-2 ${
-                            /[0-9]/.test(password)
+                            /[a-z]/.test(password)
                               ? "bg-green-600"
                               : "bg-gray-400"
                           }`}
                         ></div>
-                        One number
+                        One lowercase letter
                       </li>
                       <li
                         className={`flex items-center ${
-                          /[!@#$%^&*]/.test(password) ? "text-green-600" : ""
+                          /[!@#$%^&-_*]/.test(password) ? "text-green-600" : ""
                         }`}
                       >
                         <div
                           className={`w-1.5 h-1.5 rounded-full mr-2 ${
-                            /[!@#$%^&*]/.test(password)
+                            /[!@#$%^&-_*]/.test(password)
                               ? "bg-green-600"
                               : "bg-gray-400"
                           }`}

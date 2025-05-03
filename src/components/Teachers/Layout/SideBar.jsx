@@ -6,6 +6,8 @@ import { FaRegNoteSticky } from "react-icons/fa6";
 import { MdCoPresent } from "react-icons/md";
 import { MdQuiz } from "react-icons/md";
 import { BiSolidVideoRecording } from "react-icons/bi";
+import { SiKdenlive } from "react-icons/si";
+import { AiTwotoneSchedule } from "react-icons/ai";
 import Swal from "sweetalert2";
 
 import {
@@ -19,8 +21,7 @@ import {
   FiX,
   FiHome,
 } from "react-icons/fi";
-import { SiKdenlive } from "react-icons/si";
-
+import { SiGoogleclassroom } from "react-icons/si";
 // Sidebar menu items
 const menuItems = [
   {
@@ -41,59 +42,55 @@ const menuItems = [
     icon: <FaRegNoteSticky className="w-5 h-5" />,
     path: "/teacher-examination",
   },
+
   {
     id: 4,
-    title: "Courses",
-    icon: <FiBookOpen className="w-5 h-5" />,
-    path: "/teacher-courses",
-  },
-  {
-    id: 5,
     title: "Schedule",
     icon: <FiCalendar className="w-5 h-5" />,
     path: "/teacher-schedule",
   },
+
   {
-    id: 6,
-    title: "Reports",
-    icon: <FiBarChart2 className="w-5 h-5" />,
-    path: "/teacher-reports",
-  },
-  {
-    id: 7,
+    id: 5,
     title: "Live Class",
     icon: <SiKdenlive className="w-5 h-5" />,
     path: "/live-teacher",
   },
   {
-    id: 8,
-    title: "Settings",
-    icon: <FiSettings className="w-5 h-5" />,
-    path: "/teacher-settings",
-  },
-  {
-    id: 9,
+    id: 6,
     title: "Attendance",
     icon: <MdCoPresent className="w-5 h-5" />,
     path: "/teacher-attendance",
   },
   {
-    id: 10,
+    id: 7,
     title: "Chat",
     icon: <FaComment className="w-5 h-5" />,
     path: "/teacher-chat",
   },
   {
-    id: 11,
+    id: 8,
     title: "Upload Recorded Class",
     icon: <BiSolidVideoRecording className="w-5 h-5" />,
     path: "/upload-recorded-class",
   },
   {
-    id: 12,
+    id: 9,
     title: "Quiz",
     icon: <MdQuiz className="w-5 h-5" />,
     path: "/teacher-quiz",
+  },
+  {
+    id: 10,
+    title: "Class Assesment",
+    icon: <SiGoogleclassroom className="w-5 h-5" />,
+    path: "/teacher-assesment",
+  },
+  {
+    id: 11,
+    title: "Schedule Class",
+    icon: <AiTwotoneSchedule className="w-5 h-5" />,
+    path: "/schedule-class",
   },
 ];
 

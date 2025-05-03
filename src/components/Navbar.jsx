@@ -322,30 +322,6 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <motion.div
-              className="relative"
-              animate={{ width: searchFocus ? "16rem" : "14rem" }}
-              transition={{ duration: 0.3 }}
-            >
-              <motion.input
-                type="text"
-                placeholder="Search"
-                className="pl-3 pr-10 py-2 border rounded-full w-full border-gray-300 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                onFocus={() => setSearchFocus(true)}
-                onBlur={() => setSearchFocus(false)}
-                animate={{
-                  boxShadow: searchFocus
-                    ? "0 0 0 3px rgba(59, 130, 246, 0.2)"
-                    : "none",
-                }}
-              />
-              <motion.div
-                className="absolute right-3 top-2.5 text-gray-500 cursor-pointer"
-                whileHover={{ scale: 1.1, color: "#3B82F6" }}
-              >
-                <IoIosSearch className="text-xl" />
-              </motion.div>
-            </motion.div>
             {renderProfileImage()}
           </div>
 
@@ -515,25 +491,6 @@ const Navbar = () => {
                     </NavLink>
                   </motion.li>
                 </motion.ul>
-
-                <motion.div
-                  className="relative"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <input
-                    type="text"
-                    placeholder="Search"
-                    className="pl-3 pr-10 py-2 border rounded-full w-full border-gray-300 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                  />
-                  <motion.div
-                    className="absolute right-3 top-2.5 text-gray-500"
-                    whileHover={{ scale: 1.1, color: "#3B82F6" }}
-                  >
-                    <IoIosSearch className="text-xl" />
-                  </motion.div>
-                </motion.div>
               </div>
             </motion.div>
           )}

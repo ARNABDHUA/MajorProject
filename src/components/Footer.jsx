@@ -23,7 +23,7 @@ const Footer = () => {
             </span>
           </h2>
           <p className="text-black text-sm leading-relaxed">
-            Eduport education theme, built specifically for education centers,
+            Ecollege education theme, built specifically for education centers,
             dedicated to teaching and engaging learners.
           </p>
           {/* Social Media Icons */}
@@ -153,10 +153,10 @@ const Footer = () => {
           <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
             <p className="text-black text-sm">Toll-Free (9 AM - 8 PM IST)</p>
             <a
-              href="tel:+917001559406"
+              href="tel:+911111111111"
               className="block text-blue-500 font-semibold mt-2 text-lg hover:underline"
             >
-              +91 70015 59406
+              +91 11111 11111
             </a>
             <p className="text-black mt-3 text-sm">
               Email:{" "}
@@ -175,7 +175,7 @@ const Footer = () => {
       <div className="container mx-auto mt-12 border-t border-gray-200 pt-6">
         <div className="flex flex-col md:flex-row justify-between items-center px-6 lg:px-16">
           <div className="text-black text-sm mb-4 md:mb-0">
-            © {new Date().getFullYear()} Eduport. All rights reserved.
+            © {new Date().getFullYear()} Ecollege. All rights reserved.
           </div>
           <div className="flex gap-4 text-black text-sm">
             <a

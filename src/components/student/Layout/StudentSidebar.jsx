@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaHandsHelping } from "react-icons/fa";
 import Swal from "sweetalert2";
 import {
   FaUser,
@@ -19,6 +20,7 @@ import {
   FiChevronLeft,
   FiX,
 } from "react-icons/fi";
+import { PiExamFill } from "react-icons/pi";
 import { SiKdenlive } from "react-icons/si";
 
 // Sidebar menu items
@@ -77,6 +79,20 @@ const menuItems = [
     title: "Class Assesment",
     icon: <SiKdenlive />,
     path: "/class-assesment",
+    requiresPayment: true,
+  },
+  {
+    id: 9,
+    title: "Marks",
+    icon: <PiExamFill />,
+    path: "/student-marks",
+    requiresPayment: true,
+  },
+  {
+    id: 10,
+    title: "Student assistant",
+    icon: <FaHandsHelping />,
+    path: "/class-assistant",
     requiresPayment: true,
   },
 ];

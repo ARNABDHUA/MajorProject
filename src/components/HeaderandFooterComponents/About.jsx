@@ -27,10 +27,10 @@ const AboutUs = () => {
     <div className="w-full md:w-[95%] mx-auto">
       <div className="container mx-auto p-4 md:p-6">
         <h1 className="text-3xl md:text-4xl font-bold text-center mb-6">
-          About Eduport Portal
+          About E-College Portal
         </h1>
         <p className="text-gray-600 text-center max-w-2xl mx-auto mb-10">
-          Eduport is designed to support educational centers by providing
+          E-College is designed to support educational centers by providing
           high-quality learning experiences, fostering innovation, and enabling
           students to achieve their goals.
         </p>

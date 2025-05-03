@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const MyCourses = () => {
   const [course, setCourse] = useState([]);
@@ -8,6 +9,7 @@ const MyCourses = () => {
   const [allCourses, setAllCourses] = useState([]);
   const [myCourse, setMyCourse] = useState([]);
   const [myCourseid, setMyCourseid] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get("https://e-college-data.onrender.com/v1/adminroutine/course-all-id")
@@ -19,6 +21,9 @@ const MyCourses = () => {
         console.log(err);
       });
   }, []);
+
+
+ 
     
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -64,6 +69,16 @@ const MyCourses = () => {
     }
   }, []);
 
+
+
+  const handlepath =() =>{
+    const userData =JSON.parse (localStorage.getItem("user"));
+    const course_id = userData.course_code;
+    console.log("id",course_id)
+    navigate(`/courseModules/${course_id}`)
+
+  }
+
   // This useEffect will filter and set your particular course
   useEffect(() => {
     if (myCourseid && allCourses.length > 0) {
@@ -90,12 +105,16 @@ const MyCourses = () => {
                   <p className="text-l mt-2 text-gray-600">Duration:  {c.duration}</p>
                   <p className="mt-2 text-l text-gray-600">{c.description}</p>
                   <p className="mt-2 text-l text-gray-600">Instructor: {c.instructor}</p>
-                  <button className="mt-12 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 border border-blue-700 rounded">go to the course</button>
+                  <button className="mt-12 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 border border-blue-700 rounded" onClick={()=>handlepath()}>go to the course</button>
                   
                 </div>
               ))
             ) : (
-              <div>Loading your course...</div>
+              
+              <div className="max-w-4xl mx-auto px-7 py-8 mt-10 bg-white rounded-lg shadow-md text-center text-gray-600">
+  Loading your course...
+</div>
+
             )}
           </div>
         </div>

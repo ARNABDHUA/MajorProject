@@ -75,6 +75,7 @@ import RoutineScheduling from "./components/Teachers/Pages/RoutineScheduling";
 import TeacherClassAssesment from "./components/Teachers/Pages/TeacherClassAssesment";
 import AdmitCardGeneration from "./components/student/AdmitCard/AdmitCardGeneration";
 import StudentIdentityCard from "./components/student/Pages/StudentIdentityCard";
+import SalarySlip from "./components/Teachers/Pages/SalarySlip";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -189,6 +190,14 @@ const DisplaySetup = () => {
                 element={
                   <ProtectedRoute allowedRoles={["teacher"]}>
                     <TeacherClassAssesment />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/salary-slip"
+                element={
+                  <ProtectedRoute allowedRoles={["teacher"]}>
+                    <SalarySlip />
                   </ProtectedRoute>
                 }
               />

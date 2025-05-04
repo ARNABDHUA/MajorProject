@@ -9,7 +9,7 @@ import { BiSolidVideoRecording } from "react-icons/bi";
 import { SiKdenlive } from "react-icons/si";
 import { AiTwotoneSchedule } from "react-icons/ai";
 import Swal from "sweetalert2";
-
+import { FaMoneyCheckAlt } from "react-icons/fa";
 import {
   FiBookOpen,
   FiCalendar,
@@ -91,6 +91,12 @@ const menuItems = [
     title: "Schedule Class",
     icon: <AiTwotoneSchedule className="w-5 h-5" />,
     path: "/schedule-class",
+  },
+  {
+    id: 12,
+    title: "Salary Slip",
+    icon: <FaMoneyCheckAlt className="w-5 h-5" />,
+    path: "/salary-slip",
   },
 ];
 

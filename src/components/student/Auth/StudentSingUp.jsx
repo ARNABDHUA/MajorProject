@@ -449,8 +449,9 @@ const StudentSignUp = () => {
   };
 
   const validateEmail = (email) => {
-    return /^\S+@gmail\.com$/.test(email);
+    return /^[a-zA-Z][a-zA-Z0-9.]{5,29}@gmail\.com$/.test(email);
   };
+  
 
   const validateOtpStep = () => {
     let newErrors = {};
@@ -458,7 +459,10 @@ const StudentSignUp = () => {
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = "Email must be a valid @gmail.com address";
+      newErrors.email = `1. It must start with a letter (a–z).
+      2. It can contain numbers, letters, and periods (.).
+      3. It cannot contain special characters like !, #, %, etc.
+      4. It must be between 6 and 30 characters long.`;
     }
 
     if (otpSent) {

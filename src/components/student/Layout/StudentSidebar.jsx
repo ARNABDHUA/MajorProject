@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHandsHelping } from "react-icons/fa";
+import { PiIdentificationCardBold } from "react-icons/pi";
+import { FaRegAddressCard } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import {
   FaUser,
@@ -93,6 +95,21 @@ const menuItems = [
     title: "Student assistant",
     icon: <FaHandsHelping />,
     path: "/class-assistant",
+    requiresPayment: true,
+  },
+  {
+    id: 11,
+    title: "Admit Card",
+    icon: <PiIdentificationCardBold />,
+    path: "/student-admit",
+    requiresPayment: true,
+  },
+
+  {
+    id: 12,
+    title: "E-Identity card",
+    icon: <FaRegAddressCard />,
+    path: "/student-idcard",
     requiresPayment: true,
   },
 ];

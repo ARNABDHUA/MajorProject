@@ -73,6 +73,8 @@ import TeacherQuiz from "./components/Teachers/Pages/TeacherQuiz";
 import AdminLayout from "./components/Admin/Layout/AdminLayout";
 import RoutineScheduling from "./components/Teachers/Pages/RoutineScheduling";
 import TeacherClassAssesment from "./components/Teachers/Pages/TeacherClassAssesment";
+import AdmitCardGeneration from "./components/student/AdmitCard/AdmitCardGeneration";
+import StudentIdentityCard from "./components/student/Pages/StudentIdentityCard";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -248,6 +250,22 @@ const DisplaySetup = () => {
                 }
               />
               <Route
+                path="/student-Admit"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <AdmitCardGeneration />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student-idcard"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <StudentIdentityCard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="student-quiz"
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
@@ -317,6 +335,7 @@ const DisplaySetup = () => {
               {/* <Route path="/payment" element={<Payment />} /> */}
               <Route path="/signup" element={<StudentSignup />} />
               {/* <Route path="/chats" element={<Chatpage />} /> */}
+
               <Route path="/courseModules" element={<CoursesModules />} />
               <Route path="/courseModules/:id" element={<CoursesModules />} />
               <Route path="/about" element={<About />} />

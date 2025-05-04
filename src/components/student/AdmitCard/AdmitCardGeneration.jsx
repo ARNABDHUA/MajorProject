@@ -11,6 +11,7 @@ import {
   Path,
 } from "@react-pdf/renderer";
 import axios from "axios";
+import logo from "/images/Ecollgelogo.png";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -163,25 +164,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// Custom E-College Logo SVG component for PDF
-const CollegeLogo = () => (
-  <Svg viewBox="0 0 100 100" width="60" height="60">
-    {/* Graduation Cap */}
-    <Path d="M50 10L10 30L50 50L90 30L50 10Z" fill="#2563eb" />
-    <Path
-      d="M25 35v25l25 15 25-15V35"
-      stroke="#2563eb"
-      strokeWidth="3"
-      fill="none"
-    />
-    <Path d="M90 30v25" stroke="#2563eb" strokeWidth="3" />
-    {/* Book */}
-    <Path d="M35 65h30v10H35z" fill="#1e40af" />
-    {/* Letter E */}
-    <Path d="M45 70h10M45 75h10M45 80h10" stroke="white" strokeWidth="2" />
-  </Svg>
-);
-
 // Logo component for React UI (outside of PDF)
 const LogoForUI = () => (
   <svg
@@ -189,6 +171,7 @@ const LogoForUI = () => (
     viewBox="0 0 100 100"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    //
   >
     <path d="M50 10L10 30L50 50L90 30L50 10Z" fill="#2563eb" />
     <path
@@ -222,7 +205,8 @@ const AdmitCardPDF = ({ studentData, coursesData }) => {
         <View style={styles.header}>
           <View style={styles.logo}>
             {/* E-College Logo */}
-            <CollegeLogo />
+
+            <Image src="https://res.cloudinary.com/dnwscgmcz/image/upload/v1746374739/students/profile_images/nncier1qfpwleftm2k2c.png" />
           </View>
           <View style={styles.headerText}>
             <Text style={styles.collegeName}>E-College</Text>
@@ -350,7 +334,8 @@ const AdmitCardPDF = ({ studentData, coursesData }) => {
         <View style={styles.header}>
           <View style={styles.logo}>
             {/* E-College Logo */}
-            <CollegeLogo />
+
+            <Image src="https://res.cloudinary.com/dnwscgmcz/image/upload/v1746374739/students/profile_images/nncier1qfpwleftm2k2c.png" />
           </View>
           <View style={styles.headerText}>
             <Text style={styles.collegeName}>E-College</Text>

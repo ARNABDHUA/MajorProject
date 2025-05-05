@@ -16,6 +16,7 @@ function Room() {
   const [error, setError] = useState(null);
   const initializingRef = useRef(false);
   const [userData, setUserData] = useState([]);
+  const [acc,setAcc]=useState(null);
 
   //context api call
   const {
@@ -41,16 +42,16 @@ function Room() {
   const lowerCase_name = name ? name.toLowerCase() : "";
 
   // Allowed user verification
-  const allowedUsers = [
-    "arnab dhua",
-    "parbat nil bera",
-    "sourin dhua",
-    "farhan akhtar",
-    "shreya manna",
-    "teacher x",
-    "teacher y",
-  ];
-  const exists = name && allowedUsers.includes(lowerCase_name);
+  // const allowedUsers = [
+  //   "arnab dhua",
+  //   "parbat nil bera",
+  //   "sourin dhua",
+  //   "farhan akhtar",
+  //   "shreya manna",
+  //   "teacher x",
+  //   "teacher y",
+  // ];
+  // const exists = name && allowedUsers.includes(lowerCase_name);
 
   // Check permissions before initializing
   async function checkPermissions() {
@@ -70,6 +71,7 @@ function Room() {
     setAttendance_id(teacherAttandanceId);
     const userDetails = JSON.parse(localStorage.getItem("user"));
     setUserData(userDetails);
+    setAcc(userDetails.c_roll)// add
   }, []);
 
   // Process attendance data
@@ -97,6 +99,7 @@ function Room() {
     return { userName, joinTime, leaveTime, attendanceTime, success };
   };
 
+  const exists =acc;// aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadddddd
   // Check if the room URL has expired
   const checkRoomExpiration = () => {
     // Extract creation timestamp from URL or use localStorage
@@ -203,8 +206,8 @@ function Room() {
         showCameraStateButton: true,
         showAudioVideoSettingsButton: true,
         maxUsers: type === "one-on-one" ? 2 : 80,
-        turnOnMicrophoneWhenJoining: true,
-        turnOnCameraWhenJoining: true,
+        turnOnMicrophoneWhenJoining: false,
+        turnOnCameraWhenJoining: false,
         useFrontFacingCamera: true,
         videoResolutionList: [
           ZegoUIKitPrebuilt.VideoResolution_720P,
@@ -269,7 +272,7 @@ function Room() {
           }
 
           setJoined(false);
-          navigate("/teacher/live-class");
+          navigate("/");
         },
         onUserJoin: (users) => {
           // Track when other users join the room
@@ -494,7 +497,7 @@ function Room() {
       zpRef.current = null;
     }
     setJoined(false);
-    navigate("/teacher/live-class");
+    navigate("/");
   };
 
   // Format time remaining for display
@@ -524,7 +527,7 @@ function Room() {
           minutes) has been reached.
         </p>
         <button
-          onClick={() => navigate("/teacher/live-class")}
+          onClick={() => navigate("/")}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
         >
           Return to Dashboard

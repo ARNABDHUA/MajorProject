@@ -636,264 +636,274 @@ const AdmitCardGeneration = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div className="flex items-center border-b-2 border-blue-600 pb-4 mb-6">
-            <div className="bg-blue-100 text-blue-800 p-3 rounded-full mr-4">
-              <LogoForUI />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">
-                E-College Admit Card Generator
-              </h1>
-              <p className="text-gray-600">
-                Generate and download your examination admit card
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-blue-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+    studentData.c_roll && (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div className="flex items-center border-b-2 border-blue-600 pb-4 mb-6">
+              <div className="bg-blue-100 text-blue-800 p-3 rounded-full mr-4">
+                <LogoForUI />
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-blue-800">
-                  Your admit card is ready for download. Please verify all
-                  information before downloading.
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">
+                  E-College Admit Card Generator
+                </h1>
+                <p className="text-gray-600">
+                  Generate and download your examination admit card
                 </p>
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-700 mb-3">
-                Student Information
-              </h3>
-              <div className="grid grid-cols-1 gap-2">
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="text-gray-600">Name:</span>
-                  <span className="font-medium">{studentData.name}</span>
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-blue-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                 </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="text-gray-600">Roll Number:</span>
-                  <span className="font-medium">{studentData.c_roll}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="text-gray-600">Course:</span>
-                  <span className="font-medium">MCA</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="text-gray-600">Semester:</span>
-                  <span className="font-medium">{studentData.sem}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="text-gray-600">Email:</span>
-                  <span className="font-medium text-sm truncate">
-                    {studentData.email}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col justify-center items-center">
-              {studentData.pic ? (
-                <img
-                  src={studentData.pic}
-                  alt="Student Photo"
-                  className="w-32 h-36 object-cover border-2 border-gray-300 mb-4"
-                />
-              ) : (
-                <div className="w-32 h-36 border-2 border-red-300 flex items-center justify-center bg-gray-100 mb-4">
-                  <p className="text-red-500 text-sm text-center px-2">
-                    No photo uploaded
+                <div className="ml-3">
+                  <p className="text-sm text-blue-800">
+                    Your admit card is ready for download. Please verify all
+                    information before downloading.
                   </p>
                 </div>
-              )}
-              <p className="text-sm text-gray-500">
-                {studentData.pic ? "Student Photo" : "Photo not available"}
-              </p>
-              {!studentData.pic && (
-                <p className="text-xs text-red-500 mt-2 text-center">
-                  Please upload your photo in Edit Profile
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Display courses information */}
-          {courses && courses.length > 0 && (
-            <div className="mt-8 bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-700 mb-3">
-                Course Information
-              </h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white">
-                  <thead>
-                    <tr className="bg-blue-100 text-blue-800">
-                      <th className="py-2 px-4 text-left">Paper Code</th>
-                      <th className="py-2 px-4 text-left">Paper Name</th>
-                      <th className="py-2 px-4 text-left">Exam Date & Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {courses.map((course, index) => (
-                      <tr key={course._id} className="border-b border-gray-200">
-                        <td className="py-2 px-4">{course.paper_code}</td>
-                        <td className="py-2 px-4">{course.paper_name}</td>
-                        <td className="py-2 px-4">
-                          {`${new Date(
-                            2025,
-                            4,
-                            10 + index
-                          ).toLocaleDateString()} | 10:00 AM`}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
               </div>
             </div>
-          )}
 
-          <div className="mt-8">
-            {studentData.pic ===
-              "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg" && (
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg
-                      className="h-5 w-5 text-yellow-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                  Student Information
+                </h3>
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="flex justify-between py-1 border-b border-gray-200">
+                    <span className="text-gray-600">Name:</span>
+                    <span className="font-medium">{studentData.name}</span>
                   </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-yellow-700">
-                      <strong>Warning:</strong> No profile photo detected. Your
-                      admit card will be generated without a photo. For a
-                      complete admit card, please upload your photo in the Edit
-                      Profile section.
+                  <div className="flex justify-between py-1 border-b border-gray-200">
+                    <span className="text-gray-600">Roll Number:</span>
+                    <span className="font-medium">{studentData.c_roll}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-gray-200">
+                    <span className="text-gray-600">Course:</span>
+                    <span className="font-medium">MCA</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-gray-200">
+                    <span className="text-gray-600">Semester:</span>
+                    <span className="font-medium">{studentData.sem}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-gray-200">
+                    <span className="text-gray-600">Email:</span>
+                    <span className="font-medium text-sm truncate">
+                      {studentData.email}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-col justify-center items-center">
+                {studentData.pic ? (
+                  <img
+                    src={studentData.pic}
+                    alt="Student Photo"
+                    className="w-32 h-36 object-cover border-2 border-gray-300 mb-4"
+                  />
+                ) : (
+                  <div className="w-32 h-36 border-2 border-red-300 flex items-center justify-center bg-gray-100 mb-4">
+                    <p className="text-red-500 text-sm text-center px-2">
+                      No photo uploaded
                     </p>
                   </div>
+                )}
+                <p className="text-sm text-gray-500">
+                  {studentData.pic ? "Student Photo" : "Photo not available"}
+                </p>
+                {!studentData.pic && (
+                  <p className="text-xs text-red-500 mt-2 text-center">
+                    Please upload your photo in Edit Profile
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Display courses information */}
+            {courses && courses.length > 0 && (
+              <div className="mt-8 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                  Course Information
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white">
+                    <thead>
+                      <tr className="bg-blue-100 text-blue-800">
+                        <th className="py-2 px-4 text-left">Paper Code</th>
+                        <th className="py-2 px-4 text-left">Paper Name</th>
+                        <th className="py-2 px-4 text-left">
+                          Exam Date & Time
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {courses.map((course, index) => (
+                        <tr
+                          key={course._id}
+                          className="border-b border-gray-200"
+                        >
+                          <td className="py-2 px-4">{course.paper_code}</td>
+                          <td className="py-2 px-4">{course.paper_name}</td>
+                          <td className="py-2 px-4">
+                            {`${new Date(
+                              2025,
+                              4,
+                              10 + index
+                            ).toLocaleDateString()} | 10:00 AM`}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
 
-            <PDFDownloadLink
-              document={
-                <AdmitCardPDF studentData={studentData} coursesData={courses} />
-              }
-              fileName={`admit-card-${studentData.name.replace(
-                /\s+/g,
-                "-"
-              )}.pdf`}
-            >
-              {({ blob, url, loading, error }) =>
-                loading ? (
-                  <button
-                    disabled
-                    className="w-full bg-blue-400 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center"
-                  >
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
+            <div className="mt-8">
+              {studentData.pic ===
+                "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg" && (
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg
+                        className="h-5 w-5 text-yellow-400"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
                         fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Generating PDF...
-                  </button>
-                ) : (
-                  //added
-                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-yellow-700">
+                        <strong>Warning:</strong> No profile photo detected.
+                        Your admit card will be generated without a photo. For a
+                        complete admit card, please upload your photo in the
+                        Edit Profile section.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <PDFDownloadLink
+                document={
+                  <AdmitCardPDF
+                    studentData={studentData}
+                    coursesData={courses}
+                  />
+                }
+                fileName={`admit-card-${studentData.name.replace(
+                  /\s+/g,
+                  "-"
+                )}.pdf`}
+              >
+                {({ blob, url, loading, error }) =>
+                  loading ? (
+                    <button
+                      disabled
+                      className="w-full bg-blue-400 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      ></path>
-                    </svg>
-                    Download Admit Card
-                  </button>
-                )
-              }
-            </PDFDownloadLink>
-          </div>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Generating PDF...
+                    </button>
+                  ) : (
+                    //added
+                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
+                      <svg
+                        className="w-5 h-5 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
+                      </svg>
+                      Download Admit Card
+                    </button>
+                  )
+                }
+              </PDFDownloadLink>
+            </div>
 
-          <div className="mt-8 border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-semibold text-gray-700 mb-3">
-              Important Notes:
-            </h3>
-            <ul className="list-disc pl-5 space-y-2 text-gray-600">
-              <li>
-                This admit card must be presented at the examination center
-                along with your College ID Card.
-              </li>
-              <li>
-                Please verify all your personal and course information before
-                downloading.
-              </li>
-              <li>
-                In case of any discrepancy, please contact the Examination Cell
-                immediately.
-              </li>
-              <li>
-                Remember to follow all COVID-19 safety protocols during the
-                examination.
-              </li>
-            </ul>
+            <div className="mt-8 border-t border-gray-200 pt-6">
+              <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                Important Notes:
+              </h3>
+              <ul className="list-disc pl-5 space-y-2 text-gray-600">
+                <li>
+                  This admit card must be presented at the examination center
+                  along with your College ID Card.
+                </li>
+                <li>
+                  Please verify all your personal and course information before
+                  downloading.
+                </li>
+                <li>
+                  In case of any discrepancy, please contact the Examination
+                  Cell immediately.
+                </li>
+                <li>
+                  Remember to follow all COVID-19 safety protocols during the
+                  examination.
+                </li>
+              </ul>
 
-            <div className="mt-6 text-sm text-gray-500 bg-gray-100 p-4 rounded-lg">
-              <p>
-                <strong>Contact Information:</strong> Examination Cell:
-                033-2345-6789 | examcell@ecollege.edu
-              </p>
+              <div className="mt-6 text-sm text-gray-500 bg-gray-100 p-4 rounded-lg">
+                <p>
+                  <strong>Contact Information:</strong> Examination Cell:
+                  033-2345-6789 | examcell@ecollege.edu
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    )
   );
 };
 

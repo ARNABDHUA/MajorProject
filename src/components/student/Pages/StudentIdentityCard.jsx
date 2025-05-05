@@ -436,207 +436,212 @@ const StudentIdentityCard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8 max-w-lg mx-auto">
-          <div className="flex items-center border-b-2 border-blue-600 pb-4 mb-6">
-            <div className="bg-blue-100 text-blue-800 p-3 rounded-full mr-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
-                />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-800">
-                Student ID Card
-              </h1>
-              <p className="text-gray-600 text-sm">
-                E-College Official Identity Card
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
+    studentData.c_roll && (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-8 max-w-lg mx-auto">
+            <div className="flex items-center border-b-2 border-blue-600 pb-4 mb-6">
+              <div className="bg-blue-100 text-blue-800 p-3 rounded-full mr-4">
                 <svg
-                  className="h-5 w-5 text-blue-600"
                   xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
                   <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                    clipRule="evenodd"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
                   />
                 </svg>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-blue-800">
-                  Your ID card is ready for download. The card contains your
-                  official student information on both front and back sides.
+              <div>
+                <h1 className="text-xl font-bold text-gray-800">
+                  Student ID Card
+                </h1>
+                <p className="text-gray-600 text-sm">
+                  E-College Official Identity Card
                 </p>
               </div>
             </div>
-          </div>
 
-          {/* Improved Card Preview - Better aspect ratio and sizing */}
-          <div className="bg-gray-100 p-4 rounded-lg mb-6">
-            <h3 className="text-center text-gray-700 mb-3 font-medium">
-              Card Preview
-            </h3>
-            <div className="flex flex-col md:flex-row justify-center gap-6">
-              {/* Front side preview - increased size with correct aspect ratio */}
-              <div className="relative w-72 h-44 bg-white rounded-lg shadow-md border-2 border-blue-600 overflow-hidden flex flex-col">
-                <div className="bg-blue-600 text-white p-2 flex items-center justify-between">
-                  <div className="flex items-center">
-                    <span className="text-xl mr-1">🎓</span>
-                    <span className="font-bold">E-College</span>
-                  </div>
-                  <span className="text-xs">ID: {studentData.c_roll}</span>
-                </div>
-                <div className="bg-blue-100 py-1 text-center text-xs font-bold">
-                  STUDENT IDENTITY CARD
-                </div>
-                <div className="flex p-2">
-                  <div className="w-20 h-24 bg-gray-200 mr-2 flex items-center justify-center">
-                    <img
-                      src={studentData.pic}
-                      alt="Student"
-                      className="w-full h-full object-cover"
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-blue-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
                     />
-                  </div>
-                  <div className="flex-1 text-xs">
-                    <p className="mb-1">
-                      <strong>Name:</strong> {studentData.name}
-                    </p>
-                    <p className="mb-1">
-                      <strong>ID:</strong> {studentData.c_roll}
-                    </p>
-                    <p className="mb-1">
-                      <strong>Course:</strong> MCA
-                    </p>
-                    <p className="mb-1">
-                      <strong>Sem:</strong> {studentData.sem}
-                    </p>
-                    <p className="mb-1">
-                      <strong>Email:</strong> {studentData.email}
-                    </p>
-                    <p className="mb-1">
-                      <strong>Phone:</strong> {studentData.phoneNumber}
-                    </p>
-                  </div>
+                  </svg>
                 </div>
-                <div className="text-center text-xs mt-1">
-                  <strong>Valid Through:</strong> May 4, 2027
-                </div>
-                <div className="mt-auto bg-blue-600 text-white text-center text-xs p-1">
-                  E-College • West Bengal
-                </div>
-              </div>
-
-              {/* Back side preview - same aspect ratio as front */}
-              <div className="relative w-72 h-44 bg-white rounded-lg shadow-md border-2 border-blue-600 overflow-hidden flex flex-col p-3">
-                <div className="text-center text-xs font-bold text-blue-600 border-b border-blue-200 pb-1 mb-2">
-                  TERMS & CONDITIONS
-                </div>
-                <div className="text-[9px] space-y-1 flex-1">
-                  <p>1. This card is the property of E-College...</p>
-                  <p>2. This card is non-transferable...</p>
-                  <p>3. Loss of this card should be reported...</p>
-                  <p>4. A fee will be charged for replacement...</p>
-                  <p>5. This card must be surrendered...</p>
-                </div>
-                <div className="bg-blue-50 text-[9px] p-1 mt-2 rounded">
-                  <p className="font-bold">EMERGENCY CONTACT</p>
-                  <p>Student Affairs: 033-2345-6700</p>
-                </div>
-                <div className="mt-auto text-center text-[9px]">
-                  <p className="font-bold">If found, please return to:</p>
-                  <p>E-College • 123 Education Street, Learning City</p>
+                <div className="ml-3">
+                  <p className="text-sm text-blue-800">
+                    Your ID card is ready for download. The card contains your
+                    official student information on both front and back sides.
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="mt-8">
-            <PDFDownloadLink
-              document={<StudentIDCardPDF studentData={studentData} />}
-              fileName={`id-card-${studentData.name.replace(/\s+/g, "-")}.pdf`}
-              className="block w-full"
-            >
-              {({ blob, url, loading, error }) => (
-                <button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <span className="flex items-center">
-                      <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
+            {/* Improved Card Preview - Better aspect ratio and sizing */}
+            <div className="bg-gray-100 p-4 rounded-lg mb-6">
+              <h3 className="text-center text-gray-700 mb-3 font-medium">
+                Card Preview
+              </h3>
+              <div className="flex flex-col md:flex-row justify-center gap-6">
+                {/* Front side preview - increased size with correct aspect ratio */}
+                <div className="relative w-72 h-44 bg-white rounded-lg shadow-md border-2 border-blue-600 overflow-hidden flex flex-col">
+                  <div className="bg-blue-600 text-white p-2 flex items-center justify-between">
+                    <div className="flex items-center">
+                      <span className="text-xl mr-1">🎓</span>
+                      <span className="font-bold">E-College</span>
+                    </div>
+                    <span className="text-xs">ID: {studentData.c_roll}</span>
+                  </div>
+                  <div className="bg-blue-100 py-1 text-center text-xs font-bold">
+                    STUDENT IDENTITY CARD
+                  </div>
+                  <div className="flex p-2">
+                    <div className="w-20 h-24 bg-gray-200 mr-2 flex items-center justify-center">
+                      <img
+                        src={studentData.pic}
+                        alt="Student"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 text-xs">
+                      <p className="mb-1">
+                        <strong>Name:</strong> {studentData.name}
+                      </p>
+                      <p className="mb-1">
+                        <strong>ID:</strong> {studentData.c_roll}
+                      </p>
+                      <p className="mb-1">
+                        <strong>Course:</strong> MCA
+                      </p>
+                      <p className="mb-1">
+                        <strong>Sem:</strong> {studentData.sem}
+                      </p>
+                      <p className="mb-1">
+                        <strong>Email:</strong> {studentData.email}
+                      </p>
+                      <p className="mb-1">
+                        <strong>Phone:</strong> {studentData.phoneNumber}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-center text-xs mt-1">
+                    <strong>Valid Through:</strong> May 4, 2027
+                  </div>
+                  <div className="mt-auto bg-blue-600 text-white text-center text-xs p-1">
+                    E-College • West Bengal
+                  </div>
+                </div>
+
+                {/* Back side preview - same aspect ratio as front */}
+                <div className="relative w-72 h-44 bg-white rounded-lg shadow-md border-2 border-blue-600 overflow-hidden flex flex-col p-3">
+                  <div className="text-center text-xs font-bold text-blue-600 border-b border-blue-200 pb-1 mb-2">
+                    TERMS & CONDITIONS
+                  </div>
+                  <div className="text-[9px] space-y-1 flex-1">
+                    <p>1. This card is the property of E-College...</p>
+                    <p>2. This card is non-transferable...</p>
+                    <p>3. Loss of this card should be reported...</p>
+                    <p>4. A fee will be charged for replacement...</p>
+                    <p>5. This card must be surrendered...</p>
+                  </div>
+                  <div className="bg-blue-50 text-[9px] p-1 mt-2 rounded">
+                    <p className="font-bold">EMERGENCY CONTACT</p>
+                    <p>Student Affairs: 033-2345-6700</p>
+                  </div>
+                  <div className="mt-auto text-center text-[9px]">
+                    <p className="font-bold">If found, please return to:</p>
+                    <p>E-College • 123 Education Street, Learning City</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <PDFDownloadLink
+                document={<StudentIDCardPDF studentData={studentData} />}
+                fileName={`id-card-${studentData.name.replace(
+                  /\s+/g,
+                  "-"
+                )}.pdf`}
+                className="block w-full"
+              >
+                {({ blob, url, loading, error }) => (
+                  <button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <span className="flex items-center">
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Generating ID Card...
+                      </span>
+                    ) : (
+                      <span className="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 mr-2"
+                          fill="none"
+                          viewBox="0 0 24 24"
                           stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Generating ID Card...
-                    </span>
-                  ) : (
-                    <span className="flex items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                        />
-                      </svg>
-                      Download ID Card (PDF)
-                    </span>
-                  )}
-                </button>
-              )}
-            </PDFDownloadLink>
-          </div>
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                        Download ID Card (PDF)
+                      </span>
+                    )}
+                  </button>
+                )}
+              </PDFDownloadLink>
+            </div>
 
-          <div className="mt-4 text-xs text-gray-500 text-center">
-            This ID card contains two pages: front side with your details and
-            back side with terms & conditions. Standard ID card size format for
-            better printing.
+            <div className="mt-4 text-xs text-gray-500 text-center">
+              This ID card contains two pages: front side with your details and
+              back side with terms & conditions. Standard ID card size format
+              for better printing.
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    )
   );
 };
 

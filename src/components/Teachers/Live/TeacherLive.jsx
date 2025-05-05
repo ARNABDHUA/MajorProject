@@ -504,6 +504,7 @@ const LiveClassScheduler = () => {
               onChange={handleInputChange}
               placeholder="Enter image URL"
               className="w-full p-2 text-sm border border-gray-300 rounded-md"
+              required
             />
           </div>
 

@@ -425,7 +425,7 @@ function Room() {
             !attendanceData[name]?.success
           ) {
             console.log("SUCCESS - Minimum attendance requirement met!");
-            console.log("Arnab sdhai", attendance_id);
+            console.log("Arnab ", attendance_id);
             const updateAttendanceRecord = async () => {
               try {
                 const response = await axios.post(
@@ -451,8 +451,28 @@ function Room() {
               }
             };
 
+            const updateAttendanceRecordstudent= async()=>{
+
+              try {
+                const userDetails = JSON.parse(localStorage.getItem("attendanceid"));
+                const response = await axios.post(
+                  `https://e-college-data.onrender.com/v1/students/student-attendance-end`,
+                  {
+                    attendance_id: userDetails,
+                  }
+                );
+                // console.log("Attendance record updated:", response.data);
+                if (response.data) {
+                  console.log(" Student attendance")
+                }
+              } catch (error) {
+                console.error("Failed to update attendance record:", error);
+              }
+            }
+
             // Call the async function
             if (userData.role === "teacher") updateAttendanceRecord();
+            if (userData.role==="student") updateAttendanceRecordstudent();
             setAttendanceData((prev) => ({
               ...prev,
               [name]: {

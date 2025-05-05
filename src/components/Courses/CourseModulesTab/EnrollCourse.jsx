@@ -95,14 +95,26 @@ const EnrollCourse = () => {
           other_course_start: parsedUser.other_course_start || "",
           other_course_end: parsedUser.other_course_end || "",
           other_course_marks: parsedUser.other_course_marks || "",
-          course_code: parsedUser.course_code || "", // Pre-fill course code if exists
+          course_code: id || "", // Set course_code from URL param
           rank: parsedUser.rank || "", // Pre-fill rank if exists
         });
+
+        // Automatically check graduation checkbox if course code is 101
+        if (id === "101") {
+          setHasGraduation(true);
+        }
       }
     } catch (error) {
       console.error("Error getting user data:", error);
     }
-  }, []);
+  }, [id]);
+
+  // Handle course code change to automatically check graduation checkbox if code is 101
+  useEffect(() => {
+    if (formData.course_code === "101") {
+      setHasGraduation(true);
+    }
+  }, [formData.course_code]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -118,28 +130,84 @@ const EnrollCourse = () => {
         [name]: null,
       });
     }
+
+    // If course code changes to 101, automatically make graduation required
+    if (name === "course_code" && value === "101") {
+      setHasGraduation(true);
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
+    // Parse form values for validation
+    const tenthYear = parseInt(formData.tenth_year);
+    const twelfthYear = parseInt(formData.twelfth_year);
+    const tenthMarks = parseFloat(formData.tenth_marks);
+    const twelfthMarks = parseFloat(formData.twelfth_marks);
+
     // Required fields validation
     if (!formData.tenth_year) {
       newErrors.tenth_year = "10th passout year is required";
+    } else if (isNaN(tenthYear)) {
+      newErrors.tenth_year = "Enter a valid year for 10th";
     }
+
     if (!formData.tenth_marks) {
       newErrors.tenth_marks = "10th percentage is required";
+    } else if (isNaN(tenthMarks) || tenthMarks < 45) {
+      newErrors.tenth_marks = "Minimum 45% required in 10th";
     }
 
     if (!formData.twelfth_year) {
       newErrors.twelfth_year = "12th passout year is required";
+    } else if (isNaN(twelfthYear)) {
+      newErrors.twelfth_year = "Enter a valid year for 12th";
+    } else if (!isNaN(tenthYear) && twelfthYear < tenthYear + 2) {
+      newErrors.twelfth_year = "12th year must be at least 2 years after 10th";
     }
+
     if (!formData.twelfth_marks) {
       newErrors.twelfth_marks = "12th percentage is required";
+    } else if (isNaN(twelfthMarks) || twelfthMarks < 45) {
+      newErrors.twelfth_marks = "Minimum 45% required in 12th";
     }
 
     if (!formData.rank) {
       newErrors.rank = "Rank is required";
+    }
+
+    // Course 101 requires graduation details validation
+    if (formData.course_code === "101") {
+      if (!hasGraduation) {
+        newErrors.hasGraduation =
+          "Graduation details are required for Course 101";
+      } else {
+        // Validate graduation fields if hasGraduation is checked
+        if (!formData.ug_name || formData.ug_name.trim() === "") {
+          newErrors.ug_name =
+            "Graduation course name is required for Course 101";
+        }
+
+        if (!formData.ug_start) {
+          newErrors.ug_start =
+            "Graduation start year is required for Course 101";
+        }
+
+        if (!formData.ug_end) {
+          newErrors.ug_end = "Graduation end year is required for Course 101";
+        } else if (parseInt(formData.ug_end) <= parseInt(formData.ug_start)) {
+          newErrors.ug_end = "End year must be after start year";
+        }
+
+        if (!formData.ug_marks) {
+          newErrors.ug_marks =
+            "Graduation percentage is required for Course 101";
+        } else if (parseFloat(formData.ug_marks) < 45) {
+          newErrors.ug_marks =
+            "Minimum 45% required in graduation for Course 101";
+        }
+      }
     }
 
     setErrors(newErrors);
@@ -150,6 +218,17 @@ const EnrollCourse = () => {
     e.preventDefault();
 
     if (!validateForm()) {
+      // If course 101 requires graduation but checkbox is not checked, show error and check it
+      if (formData.course_code === "101" && !hasGraduation) {
+        setHasGraduation(true);
+        Swal.fire({
+          position: "top-end",
+          icon: "error",
+          title: "Graduation details are required for Course 101",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      }
       return;
     }
 
@@ -429,6 +508,11 @@ const EnrollCourse = () => {
                         {errors.course_code}
                       </p>
                     )}
+                    {courseCode === "101" && (
+                      <p className="text-blue-600 text-xs mt-1">
+                        Note: This course requires graduation details
+                      </p>
+                    )}
                   </div>
 
                   {/* Rank */}
@@ -627,14 +711,27 @@ const EnrollCourse = () => {
                       className="mr-2 h-4 w-4 text-blue-600"
                       checked={hasGraduation}
                       onChange={() => setHasGraduation(!hasGraduation)}
+                      disabled={formData.course_code === "101"} // Disable the checkbox for course 101
                     />
                     <label
                       htmlFor="hasGraduation"
-                      className="text-lg font-medium text-gray-700"
+                      className={`text-lg font-medium ${
+                        formData.course_code === "101"
+                          ? "text-blue-700"
+                          : "text-gray-700"
+                      }`}
                     >
                       I have graduation details
+                      {formData.course_code === "101" && (
+                        <span className="text-red-500 ml-1">*</span>
+                      )}
                     </label>
                   </div>
+                  {errors.hasGraduation && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.hasGraduation}
+                    </p>
+                  )}
                 </div>
 
                 {/* Graduation Details (Optional) */}
@@ -648,11 +745,17 @@ const EnrollCourse = () => {
                   >
                     <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
                       <FiBook className="mr-2" /> Graduation Details
+                      {formData.course_code === "101" && (
+                        <span className="text-red-500 ml-1">*</span>
+                      )}
                     </h3>
                     <div className="grid grid-cols-1 gap-4 mb-4">
                       <div className="relative">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Degree/Course Name
+                          {formData.course_code === "101" && (
+                            <span className="text-red-500 ml-1">*</span>
+                          )}
                         </label>
                         <motion.input
                           variants={inputVariants}
@@ -662,15 +765,28 @@ const EnrollCourse = () => {
                           name="ug_name"
                           value={formData.ug_name}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="e.g. B.Sc. Computer Science"
+                          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.ug_name
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                          placeholder="e.g. B.Tech in Computer Science"
                         />
                       </div>
+                      {errors.ug_name && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.ug_name}
+                        </p>
+                      )}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div className="relative">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Start Year
+                          {formData.course_code === "101" && (
+                            <span className="text-red-500 ml-1">*</span>
+                          )}
                         </label>
                         <div className="relative">
                           <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
@@ -686,15 +802,27 @@ const EnrollCourse = () => {
                             name="ug_start"
                             value={formData.ug_start}
                             onChange={handleInputChange}
-                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors.ug_start
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            }`}
                             placeholder="YYYY"
                           />
                         </div>
+                        {errors.ug_start && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.ug_start}
+                          </p>
+                        )}
                       </div>
 
                       <div className="relative">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           End Year
+                          {formData.course_code === "101" && (
+                            <span className="text-red-500 ml-1">*</span>
+                          )}
                         </label>
                         <div className="relative">
                           <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
@@ -710,15 +838,29 @@ const EnrollCourse = () => {
                             name="ug_end"
                             value={formData.ug_end}
                             onChange={handleInputChange}
-                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors.ug_end
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            }`}
                             placeholder="YYYY"
                           />
                         </div>
+                        {errors.ug_end && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.ug_end}
+                          </p>
+                        )}
                       </div>
+                    </div>
 
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="relative">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Percentage
+                          {formData.course_code === "101" && (
+                            <span className="text-red-500 ml-1">*</span>
+                          )}
                         </label>
                         <div className="relative">
                           <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
@@ -735,10 +877,19 @@ const EnrollCourse = () => {
                             name="ug_marks"
                             value={formData.ug_marks}
                             onChange={handleInputChange}
-                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors.ug_marks
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            }`}
                             placeholder="Percentage"
                           />
                         </div>
+                        {errors.ug_marks && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.ug_marks}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -758,7 +909,7 @@ const EnrollCourse = () => {
                       htmlFor="hasPostGraduation"
                       className="text-lg font-medium text-gray-700"
                     >
-                      I have post-graduation/other course details
+                      I have post-graduation or other degree details
                     </label>
                   </div>
                 </div>
@@ -773,13 +924,12 @@ const EnrollCourse = () => {
                     className="mb-6"
                   >
                     <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                      <FiBook className="mr-2" /> Post-Graduation/Other Course
-                      Details
+                      <FiBook className="mr-2" /> Post-Graduation/Other Degree
                     </h3>
                     <div className="grid grid-cols-1 gap-4 mb-4">
                       <div className="relative">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Course Name
+                          Degree/Course Name
                         </label>
                         <motion.input
                           variants={inputVariants}
@@ -790,11 +940,12 @@ const EnrollCourse = () => {
                           value={formData.other_course}
                           onChange={handleInputChange}
                           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="e.g. M.Tech, MBA, Ph.D"
+                          placeholder="e.g. M.Tech in Data Science"
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div className="relative">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Start Year
@@ -842,7 +993,9 @@ const EnrollCourse = () => {
                           />
                         </div>
                       </div>
+                    </div>
 
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="relative">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Percentage
@@ -872,100 +1025,97 @@ const EnrollCourse = () => {
                 )}
               </div>
 
+              {/* Important Notes */}
+              <div className="bg-blue-50 p-6 rounded-lg shadow-md">
+                <div className="flex items-start">
+                  <AlertCircle className="text-blue-600 mt-1 mr-3 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-lg font-medium text-blue-800 mb-2">
+                      Important Notes
+                    </h3>
+                    <ul className="text-blue-700 space-y-2 text-sm">
+                      <li>
+                        • All fields marked with an asterisk (*) are mandatory.
+                      </li>
+                      <li>
+                        • Course 101 requires graduation details with minimum
+                        45% marks.
+                      </li>
+                      <li>
+                        • Minimum 45% required in both 10th and 12th standards.
+                      </li>
+                      <li>
+                        • All information will be verified during admission
+                        process.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
               {/* Submit Button */}
+              <div className="flex justify-center mt-8">
+                <motion.button
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  type="submit"
+                  disabled={loading}
+                  className={`px-8 py-3 text-white font-semibold rounded-lg shadow-lg flex items-center ${
+                    loading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw className="animate-spin mr-2" size={20} />
+                      Processing...
+                    </>
+                  ) : (
+                    "Submit & Continue to Payment"
+                  )}
+                </motion.button>
+              </div>
+            </form>
+
+            <div className="flex justify-between mt-6">
               <motion.button
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md flex items-center justify-center"
-                disabled={loading}
+                onClick={() => navigate(-1)}
+                className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg shadow flex items-center"
               >
-                {loading ? (
-                  <>
-                    <FiLoader className="animate-spin mr-2" /> Enrolling in
-                    Course...
-                  </>
-                ) : (
-                  <>
-                    <FiCheck className="mr-2" /> Submit and Enroll
-                  </>
-                )}
+                <Home className="mr-2" size={18} />
+                Back
               </motion.button>
-            </form>
+
+              <motion.button
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                onClick={() => {
+                  Swal.fire({
+                    title: "Need Help?",
+                    text: "Contact our support team at support@ecollege.edu or call 1-800-123-4567 for assistance with your application.",
+                    icon: "info",
+                    confirmButtonText: "Got it",
+                    confirmButtonColor: "#3085d6",
+                  });
+                }}
+                className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg shadow flex items-center"
+              >
+                <HelpCircle className="mr-2" size={18} />
+                Help
+              </motion.button>
+            </div>
           </motion.div>
         </div>
       </div>
     </div>
   ) : (
-    <div className="min-h-screen bg-white flex items-center justify-center p-6">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-bl-full"></div>
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-50 rounded-tr-full"></div>
-
-      <div className="w-full max-w-lg relative z-10">
-        {/* Main card */}
-        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
-          {/* Blue accent header */}
-          <div className="h-3 bg-blue-600"></div>
-
-          <div className="p-8">
-            {/* Status icon */}
-            <div className="flex justify-center mb-6">
-              <div className="p-4 bg-blue-100 rounded-full">
-                <AlertCircle size={48} className="text-blue-600" />
-              </div>
-            </div>
-
-            {/* Error title and message */}
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-3">
-                Account Not Found
-              </h1>
-              <p className="text-gray-600 text-lg">
-                We couldn't verify your account credentials. Please check your
-                information and try again.
-              </p>
-            </div>
-
-            {/* Horizontal rule */}
-            <div className="border-t border-gray-200 my-6"></div>
-
-            {/* Action buttons */}
-            <div className="space-y-4">
-              <button className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-300 flex items-center justify-center shadow-md">
-                <RefreshCw className="h-5 w-5 mr-2" />
-                Try Again
-              </button>
-
-              <button
-                className="w-full py-4 px-6 bg-white border-2 border-blue-600 hover:bg-blue-50 text-blue-600 font-medium rounded-lg transition duration-300 flex items-center justify-center"
-                onClick={() => navigate("/")}
-              >
-                <Home className="h-5 w-5 mr-2" />
-                Return to Login Page
-              </button>
-            </div>
-
-            {/* Error code badge */}
-            <div className="mt-8 flex justify-center">
-              <span className="px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-600 flex items-center">
-                <HelpCircle className="h-4 w-4 mr-2 text-blue-600" />
-                Error Code: AUTH_INVALID_401
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer message */}
-        <div className="mt-6 text-center">
-          <p className="text-gray-500">
-            If this issue persists, please try again later or use a different
-            browser.
-          </p>
-        </div>
-      </div>
-    </div>
+    <Navigate to="/" />
   );
 };
 

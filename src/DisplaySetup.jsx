@@ -49,7 +49,7 @@ import TeacherProfile from "./components/Teachers/TeacherProfile";
 import StudentLayout from "./components/student/Layout/StudentLayout";
 import StudentProfile from "./components/student/StudentProfile";
 import MyCourses from "./components/student/Pages/MyCourses";
-import PaymentInfo from "./components/student/Pages/PaymentInfo";
+
 import StudentAttendence from "./components/student/Pages/StudentAttendence";
 import Quiz from "./components/student/Pages/Quiz";
 import EditProfile from "./components/student/Pages/EditProfile";
@@ -234,14 +234,7 @@ const DisplaySetup = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="student-payments"
-                element={
-                  <ProtectedRoute allowedRoles={["student"]}>
-                    <PaymentInfo />
-                  </ProtectedRoute>
-                }
-              />
+
               <Route
                 path="student-attendance"
                 element={

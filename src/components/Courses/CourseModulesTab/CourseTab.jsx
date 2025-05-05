@@ -7,12 +7,14 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const CourseTab = () => {
+  // State management
   const [expandedWeek, setExpandedWeek] = useState(null);
   const [expandedDay, setExpandedDay] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  const [liveClass, setLiveClass] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const containerRef = useRef(null);
@@ -64,19 +66,33 @@ const CourseTab = () => {
   // Format API response data into a more usable structure
   const formatScheduleData = (routineData) => {
     const days = routineData.days;
+
     const weekData = {
-      week: routineData.week || `Week ${routineData.sem}`,
       dateRange: routineData.date_range || `Semester ${routineData.sem}`,
       days: [],
     };
 
+    // Convert day numbers to actual day names
+    const dayNames = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+
+    // Process each day (day1, day2, etc.)
     Object.keys(days).forEach((dayKey, index) => {
       if (
         days[dayKey] &&
         Array.isArray(days[dayKey]) &&
         days[dayKey].length > 0
       ) {
-        const dayName = dayKey.replace("day", "Day ");
+        // Get the actual day name using the index
+        const dayName = dayNames[index % 7];
+
         const dayClasses = days[dayKey].map((classItem) => ({
           subject: classItem.paper,
           topic: classItem.topic || classItem.paper_code,
@@ -84,17 +100,43 @@ const CourseTab = () => {
           isLive: classItem.is_live || false,
           image: classItem.image,
           date: classItem.date,
+          paperCode: classItem.paper_code,
         }));
 
         weekData.days.push({
           day: dayName,
-          date: `Day ${index + 1}`,
+          date: dayName, // Use the actual day name here instead of "Day X"
           classes: dayClasses,
         });
       }
     });
 
     return weekData;
+  };
+
+  const handleLiveLink = async (paper_code, isLive) => {
+    console.log("ignore user", user.course_code);
+
+    try {
+      const response = await axios.post(
+        "https://e-college-data.onrender.com/v1/students/student-attendance-start",
+        {
+          c_roll: user.c_roll,
+          paper_code: paper_code,
+          course_code: user.course_code,
+        }
+      );
+      if (response.data.data.attendance_id) {
+        const attandanceData = response.data.data.attendance_id;
+        const AttandanceId = localStorage.setItem(
+          "attendanceid",
+          attandanceData
+        );
+        window.open(`${isLive}`);
+      }
+    } catch (err) {
+      console.log("Error attandance Attandence", err);
+    }
   };
 
   // Event handlers for expanding/collapsing sections
@@ -109,46 +151,83 @@ const CourseTab = () => {
     setExpandedDay(expandedDay === dayIndex ? null : dayIndex);
   };
 
-  // Helper function to determine if a class is currently live
+  /**
+   * Check if a class is currently live based on date and time
+   * @param {Object} classData - The class data object
+   * @returns {Boolean} - Whether class is currently live
+   */
   const isClassLive = (classData) => {
-    const isCurrentDay = new Date().getDay() === getCurrentDayIndex(classData);
-    return isCurrentDay && classData.isLive && isTimeInRange(classData.time);
+    // First check if we have the required data and a live URL
+    if (!classData.date || !classData.isLive || !classData.time) return false;
+
+    try {
+      // Check if the date matches today's date (YYYY-MM-DD format)
+      const today = new Date();
+      const todayStr = today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+
+      // Simple string comparison for dates in YYYY-MM-DD format
+      const isToday = classData.date === todayStr;
+
+      // Only check time if it's today
+      if (isToday) {
+        return isTimeInRange(classData.time);
+      }
+
+      return false;
+    } catch (error) {
+      console.error("Error checking if class is live:", error);
+      return false;
+    }
   };
 
-  // Get the day index for the current class
-  const getCurrentDayIndex = (classData) => {
-    // This should be modified based on how your days are indexed in the data
-    return new Date().getDay(); // 0-6, where 0 is Sunday
-  };
-
-  // Improved time range parsing
+  /**
+   * Check if current time is within a specified time range
+   * @param {String} timeRange - Time range string (e.g. "10.00 P.M-11.00 P.M")
+   * @returns {Boolean} - Whether current time is in range
+   */
   const isTimeInRange = (timeRange) => {
     if (!timeRange) return false;
 
     try {
+      // Split the time range into start and end times
       const [startStr, endStr] = timeRange.split(/\s*-\s*/);
       if (!startStr || !endStr) return false;
 
       const now = new Date();
-      const startTime = parseTimeString(startStr, now);
-      const endTime = parseTimeString(endStr, now);
+      const startTime = parseTimeString(startStr);
+      const endTime = parseTimeString(endStr);
 
       if (!startTime || !endTime) return false;
 
-      return now >= startTime && now <= endTime;
+      // Compare current time with the range
+      const currentHours = now.getHours();
+      const currentMinutes = now.getMinutes();
+      const currentTotalMinutes = currentHours * 60 + currentMinutes;
+
+      const startTotalMinutes = startTime.hours * 60 + startTime.minutes;
+      const endTotalMinutes = endTime.hours * 60 + endTime.minutes;
+
+      return (
+        currentTotalMinutes >= startTotalMinutes &&
+        currentTotalMinutes <= endTotalMinutes
+      );
     } catch (error) {
       console.error("Error checking time range:", error);
       return false;
     }
   };
 
-  // Improved time parsing function
-  const parseTimeString = (timeStr, baseDate) => {
+  /**
+   * Parse a time string into hours and minutes in 24-hour format
+   * @param {String} timeStr - Time string (e.g. "10.00 P.M" or "9:30 AM")
+   * @returns {Object|null} - Object with hours and minutes, or null if invalid
+   */
+  const parseTimeString = (timeStr) => {
     if (!timeStr) return null;
 
     try {
-      // Handle various time formats: "1:00 PM", "1 PM", "13:00", etc.
-      const timeRegex = /(\d+)(?::(\d+))?\s*([AP]\.?M\.?)?/i;
+      // Handle various time formats: "1:00 PM", "1 PM", "13:00", "10.00 P.M" etc.
+      const timeRegex = /(\d+)(?:[:.:](\d+))?\s*([AP]\.?M\.?)?/i;
       const match = timeStr.match(timeRegex);
 
       if (!match) return null;
@@ -164,9 +243,7 @@ const CourseTab = () => {
         else if (!isPM && hours === 12) hours = 0;
       }
 
-      const result = new Date(baseDate);
-      result.setHours(hours, minutes, 0, 0);
-      return result;
+      return { hours, minutes };
     } catch (error) {
       console.error(`Error parsing time: ${timeStr}`, error);
       return null;
@@ -191,6 +268,27 @@ const CourseTab = () => {
     }
   }, [expandedDay]);
 
+  /**
+   * Format a date string for display
+   * @param {String} dateStr - Date string in YYYY-MM-DD format
+   * @returns {String} - Formatted date string
+   */
+  const formatDateString = (dateStr) => {
+    if (!dateStr) return "";
+
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateStr; // Return original if parsing fails
+    }
+  };
+
   // Render functions for different states
   const renderAuthenticatedView = () => (
     <div
@@ -205,10 +303,6 @@ const CourseTab = () => {
             onClick={() => toggleWeek(weekIndex)}
           >
             <div className="p-1 sm:p-2 flex flex-col sm:flex-row sm:items-center sm:gap-2">
-              <span className="font-bold text-base sm:text-lg text-gray-800">
-                {weekData.week}
-                {weekData.dateRange ? " -" : ""}
-              </span>
               <span className="text-slate-700 text-sm sm:text-base">
                 {weekData.dateRange}
               </span>
@@ -234,10 +328,6 @@ const CourseTab = () => {
                   <div className="p-1 sm:p-2 flex flex-col sm:flex-row sm:items-center sm:gap-2">
                     <span className="font-bold text-sm sm:text-md text-gray-800">
                       {dayData.day}
-                      {dayData.date ? " -" : ""}
-                    </span>
-                    <span className="text-slate-700 text-xs sm:text-sm">
-                      {dayData.date}
                     </span>
                   </div>
                   <div className="p-1 sm:p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
@@ -254,6 +344,7 @@ const CourseTab = () => {
                   <div className="max-h-[calc(100vh-250px)] sm:max-h-[calc(100vh-230px)] md:max-h-[calc(100vh-200px)] overflow-y-auto pr-2 rounded-md bg-gray-50 p-2">
                     {dayData.classes.length > 0 ? (
                       dayData.classes.map((classData, classIndex) => {
+                        // Check if class is currently live based on date and time
                         const isLive = isClassLive(classData);
 
                         return (
@@ -270,26 +361,40 @@ const CourseTab = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <h1 className="font-medium text-sm sm:text-base md:text-lg truncate text-gray-800">
-                                {classData.subject}
+                                {classData.subject} - {classData.paperCode}
                                 {classData.topic ? ` - ${classData.topic}` : ""}
                               </h1>
                               <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-600 mt-1">
                                 <span className="font-light truncate">
                                   {classData.time}
                                 </span>
-                                <LuDot className="hidden sm:block mx-1" />
-                                {isLive ? (
-                                  <span className="flex items-center text-red-600 cursor-pointer font-medium ml-1 sm:ml-0">
-                                    <Link
-                                      to={classData.isLive}
-                                      className="flex justify-center items-center gap-2"
-                                    >
-                                      <span>Live</span>
-                                      <CiStreamOn className="ml-1 text-lg sm:text-xl text-red-600" />
-                                    </Link>
-                                  </span>
-                                ) : (
-                                  <span className="text-green-600 font-medium ml-1 sm:ml-0"></span>
+                                {classData.date && (
+                                  <>
+                                    <LuDot className="mx-1" />
+                                    <span className="font-light">
+                                      {formatDateString(classData.date)}
+                                    </span>
+                                  </>
+                                )}
+                                {/* Show Live indicator only if class is currently live */}
+                                {isLive && (
+                                  <>
+                                    <LuDot className="hidden sm:block mx-1" />
+                                    <span className="flex items-center text-red-600 cursor-pointer font-medium ml-1 sm:ml-0">
+                                      <button
+                                        onClick={() =>
+                                          handleLiveLink(
+                                            classData.paperCode,
+                                            classData.isLive
+                                          )
+                                        }
+                                        className="flex justify-center items-center gap-2"
+                                      >
+                                        <span>Live</span>
+                                        <CiStreamOn className="ml-1 text-lg sm:text-xl text-red-600" />
+                                      </button>
+                                    </span>
+                                  </>
                                 )}
                               </div>
                             </div>
@@ -324,19 +429,14 @@ const CourseTab = () => {
           <div className="mb-4">
             <div className="flex justify-between border border-slate-300 items-center p-3 rounded-xl">
               <div className="p-2 flex flex-col">
-                <span className="font-bold text-base text-gray-800">
-                  Sample Week
-                </span>
-                <span className="text-slate-700 text-sm">
-                  Sample Date Range
-                </span>
+                <span className="text-slate-700 text-sm">Sample Semester</span>
               </div>
             </div>
             <div className="mt-3">
               <div className="my-2 flex justify-between border border-slate-300 p-2 rounded-md">
                 <div className="p-2 flex flex-col">
                   <span className="font-bold text-sm text-gray-800">
-                    Sample Day
+                    Monday
                   </span>
                 </div>
               </div>

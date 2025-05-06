@@ -1,405 +1,486 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import {
-  FiCalendar,
-  FiClock,
-  FiUser,
-  FiBook,
-  FiCheckCircle,
-  FiSearch,
-  FiFilter,
-} from "react-icons/fi";
-import { FaRegClock, FaChalkboardTeacher } from "react-icons/fa";
-import { MdOutlineEmail } from "react-icons/md";
+import { useState, useEffect } from 'react';
+import { Calendar, Clock, User, Book, Award, CheckCircle, XCircle, ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react';
+import axios from 'axios';
 
 const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [latestAttendance, setLatestAttendance] = useState(null);
+  const [teacherData, setTeacherData] = useState(null);
+  const [stats, setStats] = useState({ present: 0, absent: 0, total: 0 });
+  const [selectedPaperCode, setSelectedPaperCode] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  
+  const itemsPerPage = 7;
+
+  // For demo - use this to sort by date properly
+  const parseDateString = (dateStr) => {
+    if (dateStr.includes('GMT')) {
+      return new Date(dateStr);
+    } else {
+      // Parse date format like "06-05-2025"
+      const [day, month, year] = dateStr.split('-');
+      return new Date(`${year}-${month}-${day}`);
+    }
+  };
 
   useEffect(() => {
-    // Load data from localStorage
-    setTimeout(() => {
-      try {
-        const data = localStorage.getItem("teacherAttendanceData");
-        console.log("Raw localStorage data:", data);
-
-        if (data) {
-          // Check if the data is an array or a single object
-          let parsedData;
-          try {
-            parsedData = JSON.parse(data);
-            console.log("Parsed data:", parsedData);
-
-            // If parsedData is not an array but an object, convert it to an array
-            if (parsedData && !Array.isArray(parsedData)) {
-              parsedData = [parsedData];
-              console.log("Converted to array:", parsedData);
-            }
-
-            // If we have valid data, use it
-            if (parsedData && parsedData.length > 0) {
-              setAttendanceData(parsedData);
-              setIsLoading(false);
-              return;
-            }
-          } catch (error) {
-            console.error("Error parsing localStorage data:", error);
-          }
-        }
-
-        // If we reach here, either there was no data or we couldn't parse it properly
-        // Use sample data as fallback
-        const sampleData = [
-          {
-            attendance_id: "bc22b5c5-e218-49c6-81fa-5361fdf7bcd5",
-            c_roll: "72570001",
-            course_code: "101",
-            createdAt: "2025-04-28T17:02:31.055Z",
-            date: "2025-04-28T17:02:31.055Z",
-            email: "teacherx@gmail.com",
-            exittime: "05:19 PM",
-            jointime: "05:02 PM",
-            paper_code: "MCA-101",
-            status: "present",
-            teacher: "Teacher x",
-            updatedAt: "2025-04-28T17:19:03.956Z",
-            __v: 0,
-            _id: "680fb4a7b7b3fdb29cbd3151",
-          },
-          {
-            attendance_id: "ac22b5c5-e218-49c6-81fa-5361fdf7bce2",
-            c_roll: "72570002",
-            course_code: "102",
-            createdAt: "2025-04-27T10:15:22.055Z",
-            date: "2025-04-27T10:15:22.055Z",
-            email: "teachery@gmail.com",
-            exittime: "12:30 PM",
-            jointime: "10:15 AM",
-            paper_code: "MCA-102",
-            status: "present",
-            teacher: "Teacher Y",
-            updatedAt: "2025-04-27T12:30:12.643Z",
-            __v: 0,
-            _id: "680fb4a7b7b3fdb29cbd3152",
-          },
-          {
-            attendance_id: "dc22b5c5-e218-49c6-81fa-5361fdf7bce7",
-            c_roll: "72570003",
-            course_code: "103",
-            createdAt: "2025-04-26T09:05:12.055Z",
-            date: "2025-04-26T09:05:12.055Z",
-            email: "teacherz@gmail.com",
-            exittime: "",
-            jointime: "09:05 AM",
-            paper_code: "MCA-103",
-            status: "absent",
-            teacher: "Teacher Z",
-            updatedAt: "2025-04-26T09:05:12.055Z",
-            __v: 0,
-            _id: "680fb4a7b7b3fdb29cbd3153",
-          },
-        ];
-        setAttendanceData(sampleData);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error loading attendance data:", error);
-        setIsLoading(false);
-      }
-    }, 1000);
+    // Get teacher data from localStorage
+    const userData = JSON.parse(localStorage.getItem('user'));
+    setTeacherData(userData);
+    
+    // Set default selected paper code if available
+    if (userData && userData.teacher_course && userData.teacher_course.length > 0) {
+      setSelectedPaperCode(userData.teacher_course[0].paper_code);
+    }
+    
+    // Get latest attendance data from localStorage
+    const latestData = JSON.parse(localStorage.getItem('teacherAttendanceData'));
+    setLatestAttendance(latestData);
   }, []);
+  
+  // Fetch attendance data when selected paper code changes
+  useEffect(() => {
+    if (selectedPaperCode && teacherData) {
+      fetchAttendanceData();
+    }
+  }, [selectedPaperCode]);
 
-  // Filter and search functionality
-  const filteredData = attendanceData.filter((item) => {
-    const matchesSearch =
-      item.teacher.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.paper_code.toLowerCase().includes(searchTerm.toLowerCase());
+  // Fetch attendance data based on selected paper code
+  const fetchAttendanceData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        'https://e-college-data.onrender.com/v1/teachers/teachers-all-attendance',
+        { paper_code: selectedPaperCode, c_roll: teacherData.c_roll }
+      );
+      
+      if (response.data && response.data.data) {
+        // Sort by date descending (most recent first)
+        const sortedData = response.data.data.sort((a, b) => {
+          return parseDateString(b.date) - parseDateString(a.date);
+        });
+        
+        setAttendanceData(sortedData);
+        
+        // Calculate statistics
+        const presentCount = sortedData.filter(item => item.status === 'present').length;
+        const totalCount = sortedData.length;
+        
+        setStats({
+          present: presentCount,
+          absent: totalCount - presentCount,
+          total: totalCount
+        });
+        
+        // Update latest attendance
+        if (sortedData.length > 0) {
+          setLatestAttendance(sortedData[0]);
+          localStorage.setItem('teacherAttendanceData', JSON.stringify(sortedData[0]));
+        }
+      }
+    } catch (err) {
+      setError('Failed to fetch attendance data');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    if (filterStatus === "all") return matchesSearch;
-    return matchesSearch && item.status === filterStatus;
-  });
+  // Calculate total pages
+  const totalPages = Math.ceil(attendanceData.length / itemsPerPage);
+  
+  // Get current items
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = attendanceData.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Format date nicely
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  
+  // Handle paper code selection
+  const handlePaperCodeChange = (paperCode) => {
+    setSelectedPaperCode(paperCode);
+    setDropdownOpen(false);
+    setCurrentPage(1); // Reset to first page when changing paper code
+  };
+  
+  // Format date for display
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    try {
+      const date = parseDateString(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (e) {
+      return dateString; // Fallback to the original string
+    }
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
+  // Format time for display
+  const formatTime = (timeString) => {
+    return timeString || 'N/A';
   };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
-    },
+  // Calculate class duration
+  const calculateDuration = (joinTime, exitTime) => {
+    if (!joinTime || !exitTime) return 'N/A';
+    
+    try {
+      // Convert 12-hour time format to minutes
+      const parseTime = (time) => {
+        const [timePart, modifier] = time.split(' ');
+        let [hours, minutes] = timePart.split(':');
+        
+        hours = parseInt(hours, 10);
+        minutes = parseInt(minutes, 10);
+        
+        if (modifier === 'PM' && hours < 12) hours += 12;
+        if (modifier === 'AM' && hours === 12) hours = 0;
+        
+        return hours * 60 + minutes;
+      };
+      
+      const startMinutes = parseTime(joinTime);
+      const endMinutes = parseTime(exitTime);
+      
+      let diffMinutes = endMinutes - startMinutes;
+      if (diffMinutes < 0) diffMinutes += 24 * 60; // Adjust for crossing midnight
+      
+      const hours = Math.floor(diffMinutes / 60);
+      const minutes = diffMinutes % 60;
+      
+      if (hours === 0) {
+        return `${minutes} mins`;
+      } else {
+        return `${hours}h ${minutes}m`;
+      }
+    } catch (e) {
+      return 'N/A';
+    }
+  };
+
+  // Get course name from paper code
+  const getCourseNameByPaperCode = (paperCode) => {
+    if (!teacherData || !teacherData.teacher_course) return paperCode;
+    
+    const course = teacherData.teacher_course.find(course => course.paper_code === paperCode);
+    return course ? `${paperCode} - ${course.paper_name}` : paperCode;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Teacher Attendance Report
-          </h1>
-          <p className="text-gray-600">
-            View and filter attendance records for all teachers
-          </p>
-        </motion.div>
-
-        {/* Stats Overview */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.div
-            variants={itemVariants}
-            className="bg-white rounded-lg shadow p-6 flex items-center"
-          >
-            <div className="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-              <FiUser className="text-xl" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Total Records</p>
-              <p className="text-xl font-semibold">{attendanceData.length}</p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            variants={itemVariants}
-            className="bg-white rounded-lg shadow p-6 flex items-center"
-          >
-            <div className="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-              <FiCheckCircle className="text-xl" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Present</p>
-              <p className="text-xl font-semibold">
-                {
-                  attendanceData.filter((item) => item.status === "present")
-                    .length
-                }
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            variants={itemVariants}
-            className="bg-white rounded-lg shadow p-6 flex items-center"
-          >
-            <div className="p-3 rounded-full bg-red-100 text-red-600 mr-4">
-              <FiClock className="text-xl" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Absent</p>
-              <p className="text-xl font-semibold">
-                {
-                  attendanceData.filter((item) => item.status === "absent")
-                    .length
-                }
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            variants={itemVariants}
-            className="bg-white rounded-lg shadow p-6 flex items-center"
-          >
-            <div className="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
-              <FiBook className="text-xl" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Courses</p>
-              <p className="text-xl font-semibold">
-                {new Set(attendanceData.map((item) => item.course_code)).size}
-              </p>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* Filter and Search */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white rounded-lg shadow mb-8 p-4 md:p-6"
-        >
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="relative w-full md:w-1/2">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiSearch className="text-gray-400" />
+    <div className="bg-gray-50 min-h-screen p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Paper Code Dropdown */}
+        {teacherData && teacherData.teacher_course && teacherData.teacher_course.length > 0 && (
+          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-3">Select Course</h3>
+              <div className=" relative">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="w-full md:w-96 bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-left focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="block truncate">
+                      {selectedPaperCode ? getCourseNameByPaperCode(selectedPaperCode) : 'Select Course'}
+                    </span>
+                    <ChevronDown className="h-5 w-5 text-gray-400" />
+                  </div>
+                </button>
+                
+                {dropdownOpen && (
+                  <div className=" z-100 mt-1 w-full md:w-96 bg-white shadow-lg rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {teacherData.teacher_course.map((course) => (
+                      <div
+                        key={course}
+                        className={`cursor-pointer select-none text-amber-400 relative py-2 pl-3 pr-9 hover:bg-blue-50 ${
+                          selectedPaperCode === course ? 'bg-blue-100' : ''
+                        }`}
+                        onClick={() => handlePaperCodeChange(course)}
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-sm text-gray-500">{course}</span>
+                        </div>
+                        {selectedPaperCode === course && (
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600">
+                            <CheckCircle className="h-5 w-5" />
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <input
-                type="text"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Search by name, email, or course..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <div className="flex space-x-2 items-center w-full md:w-auto">
-              <FiFilter className="text-gray-500" />
-              <select
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="all">All Status</option>
-                <option value="present">Present</option>
-                <option value="absent">Absent</option>
-              </select>
             </div>
           </div>
-        </motion.div>
-
-        {/* Attendance Records */}
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          </div>
-        ) : (
-          <>
-            {filteredData.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="bg-white rounded-lg shadow p-8 text-center"
-              >
-                <p className="text-gray-500 text-lg">
-                  No attendance records found
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-              >
-                {filteredData.map((record, index) => (
-                  <motion.div
-                    key={record._id || index}
-                    variants={itemVariants}
-                    className="bg-white rounded-lg shadow overflow-hidden"
-                  >
-                    <div
-                      className={`h-2 ${
-                        record.status === "present"
-                          ? "bg-green-500"
-                          : "bg-red-500"
-                      }`}
-                    ></div>
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex items-center">
-                          <div
-                            className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                              record.status === "present"
-                                ? "bg-green-100 text-green-600"
-                                : "bg-red-100 text-red-600"
-                            }`}
-                          >
-                            <FaChalkboardTeacher className="text-xl" />
-                          </div>
-                          <div className="ml-4">
-                            <h3 className="text-lg font-semibold text-gray-800">
-                              {record.teacher}
-                            </h3>
-                            <div className="flex items-center text-gray-500">
-                              <MdOutlineEmail className="mr-1" />
-                              <span className="text-sm">{record.email}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            record.status === "present"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {record.status.toUpperCase()}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="flex items-center">
-                          <FiCalendar className="text-gray-400 mr-2" />
-                          <div>
-                            <p className="text-xs text-gray-500">Date</p>
-                            <p className="text-sm font-medium">
-                              {formatDate(record.date)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center">
-                          <FiBook className="text-gray-400 mr-2" />
-                          <div>
-                            <p className="text-xs text-gray-500">Course</p>
-                            <p className="text-sm font-medium">
-                              {record.paper_code}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="flex items-center">
-                          <FaRegClock className="text-gray-400 mr-2" />
-                          <div>
-                            <p className="text-xs text-gray-500">Join Time</p>
-                            <p className="text-sm font-medium">
-                              {record.jointime || "N/A"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center">
-                          <FaRegClock className="text-gray-400 mr-2" />
-                          <div>
-                            <p className="text-xs text-gray-500">Exit Time</p>
-                            <p className="text-sm font-medium">
-                              {record.exittime || "N/A"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </>
         )}
+        
+        {/* Teacher Profile Section */}
+        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+          <div className="md:flex">
+            <div className="md:shrink-0 bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white flex flex-col justify-center items-center md:w-64">
+              <div className="h-24 w-24 rounded-full bg-white/20 flex items-center justify-center mb-4">
+                {teacherData?.image ? (
+                  <img 
+                    src={teacherData.image} 
+                    alt={teacherData?.name || "Teacher"} 
+                    className="h-20 w-20 rounded-full object-cover"
+                  />
+                ) : (
+                  <User size={40} className="text-white" />
+                )}
+              </div>
+              <h2 className="text-xl font-bold">{teacherData?.name || "Teacher Name"}</h2>
+              <p className="text-blue-100 text-sm mt-1">{teacherData?.email || "email@example.com"}</p>
+              <div className="mt-4 bg-white/10 rounded-lg p-2 px-3">
+                <p className="text-sm">ID: {teacherData?.c_roll || "N/A"}</p>
+              </div>
+            </div>
+            
+            <div className="p-6 md:p-8 w-full">
+              <div className="flex flex-col md:flex-row justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800 flex items-center">
+                    <Book className="mr-2 text-blue-600" size={20} />
+                    Subject Details
+                  </h3>
+                  <div className="mt-2 space-y-2">
+                    <p className="text-gray-600"><span className="font-medium">Paper Code:</span> {selectedPaperCode || (latestAttendance?.paper_code || "N/A")}</p>
+
+                    <p className="text-gray-600"><span className="font-medium">Role:</span> {teacherData?.role || "Teacher"}</p>
+                  </div>
+                </div>
+                
+                <div className="mt-6 md:mt-0">
+                  <h3 className="text-xl font-bold text-gray-800 flex items-center">
+                    <Award className="mr-2 text-blue-600" size={20} />
+                    Attendance Stats
+                  </h3>
+                  <div className="mt-2 flex flex-wrap gap-4">
+                    <div className="bg-green-50 p-3 rounded-lg">
+                      <p className="text-sm text-green-700">Present</p>
+                      <p className="text-2xl font-bold text-green-700">{stats.present}</p>
+                    </div>
+                    <div className="bg-red-50 p-3 rounded-lg">
+                      <p className="text-sm text-red-700">Absent</p>
+                      <p className="text-2xl font-bold text-red-700">{stats.absent}</p>
+                    </div>
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <p className="text-sm text-blue-700">Total</p>
+                      <p className="text-2xl font-bold text-blue-700">{stats.total}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Latest Attendance */}
+        {latestAttendance && (
+          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6 border-l-4 border-green-500">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-3">Latest Class Attendance</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center">
+                  <Calendar className="text-blue-600 mr-3" size={20} />
+                  <div>
+                    <p className="text-sm text-gray-500">Date</p>
+                    <p className="font-medium">{formatDate(latestAttendance.date)}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Clock className="text-blue-600 mr-3" size={20} />
+                  <div>
+                    <p className="text-sm text-gray-500">Time</p>
+                    <p className="font-medium">{formatTime(latestAttendance.jointime)} - {formatTime(latestAttendance.exittime)}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <div className={`mr-3 ${latestAttendance.status === 'present' ? 'text-green-500' : 'text-red-500'}`}>
+                    {latestAttendance.status === 'present' ? <CheckCircle size={20} /> : <XCircle size={20} />}
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Status</p>
+                    <p className={`font-medium capitalize ${latestAttendance.status === 'present' ? 'text-green-700' : 'text-red-700'}`}>
+                      {latestAttendance.status}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Attendance Table */}
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h3 className="text-lg font-bold text-gray-800">Attendance History</h3>
+            <p className="text-sm text-gray-500 mt-1">
+              {selectedPaperCode ? `Showing records for ${getCourseNameByPaperCode(selectedPaperCode)}` : 'Please select a course'}
+            </p>
+          </div>
+          
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+              <p className="mt-4 text-gray-600">Loading attendance records...</p>
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center text-red-600">{error}</div>
+          ) : !selectedPaperCode ? (
+            <div className="p-8 text-center text-gray-600">Please select a course to view attendance records.</div>
+          ) : attendanceData.length === 0 ? (
+            <div className="p-8 text-center text-gray-600">No attendance records found for this course.</div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Time</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exit Time</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {currentItems.map((item, index) => (
+                      <tr key={item._id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(item.date)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatTime(item.jointime)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatTime(item.exittime || 'N/A')}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {calculateDuration(item.jointime, item.exittime)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            item.status === 'present' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {item.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Pagination */}
+              <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                <div className="flex-1 flex justify-between sm:hidden">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
+                      currentPage === 1 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
+                      currentPage === totalPages 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm text-gray-700">
+                      Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{' '}
+                      <span className="font-medium">
+                        {Math.min(indexOfLastItem, attendanceData.length)}
+                      </span>{' '}
+                      of <span className="font-medium">{attendanceData.length}</span> results
+                    </p>
+                  </div>
+                  <div>
+                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                          currentPage === 1 
+                            ? 'text-gray-300 cursor-not-allowed' 
+                            : 'text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="sr-only">Previous</span>
+                        <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+                      </button>
+                      
+                      {/* Page numbers */}
+                      {[...Array(totalPages).keys()].map(number => {
+                        // Only show a few page numbers and ellipsis for the rest
+                        if (
+                          number + 1 === 1 || 
+                          number + 1 === totalPages || 
+                          (number + 1 >= currentPage - 1 && number + 1 <= currentPage + 1)
+                        ) {
+                          return (
+                            <button
+                              key={number}
+                              onClick={() => paginate(number + 1)}
+                              className={`relative inline-flex items-center px-4 py-2 border ${
+                                currentPage === number + 1
+                                  ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                                  : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                              } text-sm font-medium`}
+                            >
+                                {number + 1}
+                            </button>
+                          );
+                        } else if (
+                          number + 1 === currentPage - 2 || 
+                          number + 1 === currentPage + 2
+                        ) {
+                          return (
+                            <span
+                              key={number}
+                              className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+                            >
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
+                      })}
+                      
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                          currentPage === totalPages 
+                            ? 'text-gray-300 cursor-not-allowed' 
+                            : 'text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className="sr-only">Next</span>
+                        <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

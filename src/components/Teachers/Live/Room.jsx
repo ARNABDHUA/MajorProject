@@ -28,7 +28,7 @@ function Room() {
   // Attendance tracking state
   const [attendanceData, setAttendanceData] = useState({});
   const attendanceTimeRef = useRef(null);
-  const minimumAttendanceTime = 10 * 60 * 1000; // 20 minutes in milliseconds
+  const minimumAttendanceTime = 1 * 60 * 1000; // 20 minutes in milliseconds
 
   // Room expiration state
   const [roomExpired, setRoomExpired] = useState(false);
@@ -150,6 +150,7 @@ function Room() {
     initializingRef.current = true;
 
     try {
+      if(exists===null) {exists===false}
       if (!exists) {
         throw new Error("You are not authorized to join this room.");
       }
@@ -236,10 +237,10 @@ function Room() {
           );
 
           // Update attendance data with join time
-          setAttendanceData((prev) => ({
-            ...prev,
-            [name]: { joinTime, leaveTime: null },
-          }));
+          // setAttendanceData((prev) => ({
+          //   ...prev,
+          //   [name]: { joinTime, leaveTime: null },
+          // }));
 
           // Store join time in ref for quick access during cleanup
           attendanceTimeRef.current = joinTime;
@@ -253,15 +254,15 @@ function Room() {
             const result = processAttendance(name, joinTime, leaveTime);
 
             // Update attendance data with complete record
-            setAttendanceData((prev) => ({
-              ...prev,
-              [name]: {
-                joinTime,
-                leaveTime,
-                duration: result.attendanceTime,
-                success: result.success,
-              },
-            }));
+            // setAttendanceData((prev) => ({
+            //   ...prev,
+            //   [name]: {
+            //     joinTime,
+            //     leaveTime,
+            //     duration: result.attendanceTime,
+            //     success: result.success,
+            //   },
+            // }));
 
             // If successful attendance, we can save it
             if (result.success) {
@@ -283,10 +284,10 @@ function Room() {
                 joinTime
               ).toLocaleTimeString()}`
             );
-            setAttendanceData((prev) => ({
-              ...prev,
-              [user.userName]: { joinTime, leaveTime: null },
-            }));
+            // setAttendanceData((prev) => ({
+            //   ...prev,
+            //   [user.userName]: { joinTime, leaveTime: null },
+            // }));
           });
         },
         onUserLeave: (users) => {
@@ -302,15 +303,15 @@ function Room() {
               );
 
               // Update with complete record
-              setAttendanceData((prev) => ({
-                ...prev,
-                [user.userName]: {
-                  joinTime: userData.joinTime,
-                  leaveTime,
-                  duration: result.attendanceTime,
-                  success: result.success,
-                },
-              }));
+              // setAttendanceData((prev) => ({
+              //   ...prev,
+              //   [user.userName]: {
+              //     joinTime: userData.joinTime,
+              //     leaveTime,
+              //     duration: result.attendanceTime,
+              //     success: result.success,
+              //   },
+              // }));
 
               // If successful attendance, we can save it
               if (result.success) {
@@ -358,6 +359,7 @@ function Room() {
     setTimeUntilExpiration(timeLeft);
 
     // Only initialize if room is valid and not expired
+    if(exists===null) {exists===false}
     if (type && exists && !joined && !initializingRef.current && !expired) {
       initMeeting(type);
     }
@@ -455,9 +457,10 @@ function Room() {
             };
 
             const updateAttendanceRecordstudent= async()=>{
-
+              
               try {
-                const userDetails = JSON.parse(localStorage.getItem("attendanceid"));
+                const userDetails =(localStorage.getItem("attendanceid"));
+                console.log("student attendance_id",userDetails);
                 const response = await axios.post(
                   `https://e-college-data.onrender.com/v1/students/student-attendance-end`,
                   {
@@ -476,13 +479,13 @@ function Room() {
             // Call the async function
             if (userData.role === "teacher") updateAttendanceRecord();
             if (userData.role==="student") updateAttendanceRecordstudent();
-            setAttendanceData((prev) => ({
-              ...prev,
-              [name]: {
-                ...prev[name],
-                success: true,
-              },
-            }));
+            // setAttendanceData((prev) => ({
+            //   ...prev,
+            //   [name]: {
+            //     ...prev[name],
+            //     success: true,
+            //   },
+            // }));
           }
         }
       }, 60000); // Every second
@@ -596,8 +599,6 @@ function Room() {
           <div className="text-xs mt-1"></div>
         </div>
       )}
-
-      {/* Attendance information panel for teachers/admins */}
     </div>
   );
 }

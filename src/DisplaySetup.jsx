@@ -76,6 +76,8 @@ import TeacherClassAssesment from "./components/Teachers/Pages/TeacherClassAsses
 import AdmitCardGeneration from "./components/student/AdmitCard/AdmitCardGeneration";
 import StudentIdentityCard from "./components/student/Pages/StudentIdentityCard";
 import SalarySlip from "./components/Teachers/Pages/SalarySlip";
+import { Delete } from "lucide-react";
+import DeleteCourse from "./components/Teachers/Pages/DeleteCourse";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -190,6 +192,14 @@ const DisplaySetup = () => {
                 element={
                   <TeacherProtectedRoute allowedRoles={["teacher"]}>
                     <TeacherClassAssesment />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/delete-class"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <DeleteCourse />
                   </TeacherProtectedRoute>
                 }
               />

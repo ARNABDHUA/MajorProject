@@ -24,15 +24,24 @@ const dayMapping = {
   day6: "Saturday",
 };
 
-const Routine = () => {
+const Routine = ({ courseId }) => {
   const [activeDay, setActiveDay] = useState(null);
   const [schedule, setSchedule] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { id } = useParams();
+
+  // Get id either from props or URL params
+  const params = useParams();
+  const id = courseId || params.id;
 
   useEffect(() => {
     const fetchSchedule = async () => {
+      if (!id) {
+        setError("No course ID provided");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         // Replace this URL with your actual API endpoint

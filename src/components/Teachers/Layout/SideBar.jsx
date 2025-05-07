@@ -10,6 +10,8 @@ import { SiKdenlive } from "react-icons/si";
 import { AiTwotoneSchedule } from "react-icons/ai";
 import Swal from "sweetalert2";
 import { FaMoneyCheckAlt } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+import { MdAssignmentInd } from "react-icons/md";
 import {
   FiBookOpen,
   FiCalendar,
@@ -116,7 +118,7 @@ const Sidebar = ({
         path: "/teacher-assesment",
       },
       {
-        id: 12,
+        id: 14,
         title: "Salary Slip",
         icon: <FaMoneyCheckAlt className="w-5 h-5" />,
         path: "/salary-slip",
@@ -125,12 +127,28 @@ const Sidebar = ({
 
     // Only add the Schedule Class option if user is HOD
     if (isHOD) {
-      baseMenuItems.splice(10, 0, {
-        id: 11,
-        title: "Schedule Class",
-        icon: <AiTwotoneSchedule className="w-5 h-5" />,
-        path: "/schedule-class",
-      });
+      baseMenuItems.splice(
+        10,
+        0,
+        {
+          id: 11,
+          title: "Schedule Class",
+          icon: <AiTwotoneSchedule className="w-5 h-5" />,
+          path: "/schedule-class",
+        },
+        {
+          id: 12,
+          title: "Delete Class",
+          icon: <MdDelete className="w-5 h-5" />,
+          path: "/delete-class",
+        },
+        {
+          id: 13,
+          title: "Teacher Assign",
+          icon: <MdAssignmentInd className="w-5 h-5" />,
+          path: "/teacher-assign",
+        }
+      );
     }
 
     return baseMenuItems;

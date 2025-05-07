@@ -129,6 +129,7 @@ const MyChats = ({ fetchAgain }) => {
   const [pressingChatId, setPressingChatId] = useState(null);
   // Add loading state to prevent rendering before user data is ready
   const [isLoading, setIsLoading] = useState(true);
+  const [isStudent,setIsStudent]=useState(false);
 
   const { 
     selectedChat, 
@@ -151,8 +152,10 @@ const MyChats = ({ fetchAgain }) => {
           return false;
         }
         
+        const studentData=userInfo.isstudent
         setLoggedUser(userInfo);
         setToken(userToken);
+        setIsStudent(studentData);
         
         // Load saved group images from localStorage
         const savedGroupImages = localStorage.getItem("groupChatImages");
@@ -519,9 +522,9 @@ const handleImageSelect = (imageUrl) => {
             )} */}
           </div>
           <GroupChatModal>
-            <button className="flex items-center gap-2 text-[17px] md:text-[10px] lg:text-[17px] px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+            {!isStudent &&<button className="flex items-center gap-2 text-[17px] md:text-[10px] lg:text-[17px] px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
               New Group Chat <span className="text-lg">+</span>
-            </button>
+            </button>}
           </GroupChatModal>
         </div>
 

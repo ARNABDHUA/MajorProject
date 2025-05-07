@@ -49,7 +49,7 @@ import TeacherProfile from "./components/Teachers/TeacherProfile";
 import StudentLayout from "./components/student/Layout/StudentLayout";
 import StudentProfile from "./components/student/StudentProfile";
 import MyCourses from "./components/student/Pages/MyCourses";
-import PaymentInfo from "./components/student/Pages/PaymentInfo";
+
 import StudentAttendence from "./components/student/Pages/StudentAttendence";
 import Quiz from "./components/student/Pages/Quiz";
 import EditProfile from "./components/student/Pages/EditProfile";
@@ -73,6 +73,9 @@ import TeacherQuiz from "./components/Teachers/Pages/TeacherQuiz";
 import AdminLayout from "./components/Admin/Layout/AdminLayout";
 import RoutineScheduling from "./components/Teachers/Pages/RoutineScheduling";
 import TeacherClassAssesment from "./components/Teachers/Pages/TeacherClassAssesment";
+import AdmitCardGeneration from "./components/student/AdmitCard/AdmitCardGeneration";
+import StudentIdentityCard from "./components/student/Pages/StudentIdentityCard";
+import SalarySlip from "./components/Teachers/Pages/SalarySlip";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -190,6 +193,14 @@ const DisplaySetup = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/salary-slip"
+                element={
+                  <ProtectedRoute allowedRoles={["teacher"]}>
+                    <SalarySlip />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
             {/* Admin */}
             <Route element={<AdminLayout />}>
@@ -223,14 +234,7 @@ const DisplaySetup = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="student-payments"
-                element={
-                  <ProtectedRoute allowedRoles={["student"]}>
-                    <PaymentInfo />
-                  </ProtectedRoute>
-                }
-              />
+
               <Route
                 path="student-attendance"
                 element={
@@ -244,6 +248,22 @@ const DisplaySetup = () => {
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <Chatpage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student-Admit"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <AdmitCardGeneration />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student-idcard"
+                element={
+                  <ProtectedRoute allowedRoles={["student"]}>
+                    <StudentIdentityCard />
                   </ProtectedRoute>
                 }
               />
@@ -317,6 +337,7 @@ const DisplaySetup = () => {
               {/* <Route path="/payment" element={<Payment />} /> */}
               <Route path="/signup" element={<StudentSignup />} />
               {/* <Route path="/chats" element={<Chatpage />} /> */}
+
               <Route path="/courseModules" element={<CoursesModules />} />
               <Route path="/courseModules/:id" element={<CoursesModules />} />
               <Route path="/about" element={<About />} />

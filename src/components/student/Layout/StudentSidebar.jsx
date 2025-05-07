@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHandsHelping } from "react-icons/fa";
+import { PiIdentificationCardBold } from "react-icons/pi";
+import { FaRegAddressCard } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import {
   FaUser,
@@ -39,60 +41,69 @@ const menuItems = [
     path: "/student-courses",
     requiresPayment: true,
   },
+
   {
     id: 3,
-    title: "Payment Info",
-    icon: <FaRegCreditCard />,
-    path: "/student-payments",
-    requiresPayment: false,
-  },
-  {
-    id: 4,
     title: "Attendance",
     icon: <FaCalendarCheck />,
     path: "/student-attendance",
     requiresPayment: true,
   },
   {
-    id: 5,
+    id: 4,
     title: "Quiz",
     icon: <FaQuestionCircle />,
     path: "/student-quiz",
     requiresPayment: true,
   },
   {
-    id: 6,
+    id: 5,
     title: "Chat Room",
     icon: <FaComments />,
     path: "/student-chat",
     requiresPayment: true,
   },
   {
-    id: 7,
+    id: 6,
     title: "Edit Profile",
     icon: <FaUserEdit />,
     path: "/student-edit-profile",
     requiresPayment: false,
   },
   {
-    id: 8,
+    id: 7,
     title: "Class Assesment",
     icon: <SiKdenlive />,
     path: "/class-assesment",
     requiresPayment: true,
   },
   {
-    id: 9,
+    id: 8,
     title: "Marks",
     icon: <PiExamFill />,
     path: "/student-marks",
     requiresPayment: true,
   },
   {
-    id: 10,
+    id: 9,
     title: "Student assistant",
     icon: <FaHandsHelping />,
     path: "/class-assistant",
+    requiresPayment: true,
+  },
+  {
+    id: 10,
+    title: "Admit Card",
+    icon: <PiIdentificationCardBold />,
+    path: "/student-admit",
+    requiresPayment: true,
+  },
+
+  {
+    id: 11,
+    title: "E-Identity card",
+    icon: <FaRegAddressCard />,
+    path: "/student-idcard",
     requiresPayment: true,
   },
 ];
@@ -146,7 +157,7 @@ const StudentSidebar = ({
       confirmButtonText: "Go to Payment",
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.href = "/student-payments";
+        window.location.href = "/";
       }
     });
   };

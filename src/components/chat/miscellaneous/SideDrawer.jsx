@@ -144,14 +144,26 @@ function SideDrawer() {
       setLoading(true);
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const useId = userInfo._id;
-
-      const { data } = await axios.post(
+      const studetData=userInfo.isstudent
+      // console.log("isstudent check",studetData)
+      if(! studetData)
+     { const { data } = await axios.post(
         `https://e-college-data.onrender.com/v1/chat/chat-user-all?search=${search}`,
         { useId }
       );
 
       setSearchResult(data);
       setLoading(false);
+    }
+      else{
+        const { data } = await axios.post(
+          `https://e-college-data.onrender.com/v1/chat/chat-user-all-forstudent?search=${search}`,
+          { useId }
+        );
+  
+        setSearchResult(data);
+        setLoading(false);
+      }
     } catch (error) {
       toast.error("Failed to load search results", { position: "bottom-left" });
       setLoading(false);

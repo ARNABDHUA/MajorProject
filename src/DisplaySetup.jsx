@@ -170,35 +170,35 @@ const DisplaySetup = () => {
                 }
               />
               <Route
-                path="teacher-chat"
+                path="/teacher-chat"
                 element={
-                  <ProtectedRoute allowedRoles={["teacher"]}>
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
                     <Chatpage />
-                  </ProtectedRoute>
+                  </TeacherProtectedRoute>
                 }
               />
               <Route
                 path="/schedule-class"
                 element={
-                  <ProtectedRoute allowedRoles={["teacher"]}>
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
                     <RoutineScheduling />
-                  </ProtectedRoute>
+                  </TeacherProtectedRoute>
                 }
               />
               <Route
                 path="/teacher-assesment"
                 element={
-                  <ProtectedRoute allowedRoles={["teacher"]}>
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
                     <TeacherClassAssesment />
-                  </ProtectedRoute>
+                  </TeacherProtectedRoute>
                 }
               />
               <Route
                 path="/salary-slip"
                 element={
-                  <ProtectedRoute allowedRoles={["teacher"]}>
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
                     <SalarySlip />
-                  </ProtectedRoute>
+                  </TeacherProtectedRoute>
                 }
               />
             </Route>

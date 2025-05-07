@@ -28,7 +28,7 @@ const Layout = () => {
   const getCurrentPageTitle = () => {
     const path = location.pathname;
     if (path === "/teacher-home") return "Profile";
-    if (path === "/teacher/schedule") return "Schedule";
+    if (path === "/teacher-schedule") return "Schedule";
     if (path === "/teacher-courses") return "My Classes";
     if (path === "/live-teacher") return "Live Class";
     if (path === "/teacher-examination") return "Examination";
@@ -36,6 +36,12 @@ const Layout = () => {
     if (path === "/teacher-settings") return "Settings";
     if (path === "/teacher-students") return "Students";
     if (path === "/teacher-attendance") return "Attendance";
+    if (path === "/teacher-chat") return "My Chat";
+    if (path === "/upload-recorded-class") return "Upload recorded class";
+    if (path === "/teacher-quiz") return "Quiz";
+    if (path === "/teacher-assesment") return "Assessment";
+    if (path === "/schedule-class") return "Schedule";
+    if (path === "/salary-slip") return "Salary Slip";
     return "Profile";
   };
 

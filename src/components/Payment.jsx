@@ -75,6 +75,17 @@ const Payment = () => {
         }
       );
       if (res.data) {
+        const studentChat = await axios.post(
+          "https://e-college-data.onrender.com/v1/chat/chat-isstudent",
+          {
+            email: email,
+          }
+        );
+        if (studentChat.data) {
+          const chatData = studentChat.data;
+          localStorage.setItem("userInfo", JSON.stringify(chatData));
+        }
+
         const newData = res.data;
         const userData = { ...newData, role: "student" };
         localStorage.setItem("user", JSON.stringify(userData));

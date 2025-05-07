@@ -22,83 +22,6 @@ import {
   FiHome,
 } from "react-icons/fi";
 import { SiGoogleclassroom } from "react-icons/si";
-// Sidebar menu items
-const menuItems = [
-  {
-    id: 1,
-    title: "Profile",
-    icon: <FiHome className="w-5 h-5" />,
-    path: "/teacher-home",
-  },
-  {
-    id: 2,
-    title: "Students",
-    icon: <FaUser className="w-5 h-5" />,
-    path: "/teacher-students",
-  },
-  {
-    id: 3,
-    title: "Examination",
-    icon: <FaRegNoteSticky className="w-5 h-5" />,
-    path: "/teacher-examination",
-  },
-
-  {
-    id: 4,
-    title: "Schedule",
-    icon: <FiCalendar className="w-5 h-5" />,
-    path: "/teacher-schedule",
-  },
-
-  {
-    id: 5,
-    title: "Live Class",
-    icon: <SiKdenlive className="w-5 h-5" />,
-    path: "/live-teacher",
-  },
-  {
-    id: 6,
-    title: "Attendance",
-    icon: <MdCoPresent className="w-5 h-5" />,
-    path: "/teacher-attendance",
-  },
-  {
-    id: 7,
-    title: "Chat",
-    icon: <FaComment className="w-5 h-5" />,
-    path: "/teacher-chat",
-  },
-  {
-    id: 8,
-    title: "Upload Recorded Class",
-    icon: <BiSolidVideoRecording className="w-5 h-5" />,
-    path: "/upload-recorded-class",
-  },
-  {
-    id: 9,
-    title: "Quiz",
-    icon: <MdQuiz className="w-5 h-5" />,
-    path: "/teacher-quiz",
-  },
-  {
-    id: 10,
-    title: "Class Assesment",
-    icon: <SiGoogleclassroom className="w-5 h-5" />,
-    path: "/teacher-assesment",
-  },
-  {
-    id: 11,
-    title: "Schedule Class",
-    icon: <AiTwotoneSchedule className="w-5 h-5" />,
-    path: "/schedule-class",
-  },
-  {
-    id: 12,
-    title: "Salary Slip",
-    icon: <FaMoneyCheckAlt className="w-5 h-5" />,
-    path: "/salary-slip",
-  },
-];
 
 const Sidebar = ({
   isCollapsedProp = false,
@@ -107,6 +30,7 @@ const Sidebar = ({
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(isCollapsedProp);
   const [teacherData, setTeacherData] = useState(null);
+  const [isHOD, setIsHOD] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -117,6 +41,7 @@ const Sidebar = ({
         const localData = localStorage.getItem("user");
         if (localData) {
           const parsedData = JSON.parse(localData);
+          setIsHOD(parsedData.hod);
           setTeacherData(parsedData);
         }
       } catch (err) {
@@ -126,6 +51,90 @@ const Sidebar = ({
 
     loadUserData();
   }, []);
+
+  // Define menu items inside the component to access isHOD state
+  const getMenuItems = () => {
+    const baseMenuItems = [
+      {
+        id: 1,
+        title: "Profile",
+        icon: <FiHome className="w-5 h-5" />,
+        path: "/teacher-home",
+      },
+      {
+        id: 2,
+        title: "Students",
+        icon: <FaUser className="w-5 h-5" />,
+        path: "/teacher-students",
+      },
+      {
+        id: 3,
+        title: "Examination",
+        icon: <FaRegNoteSticky className="w-5 h-5" />,
+        path: "/teacher-examination",
+      },
+      {
+        id: 4,
+        title: "Schedule",
+        icon: <FiCalendar className="w-5 h-5" />,
+        path: "/teacher-schedule",
+      },
+      {
+        id: 5,
+        title: "Live Class",
+        icon: <SiKdenlive className="w-5 h-5" />,
+        path: "/live-teacher",
+      },
+      {
+        id: 6,
+        title: "Attendance",
+        icon: <MdCoPresent className="w-5 h-5" />,
+        path: "/teacher-attendance",
+      },
+      {
+        id: 7,
+        title: "Chat",
+        icon: <FaComment className="w-5 h-5" />,
+        path: "/teacher-chat",
+      },
+      {
+        id: 8,
+        title: "Upload Recorded Class",
+        icon: <BiSolidVideoRecording className="w-5 h-5" />,
+        path: "/upload-recorded-class",
+      },
+      {
+        id: 9,
+        title: "Quiz",
+        icon: <MdQuiz className="w-5 h-5" />,
+        path: "/teacher-quiz",
+      },
+      {
+        id: 10,
+        title: "Class Assesment",
+        icon: <SiGoogleclassroom className="w-5 h-5" />,
+        path: "/teacher-assesment",
+      },
+      {
+        id: 12,
+        title: "Salary Slip",
+        icon: <FaMoneyCheckAlt className="w-5 h-5" />,
+        path: "/salary-slip",
+      },
+    ];
+
+    // Only add the Schedule Class option if user is HOD
+    if (isHOD) {
+      baseMenuItems.splice(10, 0, {
+        id: 11,
+        title: "Schedule Class",
+        icon: <AiTwotoneSchedule className="w-5 h-5" />,
+        path: "/schedule-class",
+      });
+    }
+
+    return baseMenuItems;
+  };
 
   const handleLogout = useCallback(() => {
     Swal.fire({
@@ -183,6 +192,9 @@ const Sidebar = ({
     }
   }, [onCloseMobile]);
 
+  // Get the current menu items based on HOD status
+  const menuItems = getMenuItems();
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -206,8 +218,8 @@ const Sidebar = ({
         animate={isMobile ? "visible" : isCollapsed ? "collapsed" : "expanded"}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         style={{
-          width: isMobile ? "100%" : "auto", // Changed from 85% to 100%
-          maxWidth: isMobile ? "none" : "auto", // Changed from 300px to none
+          width: isMobile ? "100%" : "auto",
+          maxWidth: isMobile ? "none" : "auto",
         }}
       >
         <div className="flex flex-col h-full bg-white text-gray-700 shadow-xl overflow-hidden">
@@ -371,6 +383,9 @@ const Sidebar = ({
                         }}
                       />
                       <span>Active Teacher</span>
+                      {isHOD && (
+                        <span className="ml-2 font-semibold">(HOD)</span>
+                      )}
                     </div>
                   </motion.div>
                 )}

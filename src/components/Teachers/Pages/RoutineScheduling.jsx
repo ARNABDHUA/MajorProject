@@ -20,15 +20,17 @@ import {
 export default function RoutineScheduling() {
   // State variables
   const [semesters] = useState(["1", "2", "3", "4", "5", "6", "7", "8"]);
+
+  // Days mapping - display names but preserve original values
   const [days] = useState([
-    "Day 1",
-    "Day 2",
-    "Day 3",
-    "Day 4",
-    "Day 5",
-    "Day 6",
-    "Day 7",
+    { display: "Monday", value: "Day 1" },
+    { display: "Tuesday", value: "Day 2" },
+    { display: "Wednesday", value: "Day 3" },
+    { display: "Thursday", value: "Day 4" },
+    { display: "Friday", value: "Day 5" },
+    { display: "Saturday", value: "Day 6" },
   ]);
+
   const [timeSlots] = useState([
     "10:00 A.M - 11:00 A.M",
     "11:00 A.M - 12:00 P.M",
@@ -49,6 +51,7 @@ export default function RoutineScheduling() {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [showSchedule, setShowSchedule] = useState(false);
   const [loadingSchedule, setLoadingSchedule] = useState(false);
+  const [selectedCourseId, setSelectedCourseId] = useState("");
 
   // Get user data from localStorage
   const getUserData = () => {
@@ -62,17 +65,26 @@ export default function RoutineScheduling() {
   };
 
   const userData = getUserData();
-  const courseId = userData?.course_code?.[0] || "";
+  const courseCodes = userData?.course_code || [];
 
-  // Fetch papers based on selected semester
+  // Set initial course ID when component mounts
+  useEffect(() => {
+    if (courseCodes.length > 0) {
+      setSelectedCourseId(courseCodes[0]);
+    }
+  }, []);
+
+  // Fetch papers based on selected semester and course
   useEffect(() => {
     const fetchPapers = async () => {
+      if (!selectedCourseId) return;
+
       try {
         setLoading(true);
         const response = await axios.post(
           "https://e-college-data.onrender.com/v1/paper-code/get-coursecode",
           {
-            course_code: courseId,
+            course_code: selectedCourseId,
             sem: selectedSem,
           }
         );
@@ -109,10 +121,8 @@ export default function RoutineScheduling() {
       }
     };
 
-    if (courseId) {
-      fetchPapers();
-    }
-  }, [courseId, selectedSem]);
+    fetchPapers();
+  }, [selectedCourseId, selectedSem]);
 
   // Handle paper selection
   const handlePaperChange = (e) => {
@@ -122,6 +132,11 @@ export default function RoutineScheduling() {
       setSelectedPaperCode(paperCode);
       setSelectedPaper(paper.paper_name);
     }
+  };
+
+  // Handle course selection change
+  const handleCourseChange = (e) => {
+    setSelectedCourseId(e.target.value);
   };
 
   // Handle form submission
@@ -134,9 +149,9 @@ export default function RoutineScheduling() {
     try {
       setLoading(true);
       const requestData = {
-        course_id: parseInt(courseId) || courseId, // Handle if courseId is not a number
+        course_id: parseInt(selectedCourseId) || selectedCourseId, // Handle if courseId is not a number
         sem: selectedSem,
-        day: selectedDay,
+        day: selectedDay, // Keep the original "Day X" format for API
         time: selectedTime,
         paper: selectedPaper,
         paper_code: selectedPaperCode,
@@ -173,14 +188,34 @@ export default function RoutineScheduling() {
     }, 500);
   };
 
+  // Find display name for selected day
+  const getSelectedDayDisplay = () => {
+    const dayObj = days.find((day) => day.value === selectedDay);
+    return dayObj ? dayObj.display : selectedDay;
+  };
+
   // If user data is not available
-  if (!userData || !courseId) {
+  if (!userData) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
           <FaTimesCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <p className="text-red-500 text-center font-semibold">
             User data not found. Please log in again.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if user has course codes
+  if (!courseCodes || courseCodes.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+          <FaTimesCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-500 text-center font-semibold">
+            No course codes found for this user. Please contact administration.
           </p>
         </div>
       </div>
@@ -218,18 +253,26 @@ export default function RoutineScheduling() {
 
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Course ID */}
+              {/* Course ID Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                   <FaBook className="h-4 w-4 mr-1 text-gray-500" />
                   Course ID
                 </label>
-                <input
-                  type="text"
-                  value={courseId}
-                  disabled
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none text-gray-600"
-                />
+                <div className="relative">
+                  <select
+                    value={selectedCourseId}
+                    onChange={handleCourseChange}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                  >
+                    {courseCodes.map((code) => (
+                      <option key={code} value={code}>
+                        {code}
+                      </option>
+                    ))}
+                  </select>
+                  <FaChevronDown className="h-5 w-5 text-gray-400 absolute right-3 top-2.5 pointer-events-none" />
+                </div>
               </div>
 
               {/* Semester Selection */}
@@ -254,7 +297,7 @@ export default function RoutineScheduling() {
                 </div>
               </div>
 
-              {/* Day Selection */}
+              {/* Day Selection - Now showing weekday names but keeping original values */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                   <FaCalendarAlt className="h-4 w-4 mr-1 text-gray-500" />
@@ -267,8 +310,8 @@ export default function RoutineScheduling() {
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                   >
                     {days.map((day) => (
-                      <option key={day} value={day}>
-                        {day}
+                      <option key={day.value} value={day.value}>
+                        {day.display}
                       </option>
                     ))}
                   </select>
@@ -323,6 +366,27 @@ export default function RoutineScheduling() {
                   </select>
                   <FaChevronDown className="h-5 w-5 text-gray-400 absolute right-3 top-2.5 pointer-events-none" />
                 </div>
+              </div>
+            </div>
+
+            {/* Selection Summary */}
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+              <h3 className="text-sm font-medium text-blue-800 mb-2">
+                Selected Schedule
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                <span className="bg-white px-3 py-1 rounded-md text-sm flex items-center shadow-sm">
+                  <FaCalendarAlt className="h-3 w-3 mr-1 text-blue-500" />
+                  {getSelectedDayDisplay()}
+                </span>
+                <span className="bg-white px-3 py-1 rounded-md text-sm flex items-center shadow-sm">
+                  <FaClock className="h-3 w-3 mr-1 text-blue-500" />
+                  {selectedTime}
+                </span>
+                <span className="bg-white px-3 py-1 rounded-md text-sm flex items-center shadow-sm">
+                  <FaGraduationCap className="h-3 w-3 mr-1 text-blue-500" />
+                  Semester {selectedSem}
+                </span>
               </div>
             </div>
 
@@ -428,7 +492,9 @@ export default function RoutineScheduling() {
                 </h2>
               </div>
               <div className={loadingSchedule ? "opacity-50" : ""}>
-                <Routine courseId={parseInt(courseId)} />
+                <Routine
+                  courseId={parseInt(selectedCourseId) || selectedCourseId}
+                />
               </div>
             </div>
           )}

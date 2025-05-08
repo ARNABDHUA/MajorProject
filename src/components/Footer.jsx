@@ -100,12 +100,7 @@ const Footer = () => {
             >
               <span className="mr-2">•</span>FAQ
             </li>
-            <li
-              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
-              onClick={() => handleNavigation("/forum")}
-            >
-              <span className="mr-2">•</span>Forum
-            </li>
+
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
               onClick={() => handleNavigation("/sitemap")}

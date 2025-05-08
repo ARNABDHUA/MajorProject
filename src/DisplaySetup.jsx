@@ -24,7 +24,6 @@ import Documentation from "./components/HeaderandFooterComponents/Footer/Documen
 import NewsBlog from "./components/HeaderandFooterComponents/Footer/NewsBlog";
 import Library from "./components/HeaderandFooterComponents/Footer/Library";
 import FAQ from "./components/HeaderandFooterComponents/Footer/FAQ";
-import Forum from "./components/HeaderandFooterComponents/Footer/Forum";
 import HowToBecomeTeacher from "./components/HeaderandFooterComponents/Footer/HowToBecomeTeacher";
 import SiteMap from "./components/HeaderandFooterComponents/Footer/SiteMap";
 import HowtoGuide from "./components/HeaderandFooterComponents/Footer/HowtoGuide";
@@ -78,6 +77,7 @@ import StudentIdentityCard from "./components/student/Pages/StudentIdentityCard"
 import SalarySlip from "./components/Teachers/Pages/SalarySlip";
 import { Delete } from "lucide-react";
 import DeleteCourse from "./components/Teachers/Pages/DeleteCourse";
+import TeacherAssign from "./components/Teachers/Pages/TeacherAssign";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -200,6 +200,14 @@ const DisplaySetup = () => {
                 element={
                   <TeacherProtectedRoute allowedRoles={["teacher"]}>
                     <DeleteCourse />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
+                path="/teacher-assign"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <TeacherAssign />
                   </TeacherProtectedRoute>
                 }
               />
@@ -356,7 +364,7 @@ const DisplaySetup = () => {
               <Route path="/newsblog" element={<NewsBlog />} />
               <Route path="/library" element={<Library />} />
               <Route path="/faq" element={<FAQ />} />
-              <Route path="/forum" element={<Forum />} />
+
               <Route path="/sitemap" element={<SiteMap />} />
               <Route
                 path="/howtobecometeacher"

@@ -39,19 +39,7 @@ const FAQ = () => {
       id: 6,
       question: "How do I contact support?",
       answer:
-        "You can contact our support team by emailing support@ecollege.com or using the live chat feature on our website. Our team is available 24/7 to assist you.",
-    },
-    {
-      id: 7,
-      question: "Can I get a refund for a course?",
-      answer:
-        "Yes, we offer a 30-day money-back guarantee for all courses. If you're not satisfied, contact our support team within 30 days of purchase to request a refund.",
-    },
-    {
-      id: 8,
-      question: "Do you offer certificates for completed courses?",
-      answer:
-        "Yes, upon completing a course, you'll receive a certificate of completion that you can download and share on your LinkedIn profile or resume.",
+        "You can contact our support team by emailing ecollege.helper@gmail.com or using the live chat feature on our website. Our team is available 24/7 to assist you.",
     },
   ];
 

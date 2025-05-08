@@ -5,8 +5,6 @@ import {
   FiUser,
   FiMail,
   FiPhone,
-  FiHash,
-  FiDollarSign,
   FiBook,
   FiStar,
   FiEdit,
@@ -20,7 +18,7 @@ import {
   FiImage,
   FiUpload,
 } from "react-icons/fi";
-import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const TeacherProfile = () => {
   const [teacherData, setTeacherData] = useState(null);
@@ -42,6 +40,7 @@ const TeacherProfile = () => {
   const [imageFile, setImageFile] = useState(null);
   const [teacherMail, setTeacherMail] = useState(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     // Retrieve data from localStorage
     const localData = localStorage.getItem("user");
@@ -52,7 +51,6 @@ const TeacherProfile = () => {
         if (parsedData.role !== "teacher") {
           navigate("/teacher-login");
         }
-        // console.log("Teacher Data from Local Storage:", parsedData);
         const teacher_data = parsedData.email;
         setTeacherMail(teacher_data);
         setTeacherData(parsedData);
@@ -68,7 +66,7 @@ const TeacherProfile = () => {
     } else {
       console.log("No teacher data found in Local Storage.");
     }
-  }, []);
+  }, [navigate]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -82,7 +80,6 @@ const TeacherProfile = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setImageFile(file);
-      // console.log("File:----", file);
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -161,8 +158,6 @@ const TeacherProfile = () => {
         return;
       }
 
-      console.log("Sending update data:", updateData);
-
       let response;
 
       // If we have an image update, use FormData
@@ -181,23 +176,17 @@ const TeacherProfile = () => {
             },
           }
         );
-        // console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkk", response.data);
+
         if (response.data) {
-          // console.log("hhhhhhhhhhhhhhhh", teacherMail);
-          // Fixed: Define 'imageResponse' instead of using undeclared 'res'
           const imageResponse = await axios.post(
             `https://e-college-data.onrender.com/v1/chat/teacherimageget`,
             { email: teacherMail },
             {
               headers: {
-                "Content-Type": "application/json", // Fixed: Changed to application/json for this request
+                "Content-Type": "application/json",
               },
             }
           );
-          // You can use imageResponse if needed
-          // console.log("Image response:", imageResponse.data);
-          // localStorage.setItem("userInfo",
-          // JSON.stringify(imageResponse.data.user))
         }
       } else {
         // Regular JSON API call for non-image updates
@@ -211,8 +200,6 @@ const TeacherProfile = () => {
           }
         );
       }
-
-      console.log("API response:", response.data);
 
       if (response.status === 200 || response.status === 201) {
         setSuccess("Profile updated successfully!");
@@ -326,10 +313,9 @@ const TeacherProfile = () => {
         return;
       }
 
-      // Fix the request structure - send expertise directly without nesting in a data object
       const response = await axios.post(
         `https://e-college-data.onrender.com/v1/teachers/teachers-qualification/${c_roll}`,
-        { expertise }, // Send expertise directly as an object key
+        { expertise },
         {
           headers: {
             "Content-Type": "application/json",
@@ -373,7 +359,7 @@ const TeacherProfile = () => {
 
   if (!teacherData) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -406,13 +392,13 @@ const TeacherProfile = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6">
+    <div className="max-w-4xl mx-auto p-4 md:p-6 bg-gray-50 min-h-screen">
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className="mb-6 flex justify-between items-center"
       >
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+        <h2 className="text-2xl md:text-3xl font-bold text-indigo-700">
           Teacher Profile
         </h2>
         {!isEditing && (
@@ -420,7 +406,7 @@ const TeacherProfile = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleEditToggle}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full transition-colors shadow-md"
           >
             <FiEdit size={18} />
             <span>Edit Profile</span>
@@ -432,7 +418,7 @@ const TeacherProfile = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-red-50 text-red-700 p-3 rounded-lg mb-4 flex items-center gap-2"
+          className="bg-red-50 text-red-700 p-3 rounded-lg mb-4 flex items-center gap-2 shadow-sm"
         >
           <FiX className="text-red-500" size={18} />
           {error}
@@ -443,7 +429,7 @@ const TeacherProfile = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-green-50 text-green-700 p-3 rounded-lg mb-4 flex items-center gap-2"
+          className="bg-green-50 text-green-700 p-3 rounded-lg mb-4 flex items-center gap-2 shadow-sm"
         >
           <FiCheck className="text-green-500" size={18} />
           {success}
@@ -460,9 +446,9 @@ const TeacherProfile = () => {
           {/* Profile Image and Basic Info Card */}
           <motion.div
             variants={itemVariants}
-            className="md:col-span-1 bg-white rounded-xl shadow-md p-6 overflow-hidden flex flex-col items-center"
+            className="md:col-span-1 bg-white rounded-xl shadow-lg p-6 overflow-hidden flex flex-col items-center border border-indigo-50"
           >
-            <div className="w-40 h-40 mb-4 rounded-full overflow-hidden border-4 border-blue-100 shadow-md">
+            <div className="w-40 h-40 mb-4 rounded-full overflow-hidden border-4 border-indigo-100 shadow-md">
               {profileImage ? (
                 <img
                   src={profileImage}
@@ -470,43 +456,39 @@ const TeacherProfile = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                  <FiUser size={64} className="text-gray-400" />
+                <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                  <FiUser size={64} className="text-indigo-400" />
                 </div>
               )}
             </div>
             <h3 className="text-2xl font-semibold text-gray-800 mb-1">
               {teacherData.name || "Teacher Name"}
             </h3>
-            <p className="text-blue-600 font-medium mb-4">
+            <p className="text-indigo-600 font-medium mb-4">
               {teacherData.c_roll || "Teacher ID"}
             </p>
-            <div className="flex items-center gap-2 mb-2">
-              <FiMail size={16} className="text-gray-500" />
-              <span className="text-gray-700">
-                {teacherData.email || "N/A"}
-              </span>
+            <div className="flex items-center gap-2 mb-2 text-gray-700">
+              <FiMail size={16} className="text-indigo-500" />
+              <span>{teacherData.email || "N/A"}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <FiPhone size={16} className="text-gray-500" />
-              <span className="text-gray-700">
-                {teacherData.phoneNumber || "N/A"}
-              </span>
+            <div className="flex items-center gap-2 text-gray-700">
+              <FiPhone size={16} className="text-indigo-500" />
+              <span>{teacherData.phoneNumber || "N/A"}</span>
             </div>
           </motion.div>
 
           {/* Information Cards */}
           <motion.div
             variants={itemVariants}
-            className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6"
+            className="md:col-span-2 grid grid-cols-1 gap-6"
           >
             {/* Courses Card */}
             <motion.div
               variants={itemVariants}
-              className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
+              className="bg-white rounded-xl shadow-lg p-6 overflow-hidden border border-indigo-50 hover:border-indigo-100 transition-all"
             >
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <FiBook className="text-blue-600" size={20} />
+              <h3 className="text-xl font-semibold text-indigo-700 mb-4 flex items-center gap-2 pb-2 border-b border-indigo-50">
+                <FiBook className="text-indigo-600" size={20} />
                 Courses
               </h3>
               {Array.isArray(teacherData.teacher_course) &&
@@ -515,24 +497,24 @@ const TeacherProfile = () => {
                   {teacherData.teacher_course.map((course, index) => (
                     <span
                       key={index}
-                      className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+                      className="bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium shadow-sm"
                     >
                       {course}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">No courses assigned</p>
+                <p className="text-gray-500 italic">No courses assigned</p>
               )}
             </motion.div>
 
             {/* Expertise Card */}
             <motion.div
               variants={itemVariants}
-              className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
+              className="bg-white rounded-xl shadow-lg p-6 overflow-hidden border border-indigo-50 hover:border-indigo-100 transition-all"
             >
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <FiBriefcase className="text-blue-600" size={20} />
+              <h3 className="text-xl font-semibold text-indigo-700 mb-4 flex items-center gap-2 pb-2 border-b border-indigo-50">
+                <FiBriefcase className="text-indigo-600" size={20} />
                 Expertise
               </h3>
               {Array.isArray(teacherData.expertise) &&
@@ -541,53 +523,24 @@ const TeacherProfile = () => {
                   {teacherData.expertise.map((skill, index) => (
                     <span
                       key={index}
-                      className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium"
+                      className="bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-700 px-4 py-2 rounded-full text-sm font-medium shadow-sm"
                     >
                       {skill}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">No expertise listed</p>
+                <p className="text-gray-500 italic">No expertise listed</p>
               )}
-            </motion.div>
-
-            {/* Additional Information Card */}
-            <motion.div
-              variants={itemVariants}
-              className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
-            >
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <FiHash className="text-blue-600" size={20} />
-                Additional Information
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <FiDollarSign size={16} className="text-gray-500" />
-                  <span className="font-medium text-gray-600">Salary:</span>
-                  <span className="text-gray-800">
-                    Rs. {teacherData.salary || "N/A"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FiStar size={16} className="text-yellow-500" />
-                  <span className="font-medium text-gray-600">Rating:</span>
-                  <span className="text-gray-800">
-                    {teacherData.rating !== undefined
-                      ? teacherData.rating
-                      : "N/A"}
-                  </span>
-                </div>
-              </div>
             </motion.div>
 
             {/* Qualifications Card */}
             <motion.div
               variants={itemVariants}
-              className="bg-white rounded-xl shadow-md p-6 overflow-hidden"
+              className="bg-white rounded-xl shadow-lg p-6 overflow-hidden border border-indigo-50 hover:border-indigo-100 transition-all"
             >
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <FiAward className="text-blue-600" size={20} />
+              <h3 className="text-xl font-semibold text-indigo-700 mb-4 flex items-center gap-2 pb-2 border-b border-indigo-50">
+                <FiAward className="text-indigo-600" size={20} />
                 Qualifications
               </h3>
               {Array.isArray(teacherData.qualification) &&
@@ -596,17 +549,19 @@ const TeacherProfile = () => {
                   {teacherData.qualification.map((qual) => (
                     <div
                       key={qual._id || qual.degree}
-                      className="bg-gray-50 p-3 rounded-lg"
+                      className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-4 rounded-lg shadow-sm hover:shadow-md transition-all"
                     >
-                      <p className="font-medium text-gray-800">{qual.degree}</p>
-                      <p className="text-gray-600 text-sm">
+                      <p className="font-medium text-indigo-800">
+                        {qual.degree}
+                      </p>
+                      <p className="text-indigo-600 text-sm mt-1">
                         {qual.institution} • {qual.year}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">No qualifications listed</p>
+                <p className="text-gray-500 italic">No qualifications listed</p>
               )}
             </motion.div>
           </motion.div>
@@ -615,30 +570,30 @@ const TeacherProfile = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-lg p-6"
+          className="bg-white rounded-xl shadow-lg p-6 border border-indigo-100"
         >
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-              <FiEdit className="text-blue-600" size={20} />
+          <div className="flex justify-between items-center mb-6 pb-3 border-b border-indigo-100">
+            <h3 className="text-xl font-semibold text-indigo-700 flex items-center gap-2">
+              <FiEdit className="text-indigo-600" size={20} />
               Edit Profile
             </h3>
             <button
               onClick={handleEditToggle}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors"
             >
-              <FiX size={24} />
+              <FiX size={20} />
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Profile Image Section */}
-            <div className="space-y-2">
-              <h4 className="text-lg font-medium text-gray-700 flex items-center gap-2">
-                <FiImage className="text-blue-600" size={18} />
+            <div className="space-y-3 p-4 bg-indigo-50 rounded-lg">
+              <h4 className="text-lg font-medium text-indigo-800 flex items-center gap-2">
+                <FiImage className="text-indigo-600" size={18} />
                 Profile Image
               </h4>
               <div className="flex flex-col items-center sm:flex-row gap-4">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-indigo-200 shadow-md">
                   {newImageFile ? (
                     <img
                       src={newImageFile}
@@ -652,13 +607,13 @@ const TeacherProfile = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <FiUser size={48} className="text-gray-400" />
+                    <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                      <FiUser size={48} className="text-indigo-400" />
                     </div>
                   )}
                 </div>
                 <div className="flex-1">
-                  <label className="flex items-center justify-center w-full bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 rounded-lg p-3 cursor-pointer">
+                  <label className="flex items-center justify-center w-full bg-white text-indigo-600 hover:bg-indigo-100 border border-indigo-200 rounded-lg p-3 cursor-pointer shadow-sm hover:shadow transition-all">
                     <FiUpload size={18} className="mr-2" />
                     <span>Upload New Image</span>
                     <input
@@ -668,7 +623,7 @@ const TeacherProfile = () => {
                       className="hidden"
                     />
                   </label>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
+                  <p className="text-xs text-indigo-600 mt-2 text-center">
                     Recommended: Square image, maximum size 5MB
                   </p>
                 </div>
@@ -676,9 +631,9 @@ const TeacherProfile = () => {
             </div>
 
             {/* Phone Number Section */}
-            <div className="space-y-2">
-              <h4 className="text-lg font-medium text-gray-700 flex items-center gap-2">
-                <FiPhone className="text-blue-600" size={18} />
+            <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+              <h4 className="text-lg font-medium text-indigo-800 flex items-center gap-2">
+                <FiPhone className="text-indigo-600" size={18} />
                 Update Phone Number
               </h4>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -687,15 +642,15 @@ const TeacherProfile = () => {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="Enter phone number"
-                  className="flex-1 rounded-lg border-gray-300 border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 rounded-lg border-indigo-200 border p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                 />
               </div>
             </div>
 
             {/* New Qualification Section */}
-            <div className="space-y-2">
-              <h4 className="text-lg font-medium text-gray-700 flex items-center gap-2">
-                <FiAward className="text-blue-600" size={18} />
+            <div className="space-y-3 p-4 bg-indigo-50 rounded-lg">
+              <h4 className="text-lg font-medium text-indigo-800 flex items-center gap-2">
+                <FiAward className="text-indigo-600" size={18} />
                 Add New Qualification
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -709,7 +664,7 @@ const TeacherProfile = () => {
                     })
                   }
                   placeholder="Degree"
-                  className="rounded-lg border-gray-300 border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-lg border-indigo-200 border p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                 />
                 <input
                   type="text"
@@ -721,7 +676,7 @@ const TeacherProfile = () => {
                     })
                   }
                   placeholder="Institution"
-                  className="rounded-lg border-gray-300 border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-lg border-indigo-200 border p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                 />
                 <input
                   type="text"
@@ -733,15 +688,15 @@ const TeacherProfile = () => {
                     })
                   }
                   placeholder="Year"
-                  className="rounded-lg border-gray-300 border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-lg border-indigo-200 border p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                 />
               </div>
             </div>
 
             {/* New Expertise Section */}
-            <div className="space-y-2">
-              <h4 className="text-lg font-medium text-gray-700 flex items-center gap-2">
-                <FiBriefcase className="text-blue-600" size={18} />
+            <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+              <h4 className="text-lg font-medium text-indigo-800 flex items-center gap-2">
+                <FiBriefcase className="text-indigo-600" size={18} />
                 Add New Expertise
               </h4>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -750,14 +705,14 @@ const TeacherProfile = () => {
                   value={newExpertise}
                   onChange={(e) => setNewExpertise(e.target.value)}
                   placeholder="Enter expertise"
-                  className="flex-1 rounded-lg border-gray-300 border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 rounded-lg border-indigo-200 border p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
                 />
               </div>
             </div>
 
             {/* Current Qualifications Section */}
-            <div className="space-y-2">
-              <h4 className="text-lg font-medium text-gray-700">
+            <div className="space-y-3 p-4 bg-indigo-50 rounded-lg">
+              <h4 className="text-lg font-medium text-indigo-800">
                 Current Qualifications
               </h4>
               {Array.isArray(teacherData.qualification) &&
@@ -767,20 +722,20 @@ const TeacherProfile = () => {
                     <motion.div
                       key={qual._id || qual.degree}
                       whileHover={{ scale: 1.01 }}
-                      className="flex justify-between items-center bg-gray-50 p-3 rounded-lg"
+                      className="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm"
                     >
                       <div>
-                        <p className="font-medium text-gray-800">
+                        <p className="font-medium text-indigo-800">
                           {qual.degree}
                         </p>
-                        <p className="text-gray-600 text-sm">
+                        <p className="text-indigo-600 text-sm">
                           {qual.institution} • {qual.year}
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleDeleteQualification(qual.degree)}
-                        className="text-red-500 hover:text-red-700 p-1"
+                        className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-full transition-colors"
                       >
                         <FiTrash2 size={18} />
                       </button>
@@ -788,13 +743,13 @@ const TeacherProfile = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">No qualifications listed</p>
+                <p className="text-gray-500 italic">No qualifications listed</p>
               )}
             </div>
 
             {/* Current Expertise Section */}
-            <div className="space-y-2">
-              <h4 className="text-lg font-medium text-gray-700">
+            <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+              <h4 className="text-lg font-medium text-indigo-800">
                 Current Expertise
               </h4>
               {Array.isArray(teacherData.expertise) &&
@@ -803,13 +758,13 @@ const TeacherProfile = () => {
                   {teacherData.expertise.map((skill, index) => (
                     <div
                       key={index}
-                      className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
+                      className="bg-white text-indigo-700 px-3 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-sm"
                     >
                       <span>{skill}</span>
                       <button
                         type="button"
                         onClick={() => handleDeleteExpertise(skill)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded-full transition-colors"
                       >
                         <FiX size={14} />
                       </button>
@@ -817,7 +772,7 @@ const TeacherProfile = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">No expertise listed</p>
+                <p className="text-gray-500 italic">No expertise listed</p>
               )}
             </div>
 
@@ -828,7 +783,7 @@ const TeacherProfile = () => {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex justify-center items-center gap-2 disabled:opacity-70"
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg flex justify-center items-center gap-2 disabled:opacity-70 shadow-md hover:shadow-lg transition-all"
               >
                 {loading ? (
                   <>
@@ -849,8 +804,7 @@ const TeacherProfile = () => {
                       <path
                         className="opacity-75"
                         fill="currentColor"
-                        // The code continues from where it left off - completing the loading indicator path
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-1.647z"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
                     <span>Saving...</span>
@@ -867,7 +821,7 @@ const TeacherProfile = () => {
                 whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={handleEditToggle}
-                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg flex justify-center items-center gap-2"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-lg flex justify-center items-center gap-2 shadow-sm hover:shadow transition-all"
               >
                 <FiX size={18} />
                 <span>Cancel</span>

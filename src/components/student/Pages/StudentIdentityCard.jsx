@@ -333,7 +333,7 @@ const StudentIDCardPDF = ({ studentData }) => {
   );
 };
 
-// Main component remains mostly the same, but with improved preview
+// Main component with improved responsive preview
 const StudentIdentityCard = () => {
   const [studentData, setStudentData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -439,7 +439,7 @@ const StudentIdentityCard = () => {
     studentData.c_roll && (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-8 max-w-lg mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-8 max-w-lg mx-auto">
             <div className="flex items-center border-b-2 border-blue-600 pb-4 mb-6">
               <div className="bg-blue-100 text-blue-800 p-3 rounded-full mr-4">
                 <svg
@@ -492,54 +492,58 @@ const StudentIdentityCard = () => {
               </div>
             </div>
 
-            {/* Improved Card Preview - Better aspect ratio and sizing */}
-            <div className="bg-gray-100 p-4 rounded-lg mb-6">
+            {/* Improved Responsive Card Preview */}
+            <div className="bg-gray-100 p-3 sm:p-4 rounded-lg mb-6">
               <h3 className="text-center text-gray-700 mb-3 font-medium">
                 Card Preview
               </h3>
-              <div className="flex flex-col md:flex-row justify-center gap-6">
-                {/* Front side preview - increased size with correct aspect ratio */}
-                <div className="relative w-72 h-44 bg-white rounded-lg shadow-md border-2 border-blue-600 overflow-hidden flex flex-col">
+
+              {/* Cards container with improved responsiveness */}
+              <div className="flex flex-col items-center space-y-6 sm:space-y-0 sm:flex-row sm:justify-center sm:space-x-6">
+                {/* Front side preview - responsive sizing */}
+                <div className="w-full max-w-xs sm:w-64 aspect-[16/10] bg-white rounded-lg shadow-md border-2 border-blue-600 overflow-hidden flex flex-col">
                   <div className="bg-blue-600 text-white p-2 flex items-center justify-between">
                     <div className="flex items-center">
                       <span className="text-xl mr-1">🎓</span>
-                      <span className="font-bold">E-College</span>
+                      <span className="font-bold text-xs sm:text-sm">
+                        E-College
+                      </span>
                     </div>
                     <span className="text-xs">ID: {studentData.c_roll}</span>
                   </div>
                   <div className="bg-blue-100 py-1 text-center text-xs font-bold">
                     STUDENT IDENTITY CARD
                   </div>
-                  <div className="flex p-2">
-                    <div className="w-20 h-24 bg-gray-200 mr-2 flex items-center justify-center">
+                  <div className="flex p-2 flex-1">
+                    <div className="w-1/3 bg-gray-200 mr-2 flex items-center justify-center">
                       <img
                         src={studentData.pic}
                         alt="Student"
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="flex-1 text-xs">
-                      <p className="mb-1">
+                    <div className="w-2/3 text-xs">
+                      <p className="mb-1 truncate">
                         <strong>Name:</strong> {studentData.name}
                       </p>
-                      <p className="mb-1">
+                      <p className="mb-1 truncate">
                         <strong>ID:</strong> {studentData.c_roll}
                       </p>
-                      <p className="mb-1">
+                      <p className="mb-1 truncate">
                         <strong>Course:</strong> MCA
                       </p>
-                      <p className="mb-1">
+                      <p className="mb-1 truncate">
                         <strong>Sem:</strong> {studentData.sem}
                       </p>
-                      <p className="mb-1">
+                      <p className="mb-1 truncate">
                         <strong>Email:</strong> {studentData.email}
                       </p>
-                      <p className="mb-1">
+                      <p className="mb-1 truncate">
                         <strong>Phone:</strong> {studentData.phoneNumber}
                       </p>
                     </div>
                   </div>
-                  <div className="text-center text-xs mt-1">
+                  <div className="text-center text-xs mt-auto pt-1">
                     <strong>Valid Through:</strong> May 4, 2027
                   </div>
                   <div className="mt-auto bg-blue-600 text-white text-center text-xs p-1">
@@ -547,31 +551,33 @@ const StudentIdentityCard = () => {
                   </div>
                 </div>
 
-                {/* Back side preview - same aspect ratio as front */}
-                <div className="relative w-72 h-44 bg-white rounded-lg shadow-md border-2 border-blue-600 overflow-hidden flex flex-col p-3">
-                  <div className="text-center text-xs font-bold text-blue-600 border-b border-blue-200 pb-1 mb-2">
+                {/* Back side preview - responsive sizing */}
+                <div className="w-full max-w-xs sm:w-64 aspect-[16/10] bg-white rounded-lg shadow-md border-2 border-blue-600 overflow-hidden flex flex-col p-2 sm:p-3">
+                  <div className="text-center text-xs font-bold text-blue-600 border-b border-blue-200 pb-1 mb-1">
                     TERMS & CONDITIONS
                   </div>
-                  <div className="text-[9px] space-y-1 flex-1">
+                  <div className="text-[8px] sm:text-[9px] space-y-1 flex-1 overflow-hidden">
                     <p>1. This card is the property of E-College...</p>
                     <p>2. This card is non-transferable...</p>
                     <p>3. Loss of this card should be reported...</p>
                     <p>4. A fee will be charged for replacement...</p>
                     <p>5. This card must be surrendered...</p>
                   </div>
-                  <div className="bg-blue-50 text-[9px] p-1 mt-2 rounded">
+                  <div className="bg-blue-50 text-[8px] sm:text-[9px] p-1 mt-1 rounded">
                     <p className="font-bold">EMERGENCY CONTACT</p>
                     <p>Student Affairs: 033-2345-6700</p>
                   </div>
-                  <div className="mt-auto text-center text-[9px]">
+                  <div className="mt-auto text-center text-[8px] sm:text-[9px]">
                     <p className="font-bold">If found, please return to:</p>
-                    <p>E-College • 123 Education Street, Learning City</p>
+                    <p className="truncate">
+                      E-College • 123 Education Street, Learning City
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8">
+            <div className="mt-6">
               <PDFDownloadLink
                 document={<StudentIDCardPDF studentData={studentData} />}
                 fileName={`id-card-${studentData.name.replace(

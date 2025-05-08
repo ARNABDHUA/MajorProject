@@ -460,6 +460,7 @@ const AdmitCardGeneration = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [isAdmit, setIsadmit] = useState(false);
   const [missingPhoto, setMissingPhoto] = useState(false);
 
   useEffect(() => {
@@ -470,6 +471,7 @@ const AdmitCardGeneration = () => {
       if (userData) {
         // Parse the JSON data
         const parsedUserData = JSON.parse(userData);
+        setIsadmit(parsedUserData.admit);
         setStudentData(parsedUserData);
 
         // Check if profile picture is missing
@@ -510,7 +512,20 @@ const AdmitCardGeneration = () => {
       fetchCourseData();
     }
   }, [studentData]);
-
+  if (!isAdmit) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="bg-white shadow-lg rounded-2xl p-6 max-w-md text-center">
+          <h2 className="text-2xl font-semibold text-red-600 mb-2">
+            Admit Card Locked
+          </h2>
+          <p className="text-gray-700">
+            The admit card is not available right now. Please check back later.
+          </p>
+        </div>
+      </div>
+    );
+  }
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">

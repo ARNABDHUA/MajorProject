@@ -35,13 +35,12 @@ const faqs = [
   },
   {
     question: "Can I access courses for free?",
-    answer:
-      "Some courses are free, while others require enrollment fees depending on the institution.",
+    answer: "Unfortunately no.",
   },
   {
     question: "How do I contact support?",
     answer:
-      "Use the support section in your profile or email us at support@ecollege.com.",
+      "Use the support section in your profile or email us at ecollege.helper@gmail.com.",
   },
 ];
 

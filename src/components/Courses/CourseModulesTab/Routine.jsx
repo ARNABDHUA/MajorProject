@@ -24,15 +24,24 @@ const dayMapping = {
   day6: "Saturday",
 };
 
-const Routine = () => {
+const Routine = ({ courseId }) => {
   const [activeDay, setActiveDay] = useState(null);
   const [schedule, setSchedule] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { id } = useParams();
+
+  // Get id either from props or URL params
+  const params = useParams();
+  const id = courseId || params.id;
 
   useEffect(() => {
     const fetchSchedule = async () => {
+      if (!id) {
+        setError("No course ID provided");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         // Replace this URL with your actual API endpoint
@@ -424,13 +433,6 @@ const Routine = () => {
               0}{" "}
             total classes
           </p>
-          <motion.button
-            className="px-2 py-1 bg-blue-600 text-white rounded text-xs font-medium"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            Download
-          </motion.button>
         </div>
       </motion.div>
     );

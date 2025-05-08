@@ -16,6 +16,7 @@ import {
   FaTable,
   FaSync,
 } from "react-icons/fa";
+import HodProtectedRoute from "../Auth/HodProtectRoute";
 
 export default function RoutineScheduling() {
   // State variables
@@ -52,27 +53,35 @@ export default function RoutineScheduling() {
   const [showSchedule, setShowSchedule] = useState(false);
   const [loadingSchedule, setLoadingSchedule] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [isHOD, setIsHod] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [courseCodes, setCourseCodes] = useState([]);
 
-  // Get user data from localStorage
-  const getUserData = () => {
-    try {
-      const userData = localStorage.getItem("user");
-      return userData ? JSON.parse(userData) : null;
-    } catch (error) {
-      console.error("Error parsing user data:", error);
-      return null;
-    }
-  };
-
-  const userData = getUserData();
-  const courseCodes = userData?.course_code || [];
-
-  // Set initial course ID when component mounts
+  // Get user data from localStorage once on component mount
   useEffect(() => {
-    if (courseCodes.length > 0) {
+    const getUserData = () => {
+      try {
+        const userData = localStorage.getItem("user");
+        if (userData) {
+          const parsedUserdata = JSON.parse(userData);
+          setUserData(parsedUserdata);
+          setIsHod(parsedUserdata.hod);
+          setCourseCodes(parsedUserdata.course_code || []);
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    };
+
+    getUserData();
+  }, []);
+
+  // Set initial course ID when user data is loaded
+  useEffect(() => {
+    if (courseCodes.length > 0 && !selectedCourseId) {
       setSelectedCourseId(courseCodes[0]);
     }
-  }, []);
+  }, [courseCodes, selectedCourseId]);
 
   // Fetch papers based on selected semester and course
   useEffect(() => {
@@ -194,6 +203,18 @@ export default function RoutineScheduling() {
     return dayObj ? dayObj.display : selectedDay;
   };
 
+  // If user data is still loading
+  if (userData === null) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+          <FaSync className="h-12 w-12 text-blue-500 mx-auto mb-4 animate-spin" />
+          <p className="text-gray-600 font-semibold">Loading user data...</p>
+        </div>
+      </div>
+    );
+  }
+
   // If user data is not available
   if (!userData) {
     return (
@@ -206,6 +227,10 @@ export default function RoutineScheduling() {
         </div>
       </div>
     );
+  }
+
+  if (!isHOD) {
+    return <HodProtectedRoute />;
   }
 
   // Check if user has course codes

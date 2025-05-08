@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import HodProtectedRoute from "../Auth/HodProtectRoute";
 
 const dayNames = {
   day1: "Monday",
@@ -63,6 +64,7 @@ export default function ScheduleViewer() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [toast, setToast] = useState(null);
   const [selectedSemester, setSelectedSemester] = useState("1");
+  const [isHOD, setisHod] = useState(false);
 
   // Show toast notification
   const showToast = (message, type = "error") => {
@@ -80,6 +82,7 @@ export default function ScheduleViewer() {
       try {
         setLoading(true);
         const user = JSON.parse(localStorage.getItem("user"));
+        setisHod(user.hod);
 
         if (!user || !user.course_code || !user.course_code[0]) {
           setError("User data or course code not found");
@@ -216,6 +219,9 @@ export default function ScheduleViewer() {
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
+  }
+  if (!isHOD) {
+    return <HodProtectedRoute />;
   }
 
   // Render component with semester dropdown and schedule data

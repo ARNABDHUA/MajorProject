@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { RefreshCw, CheckCircle, Award, Trash2, X } from "lucide-react";
+import HodProtectedRoute from "../Auth/HodProtectRoute";
 
 export default function TeacherManagement() {
   const [teachers, setTeachers] = useState([]);
@@ -13,6 +14,7 @@ export default function TeacherManagement() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [isHOD, setisHod] = useState(false);
 
   // Get user data from local storage
   useEffect(() => {
@@ -20,20 +22,36 @@ export default function TeacherManagement() {
     if (user && user.course_code && user.course_code.length > 0) {
       setUserCourseCodes(user.course_code);
       setSelectedCourseCode(user.course_code[0]);
-      console.log("User course codes:", user.course_code);
+      setisHod(user.hod);
     }
   }, []);
 
-  // Fetch all teachers
+  // Fetch teachers based on selected course code
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
         setLoading(true);
-        const response = await axios.post(
-          "https://e-college-data.onrender.com/v1/teachers/teachers"
-        );
-        setTeachers(response.data);
+
+        // If no course code is selected, use the default API endpoint
+        if (!selectedCourseCode) {
+          const response = await axios.post(
+            "https://e-college-data.onrender.com/v1/teachers/teachers"
+          );
+          setTeachers(response.data);
+        } else {
+          // Use the new API endpoint with course_code filter
+          const response = await axios.post(
+            "https://e-college-data.onrender.com/v1/teachers/teachers-bycoursecode",
+            {
+              course_code: selectedCourseCode,
+            }
+          );
+          setTeachers(response.data);
+        }
+
         setLoading(false);
+        // Reset selected teacher when teachers list changes
+        setSelectedTeacher(null);
       } catch (err) {
         console.error("Error fetching teachers:", err);
         setError("Failed to fetch teachers");
@@ -42,7 +60,7 @@ export default function TeacherManagement() {
     };
 
     fetchTeachers();
-  }, []);
+  }, [selectedCourseCode]); // Re-fetch when course code changes
 
   // Fetch subjects when course code and semester changes
   useEffect(() => {
@@ -256,6 +274,19 @@ export default function TeacherManagement() {
     }
   }, [success]);
 
+  // Handle course code change
+  const handleCourseCodeChange = (e) => {
+    setSelectedCourseCode(e.target.value);
+    // Reset teacher selection when course code changes
+    setSelectedTeacher(null);
+    setSelectedSubjects([]);
+    setSuccess(false);
+    setError("");
+  };
+  if (!isHOD) {
+    return <HodProtectedRoute />;
+  }
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Teacher Management System</h1>
@@ -271,7 +302,7 @@ export default function TeacherManagement() {
             <select
               className="w-full p-2 border rounded-md"
               value={selectedCourseCode}
-              onChange={(e) => setSelectedCourseCode(e.target.value)}
+              onChange={handleCourseCodeChange}
             >
               <option value="">Select Course Code</option>
               {userCourseCodes.map((code, index) => (

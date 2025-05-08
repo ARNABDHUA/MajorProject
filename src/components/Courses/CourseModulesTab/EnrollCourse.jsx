@@ -1,212 +1,1139 @@
-import React from "react";
+// import { useState, useEffect } from "react";
+
+// const StudentAcademicForm = () => {
+//   const [formData, setFormData] = useState({
+//     course_code: "",
+//     select_offline: false,
+//     tenth_marks: "",
+//     tenth_year: "",
+//     twelfth_marks: "",
+//     twelfth_year: "",
+//     ug_name: "",
+//     ug_marks: "",
+//     ug_start: "",
+//     ug_end: "",
+//     other_course: "",
+//     other_course_marks: "",
+//     other_course_start: "",
+//     other_course_end: "",
+//     rank: "",
+//     tenth_file: null,
+//     twelfth_marks_file: null,
+//     ug_marks_file: null,
+//     other_marks_file: null,
+//     rank_file: null,
+//   });
+
+//   const [errors, setErrors] = useState({});
+//   const [loading, setLoading] = useState(false);
+//   const [userData, setUserData] = useState(null);
+//   const currentYear = new Date().getFullYear();
+
+//   const ugDegrees = [
+//     { value: "", label: "Select Degree" },
+//     { value: "BSC", label: "Bachelor of Science (BSc)" },
+//     { value: "BCA", label: "Bachelor of Computer Applications (BCA)" },
+//     { value: "BTECH", label: "Bachelor of Technology (BTech)" },
+//     { value: "BA", label: "Bachelor of Arts (BA)" },
+//     { value: "BCOM", label: "Bachelor of Commerce (BCom)" },
+//     { value: "BBA", label: "Bachelor of Business Administration (BBA)" },
+//   ];
+
+//   // Fetch user data from localStorage on component mount
+//   useEffect(() => {
+//     try {
+//       const userDataString = localStorage.getItem("user");
+//       if (userDataString) {
+//         const userData = JSON.parse(userDataString);
+//         setUserData(userData);
+//       }
+//     } catch (error) {
+//       console.error("Error parsing user data from localStorage:", error);
+//     }
+//   }, []);
+
+//   const validateForm = () => {
+//     const newErrors = {};
+
+//     // Course code validation
+//     if (!formData.course_code) {
+//       newErrors.course_code = "Course code is required";
+//     }
+
+//     // Tenth marks validation
+//     if (!formData.tenth_marks) {
+//       newErrors.tenth_marks = "10th marks are required";
+//     } else if (
+//       parseFloat(formData.tenth_marks) < 45 ||
+//       parseFloat(formData.tenth_marks) > 100
+//     ) {
+//       newErrors.tenth_marks = "10th marks must be between 45% and 100%";
+//     }
+
+//     // Tenth year validation
+//     if (!formData.tenth_year) {
+//       newErrors.tenth_year = "10th year is required";
+//     } else if (
+//       parseInt(formData.tenth_year) < 2000 ||
+//       parseInt(formData.tenth_year) > currentYear
+//     ) {
+//       newErrors.tenth_year = `10th year must be between 2000 and ${currentYear}`;
+//     }
+
+//     // Twelfth marks validation
+//     if (!formData.twelfth_marks) {
+//       newErrors.twelfth_marks = "12th marks are required";
+//     } else if (
+//       parseFloat(formData.twelfth_marks) < 45 ||
+//       parseFloat(formData.twelfth_marks) > 100
+//     ) {
+//       newErrors.twelfth_marks = "12th marks must be between 45% and 100%";
+//     }
+
+//     // Twelfth year validation
+//     if (!formData.twelfth_year) {
+//       newErrors.twelfth_year = "12th year is required";
+//     } else if (
+//       parseInt(formData.twelfth_year) <
+//       parseInt(formData.tenth_year) + 2
+//     ) {
+//       newErrors.twelfth_year = `12th year must be at least ${
+//         parseInt(formData.tenth_year) + 2
+//       }`;
+//     }
+
+//     // UG details validation if course code is 101
+//     if (formData.course_code === "101") {
+//       if (!formData.ug_name) {
+//         newErrors.ug_name = "UG degree name is required";
+//       }
+
+//       if (!formData.ug_marks) {
+//         newErrors.ug_marks = "UG marks are required";
+//       } else if (
+//         parseFloat(formData.ug_marks) < 0 ||
+//         parseFloat(formData.ug_marks) > 100
+//       ) {
+//         newErrors.ug_marks = "UG marks must be between 0% and 100%";
+//       }
+
+//       if (!formData.ug_start) {
+//         newErrors.ug_start = "UG start year is required";
+//       }
+
+//       if (!formData.ug_end) {
+//         newErrors.ug_end = "UG end year is required";
+//       } else if (parseInt(formData.ug_end) <= parseInt(formData.ug_start)) {
+//         newErrors.ug_end = "UG end year must be after start year";
+//       }
+
+//       if (!formData.ug_marks_file) {
+//         newErrors.ug_marks_file = "UG marks file is required";
+//       }
+//     }
+
+//     // Rank validation
+//     if (!formData.rank && formData.rank !== "Not appeared") {
+//       newErrors.rank = "Rank is required or select 'Not appeared'";
+//     }
+
+//     // File validations
+//     if (!formData.tenth_file) {
+//       newErrors.tenth_file = "10th marks file is required";
+//     }
+
+//     if (!formData.twelfth_marks_file) {
+//       newErrors.twelfth_marks_file = "12th marks file is required";
+//     }
+
+//     if (formData.rank !== "Not appeared" && !formData.rank_file) {
+//       newErrors.rank_file = "Rank file is required when rank is provided";
+//     }
+
+//     // If there are other course details, validate them too
+//     if (formData.other_course) {
+//       if (!formData.other_course_marks) {
+//         newErrors.other_course_marks = "Other course marks are required";
+//       }
+
+//       if (!formData.other_course_start) {
+//         newErrors.other_course_start = "Other course start year is required";
+//       }
+
+//       if (!formData.other_course_end) {
+//         newErrors.other_course_end = "Other course end year is required";
+//       } else if (
+//         parseInt(formData.other_course_end) <=
+//         parseInt(formData.other_course_start)
+//       ) {
+//         newErrors.other_course_end = "End year must be after start year";
+//       }
+//     }
+
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
+
+//   const handleChange = (e) => {
+//     const { name, value, type, checked, files } = e.target;
+
+//     if (type === "file") {
+//       setFormData({
+//         ...formData,
+//         [name]: files[0] || null,
+//       });
+//     } else if (type === "checkbox" || type === "radio") {
+//       setFormData({
+//         ...formData,
+//         [name]: checked,
+//       });
+//     } else {
+//       setFormData({
+//         ...formData,
+//         [name]: value,
+//       });
+//     }
+//   };
+
+//   const handleRankChange = (e) => {
+//     if (e.target.value === "Not appeared") {
+//       setFormData({
+//         ...formData,
+//         rank: "Not appeared",
+//         rank_file: null,
+//       });
+//     } else {
+//       setFormData({
+//         ...formData,
+//         rank: e.target.value,
+//       });
+//     }
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!validateForm()) {
+//       return;
+//     }
+
+//     setLoading(true);
+
+//     try {
+//       // Create FormData object for file uploads
+//       const formDataToSend = new FormData();
+
+//       // Add form fields to FormData
+//       for (const key in formData) {
+//         if (key.includes("_file") && formData[key]) {
+//           formDataToSend.append(key, formData[key]);
+//         } else {
+//           formDataToSend.append(key, formData[key]);
+//         }
+//       }
+
+//       // Add user data from localStorage
+//       if (userData) {
+//         formDataToSend.append("email", userData.email);
+//         formDataToSend.append("gender", userData.gender);
+//         formDataToSend.append("phoneNumber", userData.phoneNumber);
+//       }
+
+//       // Send data to API
+//       const response = await fetch(
+//         "https://e-college-data.onrender.com/v1/students/student-academic",
+//         {
+//           method: "POST",
+//           body: formDataToSend,
+//         }
+//       );
+
+//       if (!response.ok) {
+//         throw new Error("Failed to submit form");
+//       }
+
+//       const data = await response.json();
+//       alert("Form submitted successfully!");
+
+//       // Reset form or redirect
+//     } catch (error) {
+//       console.error("Error submitting form:", error);
+//       alert("Error submitting form. Please try again.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="bg-gray-50 min-h-screen py-8">
+//       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+//         <h1 className="text-2xl font-bold text-center text-blue-700 mb-6">
+//           Student Academic Information
+//         </h1>
+
+//         {userData && (
+//           <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+//             <h2 className="font-semibold text-lg mb-2">Personal Information</h2>
+//             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+//               <div>
+//                 <p className="text-sm text-gray-600">Name</p>
+//                 <p className="font-medium">{userData.name}</p>
+//               </div>
+//               <div>
+//                 <p className="text-sm text-gray-600">Email</p>
+//                 <p className="font-medium">{userData.email}</p>
+//               </div>
+//               <div>
+//                 <p className="text-sm text-gray-600">Phone</p>
+//                 <p className="font-medium">{userData.phoneNumber}</p>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+
+//         <form onSubmit={handleSubmit}>
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//             {/* Course Code */}
+//             <div className="col-span-1">
+//               <label
+//                 htmlFor="course_code"
+//                 className="block text-sm font-medium text-gray-700 mb-1"
+//               >
+//                 Course Code <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="text"
+//                 id="course_code"
+//                 name="course_code"
+//                 value={formData.course_code}
+//                 onChange={handleChange}
+//                 className={`w-full p-2 border rounded-md ${
+//                   errors.course_code ? "border-red-500" : "border-gray-300"
+//                 }`}
+//                 placeholder="Enter course code"
+//               />
+//               {errors.course_code && (
+//                 <p className="mt-1 text-sm text-red-600">
+//                   {errors.course_code}
+//                 </p>
+//               )}
+//             </div>
+
+//             {/* Select Offline */}
+//             <div className="col-span-1">
+//               <label className="block text-sm font-medium text-gray-700 mb-1">
+//                 Mode of Study <span className="text-red-500">*</span>
+//               </label>
+//               <div className="flex gap-4 mt-2">
+//                 <div className="flex items-center">
+//                   <input
+//                     type="radio"
+//                     id="offline_yes"
+//                     name="select_offline"
+//                     checked={formData.select_offline === true}
+//                     onChange={() =>
+//                       setFormData({ ...formData, select_offline: true })
+//                     }
+//                     className="mr-2"
+//                   />
+//                   <label htmlFor="offline_yes" className="text-sm">
+//                     Offline
+//                   </label>
+//                 </div>
+//                 <div className="flex items-center">
+//                   <input
+//                     type="radio"
+//                     id="offline_no"
+//                     name="select_offline"
+//                     checked={formData.select_offline === false}
+//                     onChange={() =>
+//                       setFormData({ ...formData, select_offline: false })
+//                     }
+//                     className="mr-2"
+//                   />
+//                   <label htmlFor="offline_no" className="text-sm">
+//                     Online
+//                   </label>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* 10th Details */}
+//             <div className="col-span-1">
+//               <label
+//                 htmlFor="tenth_marks"
+//                 className="block text-sm font-medium text-gray-700 mb-1"
+//               >
+//                 10th Marks (%) <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="number"
+//                 id="tenth_marks"
+//                 name="tenth_marks"
+//                 value={formData.tenth_marks}
+//                 onChange={handleChange}
+//                 min="45"
+//                 max="100"
+//                 step="0.01"
+//                 className={`w-full p-2 border rounded-md ${
+//                   errors.tenth_marks ? "border-red-500" : "border-gray-300"
+//                 }`}
+//                 placeholder="Enter percentage (45-100)"
+//               />
+//               {errors.tenth_marks && (
+//                 <p className="mt-1 text-sm text-red-600">
+//                   {errors.tenth_marks}
+//                 </p>
+//               )}
+//             </div>
+
+//             <div className="col-span-1">
+//               <label
+//                 htmlFor="tenth_year"
+//                 className="block text-sm font-medium text-gray-700 mb-1"
+//               >
+//                 10th Passing Year <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="number"
+//                 id="tenth_year"
+//                 name="tenth_year"
+//                 value={formData.tenth_year}
+//                 onChange={handleChange}
+//                 min="2000"
+//                 max={currentYear}
+//                 className={`w-full p-2 border rounded-md ${
+//                   errors.tenth_year ? "border-red-500" : "border-gray-300"
+//                 }`}
+//                 placeholder={`Enter year (2000-${currentYear})`}
+//               />
+//               {errors.tenth_year && (
+//                 <p className="mt-1 text-sm text-red-600">{errors.tenth_year}</p>
+//               )}
+//             </div>
+
+//             <div className="col-span-1 md:col-span-2">
+//               <label
+//                 htmlFor="tenth_file"
+//                 className="block text-sm font-medium text-gray-700 mb-1"
+//               >
+//                 10th Marksheet (PDF) <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="file"
+//                 id="tenth_file"
+//                 name="tenth_file"
+//                 onChange={handleChange}
+//                 accept=".pdf"
+//                 className={`w-full p-2 border rounded-md ${
+//                   errors.tenth_file ? "border-red-500" : "border-gray-300"
+//                 }`}
+//               />
+//               {errors.tenth_file && (
+//                 <p className="mt-1 text-sm text-red-600">{errors.tenth_file}</p>
+//               )}
+//             </div>
+
+//             {/* 12th Details */}
+//             <div className="col-span-1">
+//               <label
+//                 htmlFor="twelfth_marks"
+//                 className="block text-sm font-medium text-gray-700 mb-1"
+//               >
+//                 12th Marks (%) <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="number"
+//                 id="twelfth_marks"
+//                 name="twelfth_marks"
+//                 value={formData.twelfth_marks}
+//                 onChange={handleChange}
+//                 min="45"
+//                 max="100"
+//                 step="0.01"
+//                 className={`w-full p-2 border rounded-md ${
+//                   errors.twelfth_marks ? "border-red-500" : "border-gray-300"
+//                 }`}
+//                 placeholder="Enter percentage (45-100)"
+//               />
+//               {errors.twelfth_marks && (
+//                 <p className="mt-1 text-sm text-red-600">
+//                   {errors.twelfth_marks}
+//                 </p>
+//               )}
+//             </div>
+
+//             <div className="col-span-1">
+//               <label
+//                 htmlFor="twelfth_year"
+//                 className="block text-sm font-medium text-gray-700 mb-1"
+//               >
+//                 12th Passing Year <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="number"
+//                 id="twelfth_year"
+//                 name="twelfth_year"
+//                 value={formData.twelfth_year}
+//                 onChange={handleChange}
+//                 min={
+//                   formData.tenth_year ? parseInt(formData.tenth_year) + 2 : 2002
+//                 }
+//                 max={currentYear}
+//                 className={`w-full p-2 border rounded-md ${
+//                   errors.twelfth_year ? "border-red-500" : "border-gray-300"
+//                 }`}
+//                 placeholder={`Enter year (must be ≥ 10th year + 2)`}
+//               />
+//               {errors.twelfth_year && (
+//                 <p className="mt-1 text-sm text-red-600">
+//                   {errors.twelfth_year}
+//                 </p>
+//               )}
+//             </div>
+
+//             <div className="col-span-1 md:col-span-2">
+//               <label
+//                 htmlFor="twelfth_marks_file"
+//                 className="block text-sm font-medium text-gray-700 mb-1"
+//               >
+//                 12th Marksheet (PDF) <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="file"
+//                 id="twelfth_marks_file"
+//                 name="twelfth_marks_file"
+//                 onChange={handleChange}
+//                 accept=".pdf"
+//                 className={`w-full p-2 border rounded-md ${
+//                   errors.twelfth_marks_file
+//                     ? "border-red-500"
+//                     : "border-gray-300"
+//                 }`}
+//               />
+//               {errors.twelfth_marks_file && (
+//                 <p className="mt-1 text-sm text-red-600">
+//                   {errors.twelfth_marks_file}
+//                 </p>
+//               )}
+//             </div>
+
+//             {/* UG Details - Only required if course code is 101 */}
+//             {formData.course_code === "101" && (
+//               <>
+//                 <div className="col-span-1 md:col-span-2">
+//                   <h3 className="font-semibold text-lg mb-2 text-blue-700">
+//                     Undergraduate Details
+//                   </h3>
+//                 </div>
+
+//                 <div className="col-span-1 md:col-span-2">
+//                   <label
+//                     htmlFor="ug_name"
+//                     className="block text-sm font-medium text-gray-700 mb-1"
+//                   >
+//                     UG Degree <span className="text-red-500">*</span>
+//                   </label>
+//                   <select
+//                     id="ug_name"
+//                     name="ug_name"
+//                     value={formData.ug_name}
+//                     onChange={handleChange}
+//                     className={`w-full p-2 border rounded-md ${
+//                       errors.ug_name ? "border-red-500" : "border-gray-300"
+//                     }`}
+//                   >
+//                     {ugDegrees.map((degree) => (
+//                       <option key={degree.value} value={degree.value}>
+//                         {degree.label}
+//                       </option>
+//                     ))}
+//                   </select>
+//                   {errors.ug_name && (
+//                     <p className="mt-1 text-sm text-red-600">
+//                       {errors.ug_name}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="col-span-1 md:col-span-2">
+//                   <label
+//                     htmlFor="ug_marks"
+//                     className="block text-sm font-medium text-gray-700 mb-1"
+//                   >
+//                     UG Marks (%) <span className="text-red-500">*</span>
+//                   </label>
+//                   <input
+//                     type="number"
+//                     id="ug_marks"
+//                     name="ug_marks"
+//                     value={formData.ug_marks}
+//                     onChange={handleChange}
+//                     min="0"
+//                     max="100"
+//                     step="0.01"
+//                     className={`w-full p-2 border rounded-md ${
+//                       errors.ug_marks ? "border-red-500" : "border-gray-300"
+//                     }`}
+//                     placeholder="Enter percentage (0-100)"
+//                   />
+//                   {errors.ug_marks && (
+//                     <p className="mt-1 text-sm text-red-600">
+//                       {errors.ug_marks}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="col-span-1">
+//                   <label
+//                     htmlFor="ug_start"
+//                     className="block text-sm font-medium text-gray-700 mb-1"
+//                   >
+//                     UG Start Year <span className="text-red-500">*</span>
+//                   </label>
+//                   <input
+//                     type="number"
+//                     id="ug_start"
+//                     name="ug_start"
+//                     value={formData.ug_start}
+//                     onChange={handleChange}
+//                     min={formData.twelfth_year}
+//                     max={currentYear}
+//                     className={`w-full p-2 border rounded-md ${
+//                       errors.ug_start ? "border-red-500" : "border-gray-300"
+//                     }`}
+//                     placeholder={`Enter start year`}
+//                   />
+//                   {errors.ug_start && (
+//                     <p className="mt-1 text-sm text-red-600">
+//                       {errors.ug_start}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="col-span-1">
+//                   <label
+//                     htmlFor="ug_end"
+//                     className="block text-sm font-medium text-gray-700 mb-1"
+//                   >
+//                     UG End Year <span className="text-red-500">*</span>
+//                   </label>
+//                   <input
+//                     type="number"
+//                     id="ug_end"
+//                     name="ug_end"
+//                     value={formData.ug_end}
+//                     onChange={handleChange}
+//                     min={
+//                       formData.ug_start ? parseInt(formData.ug_start) + 1 : ""
+//                     }
+//                     max={currentYear}
+//                     className={`w-full p-2 border rounded-md ${
+//                       errors.ug_end ? "border-red-500" : "border-gray-300"
+//                     }`}
+//                     placeholder={`Enter end year`}
+//                   />
+//                   {errors.ug_end && (
+//                     <p className="mt-1 text-sm text-red-600">{errors.ug_end}</p>
+//                   )}
+//                 </div>
+
+//                 <div className="col-span-1 md:col-span-2">
+//                   <label
+//                     htmlFor="ug_marks_file"
+//                     className="block text-sm font-medium text-gray-700 mb-1"
+//                   >
+//                     UG Marksheet (PDF) <span className="text-red-500">*</span>
+//                   </label>
+//                   <input
+//                     type="file"
+//                     id="ug_marks_file"
+//                     name="ug_marks_file"
+//                     onChange={handleChange}
+//                     accept=".pdf"
+//                     className={`w-full p-2 border rounded-md ${
+//                       errors.ug_marks_file
+//                         ? "border-red-500"
+//                         : "border-gray-300"
+//                     }`}
+//                   />
+//                   {errors.ug_marks_file && (
+//                     <p className="mt-1 text-sm text-red-600">
+//                       {errors.ug_marks_file}
+//                     </p>
+//                   )}
+//                 </div>
+//               </>
+//             )}
+
+//             {/* Other Course Details - Optional */}
+//             <div className="col-span-1 md:col-span-2">
+//               <h3 className="font-semibold text-lg mb-2 text-blue-700">
+//                 Other Course Details (Optional)
+//               </h3>
+//             </div>
+
+//             <div className="col-span-1 md:col-span-2">
+//               <label
+//                 htmlFor="other_course"
+//                 className="block text-sm font-medium text-gray-700 mb-1"
+//               >
+//                 Other Course Name
+//               </label>
+//               <input
+//                 type="text"
+//                 id="other_course"
+//                 name="other_course"
+//                 value={formData.other_course}
+//                 onChange={handleChange}
+//                 className={`w-full p-2 border rounded-md ${
+//                   errors.other_course ? "border-red-500" : "border-gray-300"
+//                 }`}
+//                 placeholder="Enter other course name (if any)"
+//               />
+//               {errors.other_course && (
+//                 <p className="mt-1 text-sm text-red-600">
+//                   {errors.other_course}
+//                 </p>
+//               )}
+//             </div>
+
+//             {formData.other_course && (
+//               <>
+//                 <div className="col-span-1 md:col-span-2">
+//                   <label
+//                     htmlFor="other_course_marks"
+//                     className="block text-sm font-medium text-gray-700 mb-1"
+//                   >
+//                     Other Course Marks (%)
+//                   </label>
+//                   <input
+//                     type="number"
+//                     id="other_course_marks"
+//                     name="other_course_marks"
+//                     value={formData.other_course_marks}
+//                     onChange={handleChange}
+//                     min="0"
+//                     max="100"
+//                     step="0.01"
+//                     className={`w-full p-2 border rounded-md ${
+//                       errors.other_course_marks
+//                         ? "border-red-500"
+//                         : "border-gray-300"
+//                     }`}
+//                     placeholder="Enter percentage (0-100)"
+//                   />
+//                   {errors.other_course_marks && (
+//                     <p className="mt-1 text-sm text-red-600">
+//                       {errors.other_course_marks}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="col-span-1">
+//                   <label
+//                     htmlFor="other_course_start"
+//                     className="block text-sm font-medium text-gray-700 mb-1"
+//                   >
+//                     Other Course Start Year
+//                   </label>
+//                   <input
+//                     type="number"
+//                     id="other_course_start"
+//                     name="other_course_start"
+//                     value={formData.other_course_start}
+//                     onChange={handleChange}
+//                     className={`w-full p-2 border rounded-md ${
+//                       errors.other_course_start
+//                         ? "border-red-500"
+//                         : "border-gray-300"
+//                     }`}
+//                     placeholder="Enter start year"
+//                   />
+//                   {errors.other_course_start && (
+//                     <p className="mt-1 text-sm text-red-600">
+//                       {errors.other_course_start}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="col-span-1">
+//                   <label
+//                     htmlFor="other_course_end"
+//                     className="block text-sm font-medium text-gray-700 mb-1"
+//                   >
+//                     Other Course End Year
+//                   </label>
+//                   <input
+//                     type="number"
+//                     id="other_course_end"
+//                     name="other_course_end"
+//                     value={formData.other_course_end}
+//                     onChange={handleChange}
+//                     min={
+//                       formData.other_course_start
+//                         ? parseInt(formData.other_course_start) + 1
+//                         : ""
+//                     }
+//                     className={`w-full p-2 border rounded-md ${
+//                       errors.other_course_end
+//                         ? "border-red-500"
+//                         : "border-gray-300"
+//                     }`}
+//                     placeholder="Enter end year"
+//                   />
+//                   {errors.other_course_end && (
+//                     <p className="mt-1 text-sm text-red-600">
+//                       {errors.other_course_end}
+//                     </p>
+//                   )}
+//                 </div>
+
+//                 <div className="col-span-1 md:col-span-2">
+//                   <label
+//                     htmlFor="other_marks_file"
+//                     className="block text-sm font-medium text-gray-700 mb-1"
+//                   >
+//                     Other Course Marksheet (PDF)
+//                   </label>
+//                   <input
+//                     type="file"
+//                     id="other_marks_file"
+//                     name="other_marks_file"
+//                     onChange={handleChange}
+//                     accept=".pdf"
+//                     className={`w-full p-2 border rounded-md ${
+//                       errors.other_marks_file
+//                         ? "border-red-500"
+//                         : "border-gray-300"
+//                     }`}
+//                   />
+//                   {errors.other_marks_file && (
+//                     <p className="mt-1 text-sm text-red-600">
+//                       {errors.other_marks_file}
+//                     </p>
+//                   )}
+//                 </div>
+//               </>
+//             )}
+
+//             {/* Rank Details */}
+//             <div className="col-span-1 md:col-span-2">
+//               <h3 className="font-semibold text-lg mb-2 text-blue-700">
+//                 Entrance Examination Details
+//               </h3>
+//             </div>
+
+//             <div className="col-span-1">
+//               <label
+//                 htmlFor="rank"
+//                 className="block text-sm font-medium text-gray-700 mb-1"
+//               >
+//                 Rank <span className="text-red-500">*</span>
+//               </label>
+//               <div className="flex items-center">
+//                 <input
+//                   type="text"
+//                   id="rank"
+//                   name="rank"
+//                   value={formData.rank !== "Not appeared" ? formData.rank : ""}
+//                   onChange={handleRankChange}
+//                   className={`w-full p-2 border rounded-md ${
+//                     errors.rank ? "border-red-500" : "border-gray-300"
+//                   }`}
+//                   placeholder="Enter your rank"
+//                   disabled={formData.rank === "Not appeared"}
+//                 />
+//               </div>
+//               <div className="mt-2">
+//                 <label className="inline-flex items-center">
+//                   <input
+//                     type="checkbox"
+//                     checked={formData.rank === "Not appeared"}
+//                     onChange={(e) => {
+//                       if (e.target.checked) {
+//                         setFormData({
+//                           ...formData,
+//                           rank: "Not appeared",
+//                           rank_file: null,
+//                         });
+//                       } else {
+//                         setFormData({ ...formData, rank: "" });
+//                       }
+//                     }}
+//                     className="mr-2"
+//                   />
+//                   <span className="text-sm">Not appeared</span>
+//                 </label>
+//               </div>
+//               {errors.rank && (
+//                 <p className="mt-1 text-sm text-red-600">{errors.rank}</p>
+//               )}
+//             </div>
+
+//             {formData.rank !== "Not appeared" && (
+//               <div className="col-span-1 md:col-span-2">
+//                 <label
+//                   htmlFor="rank_file"
+//                   className="block text-sm font-medium text-gray-700 mb-1"
+//                 >
+//                   Rank Certificate (PDF) <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="file"
+//                   id="rank_file"
+//                   name="rank_file"
+//                   onChange={handleChange}
+//                   accept=".pdf"
+//                   className={`w-full p-2 border rounded-md ${
+//                     errors.rank_file ? "border-red-500" : "border-gray-300"
+//                   }`}
+//                 />
+//                 {errors.rank_file && (
+//                   <p className="mt-1 text-sm text-red-600">
+//                     {errors.rank_file}
+//                   </p>
+//                 )}
+//               </div>
+//             )}
+//           </div>
+
+//           {/* Submit Button */}
+//           <div className="mt-8 text-center">
+//             <button
+//               type="submit"
+//               disabled={loading}
+//               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-blue-300"
+//             >
+//               {loading ? "Submitting..." : "Submit"}
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default StudentAcademicForm;
+
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { AlertCircle, Home, RefreshCw, HelpCircle } from "lucide-react";
-import Swal from "sweetalert2";
-import {
-  FiUser,
-  FiMail,
-  FiPhone,
-  FiBook,
-  FiCalendar,
-  FiPercent,
-  FiCheck,
-  FiLoader,
-  FiStar,
-  FiBookmark,
-} from "react-icons/fi";
+import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import VerificationStatus from "./VerificationStatus";
 import axios from "axios";
-import { ChatState } from "../../../context/ChatProvider";
-import { Navigate, redirect, useNavigate, useParams } from "react-router-dom";
 
-const EnrollCourse = () => {
-  const { id } = useParams();
-
+const StudentAcademicForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // Extract course code from URL params
 
-  const [hasGraduation, setHasGraduation] = useState(false);
-  const [hasPostGraduation, setHasPostGraduation] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [role, setRole] = useState("");
   const [formData, setFormData] = useState({
-    tenth_year: "",
+    course_code: id || "", // Set initial course code from URL
+    select_offline: false,
     tenth_marks: "",
-    twelfth_year: "",
+    tenth_year: "",
     twelfth_marks: "",
+    twelfth_year: "",
     ug_name: "",
+    ug_marks: "",
     ug_start: "",
     ug_end: "",
-    ug_marks: "",
     other_course: "",
+    other_course_marks: "",
     other_course_start: "",
     other_course_end: "",
-    other_course_marks: "",
-    course_code: "", // Added required field
-    rank: "", // Added required field
+    rank: "",
+    tenth_file: null,
+    twelfth_marks_file: null,
+    ug_marks_file: null,
+    other_marks_file: null,
+    rank_file: null,
   });
+
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [formSubmission, setFormSubmission] = useState();
+  const currentYear = new Date().getFullYear();
 
-  const { email, setEmail, courseCode, setCourseCode } = ChatState();
+  // Max file size in KB (2000KB = 2MB)
+  const MAX_FILE_SIZE = 2000;
 
+  const ugDegrees = [
+    { value: "", label: "Select Degree" },
+    { value: "BSC", label: "Bachelor of Science (BSc)" },
+    { value: "BCA", label: "Bachelor of Computer Applications (BCA)" },
+    { value: "BTECH", label: "Bachelor of Technology (BTech)" },
+    { value: "BA", label: "Bachelor of Arts (BA)" },
+    { value: "BCOM", label: "Bachelor of Commerce (BCom)" },
+    { value: "BBA", label: "Bachelor of Business Administration (BBA)" },
+  ];
+
+  // Fetch user data from localStorage on component mount and set course code from URL
   useEffect(() => {
-    // Get user data from localStorage safely
     try {
-      const storedUser = localStorage.getItem("user");
+      const userDataString = localStorage.getItem("user");
+      if (userDataString) {
+        const userData = JSON.parse(userDataString);
+        const submissionStatus = userData.submit;
 
-      setCourseCode(id);
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        const userEmail = parsedUser.email;
-        setEmail(userEmail);
-        setRole(parsedUser.role);
-        setUserData(parsedUser);
+        setFormSubmission(submissionStatus);
+        setUserData(userData);
+      }
 
-        // If user already has graduation or post-graduation data, show those sections
-        if (
-          parsedUser.ug_name ||
-          parsedUser.ug_start ||
-          parsedUser.ug_end ||
-          parsedUser.ug_marks
-        ) {
-          setHasGraduation(true);
-        }
-        if (
-          parsedUser.other_course ||
-          parsedUser.other_course_start ||
-          parsedUser.other_course_end ||
-          parsedUser.other_course_marks
-        ) {
-          setHasPostGraduation(true);
-        }
-
-        // Pre-fill form with existing academic data
-        setFormData({
-          tenth_year: parsedUser.tenth_year || "",
-          tenth_marks: parsedUser.tenth_marks || "",
-          twelfth_year: parsedUser.twelfth_year || "",
-          twelfth_marks: parsedUser.twelfth_marks || "",
-          ug_name: parsedUser.ug_name || "",
-          ug_start: parsedUser.ug_start || "",
-          ug_end: parsedUser.ug_end || "",
-          ug_marks: parsedUser.ug_marks || "",
-          other_course: parsedUser.other_course || "",
-          other_course_start: parsedUser.other_course_start || "",
-          other_course_end: parsedUser.other_course_end || "",
-          other_course_marks: parsedUser.other_course_marks || "",
-          course_code: id || "", // Set course_code from URL param
-          rank: parsedUser.rank || "", // Pre-fill rank if exists
-        });
-
-        // Automatically check graduation checkbox if course code is 101
-        if (id === "101") {
-          setHasGraduation(true);
-        }
+      // Set course code from URL parameter if available
+      if (id) {
+        setFormData((prevState) => ({
+          ...prevState,
+          course_code: id,
+        }));
       }
     } catch (error) {
-      console.error("Error getting user data:", error);
+      console.error("Error parsing user data from localStorage:", error);
     }
   }, [id]);
 
-  // Handle course code change to automatically check graduation checkbox if code is 101
-  useEffect(() => {
-    if (formData.course_code === "101") {
-      setHasGraduation(true);
-    }
-  }, [formData.course_code]);
+  // Check file size
+  const validateFileSize = (file) => {
+    if (!file) return true;
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-
-    // Clear error for this field when user types
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: null,
-      });
-    }
-
-    // If course code changes to 101, automatically make graduation required
-    if (name === "course_code" && value === "101") {
-      setHasGraduation(true);
-    }
+    const fileSizeKB = file.size / 1024;
+    return fileSizeKB <= MAX_FILE_SIZE;
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Parse form values for validation
-    const tenthYear = parseInt(formData.tenth_year);
-    const twelfthYear = parseInt(formData.twelfth_year);
-    const tenthMarks = parseFloat(formData.tenth_marks);
-    const twelfthMarks = parseFloat(formData.twelfth_marks);
-
-    // Required fields validation
-    if (!formData.tenth_year) {
-      newErrors.tenth_year = "10th passout year is required";
-    } else if (isNaN(tenthYear)) {
-      newErrors.tenth_year = "Enter a valid year for 10th";
+    // Course code validation
+    if (!formData.course_code) {
+      newErrors.course_code = "Course code is required";
     }
 
+    // Tenth marks validation
     if (!formData.tenth_marks) {
-      newErrors.tenth_marks = "10th percentage is required";
-    } else if (isNaN(tenthMarks) || tenthMarks < 45) {
-      newErrors.tenth_marks = "Minimum 45% required in 10th";
+      newErrors.tenth_marks = "10th marks are required";
+    } else if (
+      parseFloat(formData.tenth_marks) < 45 ||
+      parseFloat(formData.tenth_marks) > 100
+    ) {
+      newErrors.tenth_marks = "10th marks must be between 45% and 100%";
     }
 
-    if (!formData.twelfth_year) {
-      newErrors.twelfth_year = "12th passout year is required";
-    } else if (isNaN(twelfthYear)) {
-      newErrors.twelfth_year = "Enter a valid year for 12th";
-    } else if (!isNaN(tenthYear) && twelfthYear < tenthYear + 2) {
-      newErrors.twelfth_year = "12th year must be at least 2 years after 10th";
+    // Tenth year validation
+    if (!formData.tenth_year) {
+      newErrors.tenth_year = "10th year is required";
+    } else if (
+      parseInt(formData.tenth_year) < 2000 ||
+      parseInt(formData.tenth_year) > currentYear
+    ) {
+      newErrors.tenth_year = `10th year must be between 2000 and ${currentYear}`;
     }
 
+    // Twelfth marks validation
     if (!formData.twelfth_marks) {
-      newErrors.twelfth_marks = "12th percentage is required";
-    } else if (isNaN(twelfthMarks) || twelfthMarks < 45) {
-      newErrors.twelfth_marks = "Minimum 45% required in 12th";
+      newErrors.twelfth_marks = "12th marks are required";
+    } else if (
+      parseFloat(formData.twelfth_marks) < 45 ||
+      parseFloat(formData.twelfth_marks) > 100
+    ) {
+      newErrors.twelfth_marks = "12th marks must be between 45% and 100%";
     }
 
-    if (!formData.rank) {
-      newErrors.rank = "Rank is required";
+    // Twelfth year validation
+    if (!formData.twelfth_year) {
+      newErrors.twelfth_year = "12th year is required";
+    } else if (
+      parseInt(formData.twelfth_year) <
+      parseInt(formData.tenth_year) + 2
+    ) {
+      newErrors.twelfth_year = `12th year must be at least ${
+        parseInt(formData.tenth_year) + 2
+      }`;
     }
 
-    // Course 101 requires graduation details validation
+    // UG details validation if course code is 101
     if (formData.course_code === "101") {
-      if (!hasGraduation) {
-        newErrors.hasGraduation =
-          "Graduation details are required for Course 101";
-      } else {
-        // Validate graduation fields if hasGraduation is checked
-        if (!formData.ug_name || formData.ug_name.trim() === "") {
-          newErrors.ug_name =
-            "Graduation course name is required for Course 101";
-        }
+      if (!formData.ug_name) {
+        newErrors.ug_name = "UG degree name is required";
+      }
 
-        if (!formData.ug_start) {
-          newErrors.ug_start =
-            "Graduation start year is required for Course 101";
-        }
+      if (!formData.ug_marks) {
+        newErrors.ug_marks = "UG marks are required";
+      } else if (
+        parseFloat(formData.ug_marks) < 0 ||
+        parseFloat(formData.ug_marks) > 100
+      ) {
+        newErrors.ug_marks = "UG marks must be between 0% and 100%";
+      }
 
-        if (!formData.ug_end) {
-          newErrors.ug_end = "Graduation end year is required for Course 101";
-        } else if (parseInt(formData.ug_end) <= parseInt(formData.ug_start)) {
-          newErrors.ug_end = "End year must be after start year";
-        }
+      if (!formData.ug_start) {
+        newErrors.ug_start = "UG start year is required";
+      }
 
-        if (!formData.ug_marks) {
-          newErrors.ug_marks =
-            "Graduation percentage is required for Course 101";
-        } else if (parseFloat(formData.ug_marks) < 45) {
-          newErrors.ug_marks =
-            "Minimum 45% required in graduation for Course 101";
-        }
+      if (!formData.ug_end) {
+        newErrors.ug_end = "UG end year is required";
+      } else if (parseInt(formData.ug_end) <= parseInt(formData.ug_start)) {
+        newErrors.ug_end = "UG end year must be after start year";
+      }
+
+      if (!formData.ug_marks_file) {
+        newErrors.ug_marks_file = "UG marks file is required";
+      } else if (!validateFileSize(formData.ug_marks_file)) {
+        newErrors.ug_marks_file = `File size must be less than ${MAX_FILE_SIZE}KB (2MB)`;
+      }
+    }
+
+    // Rank validation
+    if (!formData.rank && formData.rank !== "Not appeared") {
+      newErrors.rank = "Rank is required or select 'Not appeared'";
+    }
+
+    // File validations with size check
+    if (!formData.tenth_file) {
+      newErrors.tenth_file = "10th marks file is required";
+    } else if (!validateFileSize(formData.tenth_file)) {
+      newErrors.tenth_file = `File size must be less than ${MAX_FILE_SIZE}KB (2MB)`;
+    }
+
+    if (!formData.twelfth_marks_file) {
+      newErrors.twelfth_marks_file = "12th marks file is required";
+    } else if (!validateFileSize(formData.twelfth_marks_file)) {
+      newErrors.twelfth_marks_file = `File size must be less than ${MAX_FILE_SIZE}KB (2MB)`;
+    }
+
+    if (formData.rank !== "Not appeared" && !formData.rank_file) {
+      newErrors.rank_file = "Rank file is required when rank is provided";
+    } else if (
+      formData.rank !== "Not appeared" &&
+      formData.rank_file &&
+      !validateFileSize(formData.rank_file)
+    ) {
+      newErrors.rank_file = `File size must be less than ${MAX_FILE_SIZE}KB (2MB)`;
+    }
+
+    // If there are other course details, validate them too
+    if (formData.other_course) {
+      if (!formData.other_course_marks) {
+        newErrors.other_course_marks = "Other course marks are required";
+      }
+
+      if (!formData.other_course_start) {
+        newErrors.other_course_start = "Other course start year is required";
+      }
+
+      if (!formData.other_course_end) {
+        newErrors.other_course_end = "Other course end year is required";
+      } else if (
+        parseInt(formData.other_course_end) <=
+        parseInt(formData.other_course_start)
+      ) {
+        newErrors.other_course_end = "End year must be after start year";
+      }
+
+      if (
+        formData.other_marks_file &&
+        !validateFileSize(formData.other_marks_file)
+      ) {
+        newErrors.other_marks_file = `File size must be less than ${MAX_FILE_SIZE}KB (2MB)`;
       }
     }
 
@@ -214,909 +1141,798 @@ const EnrollCourse = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+
+    if (type === "file") {
+      // For file inputs, check file size before setting
+      const file = files[0] || null;
+
+      setFormData({
+        ...formData,
+        [name]: file,
+      });
+
+      // Validate file size on change
+      if (file && !validateFileSize(file)) {
+        setErrors({
+          ...errors,
+          [name]: `File size must be less than ${MAX_FILE_SIZE}KB (2MB)`,
+        });
+      } else if (errors[name] && errors[name].includes("size")) {
+        // Clear error if new file is valid size
+        const newErrors = { ...errors };
+        delete newErrors[name];
+        setErrors(newErrors);
+      }
+    } else if (type === "checkbox" || type === "radio") {
+      setFormData({
+        ...formData,
+        [name]: checked,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleRankChange = (e) => {
+    if (e.target.value === "Not appeared") {
+      setFormData({
+        ...formData,
+        rank: "Not appeared",
+        rank_file: null,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        rank: e.target.value,
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) {
-      // If course 101 requires graduation but checkbox is not checked, show error and check it
-      if (formData.course_code === "101" && !hasGraduation) {
-        setHasGraduation(true);
-        Swal.fire({
-          position: "top-end",
-          icon: "error",
-          title: "Graduation details are required for Course 101",
-          showConfirmButton: false,
-          timer: 2000,
-        });
-      }
       return;
     }
-
-    // Prepare data for API
-    const academicData = {
-      email: userData.email, // Including email from userData
-      course_code: formData.course_code,
-      tenth_year: formData.tenth_year,
-      tenth_marks: formData.tenth_marks,
-      twelfth_year: formData.twelfth_year,
-      twelfth_marks: formData.twelfth_marks,
-      rank: formData.rank,
-    };
-
-    // Add graduation details if available
-    if (hasGraduation) {
-      academicData.ug_name = formData.ug_name;
-      academicData.ug_start = formData.ug_start;
-      academicData.ug_end = formData.ug_end;
-      academicData.ug_marks = formData.ug_marks;
-    } else {
-      // Include empty strings for required fields
-      academicData.ug_name = "";
-      academicData.ug_start = "";
-      academicData.ug_end = "";
-      academicData.ug_marks = "";
-    }
-
-    // Add post-graduation details if available
-    if (hasPostGraduation) {
-      academicData.other_course = formData.other_course;
-      academicData.other_course_start = formData.other_course_start;
-      academicData.other_course_end = formData.other_course_end;
-      academicData.other_course_marks = formData.other_course_marks;
-    } else {
-      // Include empty strings for required fields
-      academicData.other_course = "";
-      academicData.other_course_start = "";
-      academicData.other_course_end = "";
-      academicData.other_course_marks = "";
-    }
-
     setLoading(true);
-
     try {
-      // Get user token from localStorage
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        Swal.fire({
-          position: "top-end",
-          icon: "error",
-          title: "Authentication failed. Please login again.",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-
-        setLoading(false);
-        return;
+      // Create FormData object for file uploads
+      const formDataToSend = new FormData();
+      // Add form fields to FormData
+      for (const key in formData) {
+        if (key.includes("_file") && formData[key]) {
+          // Make sure the file is actually a File object
+          if (formData[key] instanceof File) {
+            formDataToSend.append(key, formData[key]);
+          }
+        } else {
+          // Convert non-string values to strings when needed
+          formDataToSend.append(
+            key,
+            formData[key] !== null && formData[key] !== undefined
+              ? formData[key]
+              : ""
+          );
+        }
+      }
+      // Add user data from localStorage if it exists
+      if (userData) {
+        formDataToSend.append("email", userData.email || "");
+        formDataToSend.append("gender", userData.gender || "");
+        formDataToSend.append("phoneNumber", userData.phoneNumber || "");
       }
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
-
-      // Post data to API
+      // Send data to API using axios
       const response = await axios.post(
         "https://e-college-data.onrender.com/v1/students/student-academic",
-        academicData,
-        config
+        formDataToSend,
+        {
+          headers: {
+            // Axios will automatically set the Content-Type to multipart/form-data with boundary
+            // No need to manually set it
+          },
+        }
       );
 
-      if (response.data) {
-        console.log(response.data);
-        // Update user data in localStorage with new academic info
-        const updatedUserData = { ...userData, ...academicData };
-        localStorage.setItem("user", JSON.stringify(updatedUserData));
+      // Axios automatically throws errors for non-2xx responses
+      // and parses JSON, so response.data is already the parsed data
+      const data = response.data;
+      //added
+      const user = JSON.parse(localStorage.getItem("user")); // assuming it's saved as 'user'
+      user.submit = true;
+      localStorage.setItem("user", JSON.stringify(user));
 
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Educational Profile updated successfully!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        setTimeout(navigate("/payment"), 3000);
-      }
-    } catch (error) {
-      console.error("Error updating educational profile:", error);
+      // Show success message
       Swal.fire({
         position: "top-end",
-        icon: "error",
-        title: "Failed to update educational profile. Please try again",
+        icon: "success",
+        title: "You have registered successfully",
         showConfirmButton: false,
         timer: 1500,
+      });
+
+      // Redirect after delay
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+
+      // Extract error message from axios error object
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Error submitting form. Please try again.";
+
+      // More user-friendly error handling
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: errorMessage,
       });
     } finally {
       setLoading(false);
     }
   };
-
-  // Animation variants
-  const inputVariants = {
-    focus: { scale: 1.02, transition: { duration: 0.2 } },
-    blur: { scale: 1, transition: { duration: 0.2 } },
-  };
-
-  const buttonVariants = {
-    hover: { scale: 1.05, transition: { duration: 0.2 } },
-    tap: { scale: 0.95, transition: { duration: 0.1 } },
-  };
-
-  if (!userData) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6 flex justify-center items-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-          <div className="animate-spin text-blue-600 mx-auto mb-4">
-            <FiLoader size={32} />
-          </div>
-          <p className="text-gray-700 text-lg">Loading user data...</p>
-        </div>
-      </div>
-    );
+  if (formSubmission) {
+    return <VerificationStatus />;
   }
+  return (
+    <div className="bg-gray-50 min-h-screen py-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 className="text-2xl font-bold text-center text-blue-700 mb-6">
+          Student Academic Information
+        </h1>
 
-  return role === "student" ? (
-    <div>
-      <div className="min-h-screen bg-gray-50 p-6 flex justify-center">
-        <div className="w-full max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-lg shadow-lg p-8"
-          >
-            <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-              Educational Profile & Course Enrollment
-            </h1>
+        {userData && (
+          <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+            <h2 className="font-semibold text-lg mb-2">Personal Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <p className="text-sm text-gray-600">Name</p>
+                <p className="font-medium">{userData.name}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Email</p>
+                <p className="font-medium">{userData.email}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Phone</p>
+                <p className="font-medium">{userData.phoneNumber}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Personal Information */}
-              <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                  Personal Information
-                </h2>
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Course Code - Now read-only since it comes from URL */}
+            <div className="col-span-1">
+              <label
+                htmlFor="course_code"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Course Code <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="course_code"
+                name="course_code"
+                value={formData.course_code}
+                onChange={handleChange}
+                className={`w-full p-2 border rounded-md bg-gray-100 ${
+                  errors.course_code ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter course code"
+                readOnly
+              />
+              {errors.course_code && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.course_code}
+                </p>
+              )}
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Name */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Name
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiUser />
-                      </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="text"
-                        value={userData.name}
-                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
-                        placeholder="Full Name"
-                        disabled
-                      />
-                    </div>
-                  </div>
-
-                  {/* Gender */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Gender
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiUser />
-                      </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="text"
-                        value={userData.gender}
-                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
-                        disabled
-                      />
-                    </div>
-                  </div>
-
-                  {/* Email */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiMail />
-                      </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="email"
-                        value={userData.email}
-                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
-                        placeholder="Email Address"
-                        disabled
-                      />
-                    </div>
-                  </div>
+            {/* Select Offline */}
+            <div className="col-span-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Mode of Study <span className="text-red-500">*</span>
+              </label>
+              <div className="flex gap-4 mt-2">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="offline_yes"
+                    name="select_offline"
+                    checked={formData.select_offline === true}
+                    onChange={() =>
+                      setFormData({ ...formData, select_offline: true })
+                    }
+                    className="mr-2"
+                  />
+                  <label htmlFor="offline_yes" className="text-sm">
+                    Offline
+                  </label>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-1 gap-4 mt-4">
-                  {/* Phone */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone Number
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiPhone />
-                      </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        value={userData.phoneNumber}
-                        type="tel"
-                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
-                        placeholder="Phone Number"
-                        disabled
-                      />
-                    </div>
-                  </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="offline_no"
+                    name="select_offline"
+                    checked={formData.select_offline === false}
+                    onChange={() =>
+                      setFormData({ ...formData, select_offline: false })
+                    }
+                    className="mr-2"
+                  />
+                  <label htmlFor="offline_no" className="text-sm">
+                    Online
+                  </label>
                 </div>
               </div>
+            </div>
 
-              {/* Course Enrollment Details */}
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                  Course Enrollment Details
-                </h2>
+            {/* 10th Details */}
+            <div className="col-span-1">
+              <label
+                htmlFor="tenth_marks"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                10th Marks (%) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                id="tenth_marks"
+                name="tenth_marks"
+                value={formData.tenth_marks}
+                onChange={handleChange}
+                min="45"
+                max="100"
+                step="0.01"
+                className={`w-full p-2 border rounded-md ${
+                  errors.tenth_marks ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter percentage (45-100)"
+              />
+              {errors.tenth_marks && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.tenth_marks}
+                </p>
+              )}
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  {/* Course Code */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Course Code *
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiBookmark />
-                      </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="text"
-                        disabled
-                        name="course_code"
-                        value={courseCode}
-                        onChange={handleInputChange}
-                        className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.course_code
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                        placeholder="e.g. CS101"
-                      />
-                    </div>
-                    {errors.course_code && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.course_code}
-                      </p>
-                    )}
-                    {courseCode === "101" && (
-                      <p className="text-blue-600 text-xs mt-1">
-                        Note: This course requires graduation details
-                      </p>
-                    )}
-                  </div>
+            <div className="col-span-1">
+              <label
+                htmlFor="tenth_year"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                10th Passing Year <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                id="tenth_year"
+                name="tenth_year"
+                value={formData.tenth_year}
+                onChange={handleChange}
+                min="2000"
+                max={currentYear}
+                className={`w-full p-2 border rounded-md ${
+                  errors.tenth_year ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder={`Enter year (2000-${currentYear})`}
+              />
+              {errors.tenth_year && (
+                <p className="mt-1 text-sm text-red-600">{errors.tenth_year}</p>
+              )}
+            </div>
 
-                  {/* Rank */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Entrance Rank *
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                        <FiStar />
-                      </span>
-                      <motion.input
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        whileBlur="blur"
-                        type="number"
-                        min="1"
-                        name="rank"
-                        value={formData.rank}
-                        onChange={handleInputChange}
-                        className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.rank ? "border-red-500" : "border-gray-300"
-                        }`}
-                        placeholder="Your rank in entrance exam"
-                      />
-                    </div>
-                    {errors.rank && (
-                      <p className="text-red-500 text-xs mt-1">{errors.rank}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
+            <div className="col-span-1 md:col-span-2">
+              <label
+                htmlFor="tenth_file"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                10th Marksheet (PDF, max 2MB){" "}
+                <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="file"
+                id="tenth_file"
+                name="tenth_file"
+                onChange={handleChange}
+                accept=".pdf"
+                className={`w-full p-2 border rounded-md ${
+                  errors.tenth_file ? "border-red-500" : "border-gray-300"
+                }`}
+              />
+              {errors.tenth_file && (
+                <p className="mt-1 text-sm text-red-600">{errors.tenth_file}</p>
+              )}
+            </div>
 
-              {/* Education Details */}
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                  Educational Details
-                </h2>
+            {/* 12th Details */}
+            <div className="col-span-1">
+              <label
+                htmlFor="twelfth_marks"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                12th Marks (%) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                id="twelfth_marks"
+                name="twelfth_marks"
+                value={formData.twelfth_marks}
+                onChange={handleChange}
+                min="45"
+                max="100"
+                step="0.01"
+                className={`w-full p-2 border rounded-md ${
+                  errors.twelfth_marks ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter percentage (45-100)"
+              />
+              {errors.twelfth_marks && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.twelfth_marks}
+                </p>
+              )}
+            </div>
 
-                {/* 10th Standard */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                    <FiBook className="mr-2" /> 10th Standard *
+            <div className="col-span-1">
+              <label
+                htmlFor="twelfth_year"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                12th Passing Year <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                id="twelfth_year"
+                name="twelfth_year"
+                value={formData.twelfth_year}
+                onChange={handleChange}
+                min={
+                  formData.tenth_year ? parseInt(formData.tenth_year) + 2 : 2002
+                }
+                max={currentYear}
+                className={`w-full p-2 border rounded-md ${
+                  errors.twelfth_year ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder={`Enter year (must be ≥ 10th year + 2)`}
+              />
+              {errors.twelfth_year && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.twelfth_year}
+                </p>
+              )}
+            </div>
+
+            <div className="col-span-1 md:col-span-2">
+              <label
+                htmlFor="twelfth_marks_file"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                12th Marksheet (PDF, max 2MB){" "}
+                <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="file"
+                id="twelfth_marks_file"
+                name="twelfth_marks_file"
+                onChange={handleChange}
+                accept=".pdf"
+                className={`w-full p-2 border rounded-md ${
+                  errors.twelfth_marks_file
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+              />
+              {errors.twelfth_marks_file && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.twelfth_marks_file}
+                </p>
+              )}
+            </div>
+
+            {/* UG Details - Only required if course code is 101 */}
+            {formData.course_code === "101" && (
+              <>
+                <div className="col-span-1 md:col-span-2">
+                  <h3 className="font-semibold text-lg mb-2 text-blue-700">
+                    Undergraduate Details
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Passout Year *
-                      </label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                          <FiCalendar />
-                        </span>
-                        <motion.input
-                          variants={inputVariants}
-                          whileFocus="focus"
-                          whileBlur="blur"
-                          type="number"
-                          min="1980"
-                          max="2025"
-                          name="tenth_year"
-                          value={formData.tenth_year}
-                          onChange={handleInputChange}
-                          className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.tenth_year
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                          placeholder="YYYY"
-                        />
-                      </div>
-                      {errors.tenth_year && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.tenth_year}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Percentage *
-                      </label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                          <FiPercent />
-                        </span>
-                        <motion.input
-                          variants={inputVariants}
-                          whileFocus="focus"
-                          whileBlur="blur"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          name="tenth_marks"
-                          value={formData.tenth_marks}
-                          onChange={handleInputChange}
-                          className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.tenth_marks
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                          placeholder="Percentage"
-                        />
-                      </div>
-                      {errors.tenth_marks && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.tenth_marks}
-                        </p>
-                      )}
-                    </div>
-                  </div>
                 </div>
 
-                {/* 12th Standard */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                    <FiBook className="mr-2" /> 12th Standard *
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Passout Year *
-                      </label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                          <FiCalendar />
-                        </span>
-                        <motion.input
-                          variants={inputVariants}
-                          whileFocus="focus"
-                          whileBlur="blur"
-                          type="number"
-                          min="1980"
-                          max="2025"
-                          name="twelfth_year"
-                          value={formData.twelfth_year}
-                          onChange={handleInputChange}
-                          className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.twelfth_year
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                          placeholder="YYYY"
-                        />
-                      </div>
-                      {errors.twelfth_year && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.twelfth_year}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Percentage *
-                      </label>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                          <FiPercent />
-                        </span>
-                        <motion.input
-                          variants={inputVariants}
-                          whileFocus="focus"
-                          whileBlur="blur"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          name="twelfth_marks"
-                          value={formData.twelfth_marks}
-                          onChange={handleInputChange}
-                          className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.twelfth_marks
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                          placeholder="Percentage"
-                        />
-                      </div>
-                      {errors.twelfth_marks && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.twelfth_marks}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Graduation Toggle */}
-                <div className="mb-4">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="hasGraduation"
-                      className="mr-2 h-4 w-4 text-blue-600"
-                      checked={hasGraduation}
-                      onChange={() => setHasGraduation(!hasGraduation)}
-                      disabled={formData.course_code === "101"} // Disable the checkbox for course 101
-                    />
-                    <label
-                      htmlFor="hasGraduation"
-                      className={`text-lg font-medium ${
-                        formData.course_code === "101"
-                          ? "text-blue-700"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      I have graduation details
-                      {formData.course_code === "101" && (
-                        <span className="text-red-500 ml-1">*</span>
-                      )}
-                    </label>
-                  </div>
-                  {errors.hasGraduation && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.hasGraduation}
+                <div className="col-span-1 md:col-span-2">
+                  <label
+                    htmlFor="ug_name"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    UG Degree <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="ug_name"
+                    name="ug_name"
+                    value={formData.ug_name}
+                    onChange={handleChange}
+                    className={`w-full p-2 border rounded-md ${
+                      errors.ug_name ? "border-red-500" : "border-gray-300"
+                    }`}
+                  >
+                    {ugDegrees.map((degree) => (
+                      <option key={degree.value} value={degree.value}>
+                        {degree.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.ug_name && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.ug_name}
                     </p>
                   )}
                 </div>
 
-                {/* Graduation Details (Optional) */}
-                {hasGraduation && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="mb-6"
+                <div className="col-span-1 md:col-span-2">
+                  <label
+                    htmlFor="ug_marks"
+                    className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                      <FiBook className="mr-2" /> Graduation Details
-                      {formData.course_code === "101" && (
-                        <span className="text-red-500 ml-1">*</span>
-                      )}
-                    </h3>
-                    <div className="grid grid-cols-1 gap-4 mb-4">
-                      <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Degree/Course Name
-                          {formData.course_code === "101" && (
-                            <span className="text-red-500 ml-1">*</span>
-                          )}
-                        </label>
-                        <motion.input
-                          variants={inputVariants}
-                          whileFocus="focus"
-                          whileBlur="blur"
-                          type="text"
-                          name="ug_name"
-                          value={formData.ug_name}
-                          onChange={handleInputChange}
-                          className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.ug_name
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          }`}
-                          placeholder="e.g. B.Tech in Computer Science"
-                        />
-                      </div>
-                      {errors.ug_name && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.ug_name}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Start Year
-                          {formData.course_code === "101" && (
-                            <span className="text-red-500 ml-1">*</span>
-                          )}
-                        </label>
-                        <div className="relative">
-                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                            <FiCalendar />
-                          </span>
-                          <motion.input
-                            variants={inputVariants}
-                            whileFocus="focus"
-                            whileBlur="blur"
-                            type="number"
-                            min="1980"
-                            max="2025"
-                            name="ug_start"
-                            value={formData.ug_start}
-                            onChange={handleInputChange}
-                            className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              errors.ug_start
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            }`}
-                            placeholder="YYYY"
-                          />
-                        </div>
-                        {errors.ug_start && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.ug_start}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          End Year
-                          {formData.course_code === "101" && (
-                            <span className="text-red-500 ml-1">*</span>
-                          )}
-                        </label>
-                        <div className="relative">
-                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                            <FiCalendar />
-                          </span>
-                          <motion.input
-                            variants={inputVariants}
-                            whileFocus="focus"
-                            whileBlur="blur"
-                            type="number"
-                            min="1980"
-                            max="2030"
-                            name="ug_end"
-                            value={formData.ug_end}
-                            onChange={handleInputChange}
-                            className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              errors.ug_end
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            }`}
-                            placeholder="YYYY"
-                          />
-                        </div>
-                        {errors.ug_end && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.ug_end}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Percentage
-                          {formData.course_code === "101" && (
-                            <span className="text-red-500 ml-1">*</span>
-                          )}
-                        </label>
-                        <div className="relative">
-                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                            <FiPercent />
-                          </span>
-                          <motion.input
-                            variants={inputVariants}
-                            whileFocus="focus"
-                            whileBlur="blur"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            max="100"
-                            name="ug_marks"
-                            value={formData.ug_marks}
-                            onChange={handleInputChange}
-                            className={`pl-10 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              errors.ug_marks
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            }`}
-                            placeholder="Percentage"
-                          />
-                        </div>
-                        {errors.ug_marks && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.ug_marks}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Post Graduation Toggle */}
-                <div className="mb-4">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="hasPostGraduation"
-                      className="mr-2 h-4 w-4 text-blue-600"
-                      checked={hasPostGraduation}
-                      onChange={() => setHasPostGraduation(!hasPostGraduation)}
-                    />
-                    <label
-                      htmlFor="hasPostGraduation"
-                      className="text-lg font-medium text-gray-700"
-                    >
-                      I have post-graduation or other degree details
-                    </label>
-                  </div>
-                </div>
-
-                {/* Post Graduation Details (Optional) */}
-                {hasPostGraduation && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="mb-6"
-                  >
-                    <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                      <FiBook className="mr-2" /> Post-Graduation/Other Degree
-                    </h3>
-                    <div className="grid grid-cols-1 gap-4 mb-4">
-                      <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Degree/Course Name
-                        </label>
-                        <motion.input
-                          variants={inputVariants}
-                          whileFocus="focus"
-                          whileBlur="blur"
-                          type="text"
-                          name="other_course"
-                          value={formData.other_course}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="e.g. M.Tech in Data Science"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Start Year
-                        </label>
-                        <div className="relative">
-                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                            <FiCalendar />
-                          </span>
-                          <motion.input
-                            variants={inputVariants}
-                            whileFocus="focus"
-                            whileBlur="blur"
-                            type="number"
-                            min="1980"
-                            max="2025"
-                            name="other_course_start"
-                            value={formData.other_course_start}
-                            onChange={handleInputChange}
-                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="YYYY"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          End Year
-                        </label>
-                        <div className="relative">
-                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                            <FiCalendar />
-                          </span>
-                          <motion.input
-                            variants={inputVariants}
-                            whileFocus="focus"
-                            whileBlur="blur"
-                            type="number"
-                            min="1980"
-                            max="2030"
-                            name="other_course_end"
-                            value={formData.other_course_end}
-                            onChange={handleInputChange}
-                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="YYYY"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Percentage
-                        </label>
-                        <div className="relative">
-                          <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                            <FiPercent />
-                          </span>
-                          <motion.input
-                            variants={inputVariants}
-                            whileFocus="focus"
-                            whileBlur="blur"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            max="100"
-                            name="other_course_marks"
-                            value={formData.other_course_marks}
-                            onChange={handleInputChange}
-                            className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Percentage"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-
-              {/* Important Notes */}
-              <div className="bg-blue-50 p-6 rounded-lg shadow-md">
-                <div className="flex items-start">
-                  <AlertCircle className="text-blue-600 mt-1 mr-3 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-lg font-medium text-blue-800 mb-2">
-                      Important Notes
-                    </h3>
-                    <ul className="text-blue-700 space-y-2 text-sm">
-                      <li>
-                        • All fields marked with an asterisk (*) are mandatory.
-                      </li>
-                      <li>
-                        • Course 101 requires graduation details with minimum
-                        45% marks.
-                      </li>
-                      <li>
-                        • Minimum 45% required in both 10th and 12th standards.
-                      </li>
-                      <li>
-                        • All information will be verified during admission
-                        process.
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex justify-center mt-8">
-                <motion.button
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  type="submit"
-                  disabled={loading}
-                  className={`px-8 py-3 text-white font-semibold rounded-lg shadow-lg flex items-center ${
-                    loading
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                >
-                  {loading ? (
-                    <>
-                      <RefreshCw className="animate-spin mr-2" size={20} />
-                      Processing...
-                    </>
-                  ) : (
-                    "Submit & Continue to Payment"
+                    UG Marks (%) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="ug_marks"
+                    name="ug_marks"
+                    value={formData.ug_marks}
+                    onChange={handleChange}
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    className={`w-full p-2 border rounded-md ${
+                      errors.ug_marks ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="Enter percentage (0-100)"
+                  />
+                  {errors.ug_marks && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.ug_marks}
+                    </p>
                   )}
-                </motion.button>
-              </div>
-            </form>
+                </div>
 
-            <div className="flex justify-between mt-6">
-              <motion.button
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-                onClick={() => navigate(-1)}
-                className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg shadow flex items-center"
-              >
-                <Home className="mr-2" size={18} />
-                Back
-              </motion.button>
+                <div className="col-span-1">
+                  <label
+                    htmlFor="ug_start"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    UG Start Year <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="ug_start"
+                    name="ug_start"
+                    value={formData.ug_start}
+                    onChange={handleChange}
+                    min={formData.twelfth_year}
+                    max={currentYear}
+                    className={`w-full p-2 border rounded-md ${
+                      errors.ug_start ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder={`Enter start year`}
+                  />
+                  {errors.ug_start && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.ug_start}
+                    </p>
+                  )}
+                </div>
 
-              <motion.button
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-                onClick={() => {
-                  Swal.fire({
-                    title: "Need Help?",
-                    text: "Contact our support team at support@ecollege.edu or call 1-800-123-4567 for assistance with your application.",
-                    icon: "info",
-                    confirmButtonText: "Got it",
-                    confirmButtonColor: "#3085d6",
-                  });
-                }}
-                className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg shadow flex items-center"
-              >
-                <HelpCircle className="mr-2" size={18} />
-                Help
-              </motion.button>
+                <div className="col-span-1">
+                  <label
+                    htmlFor="ug_end"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    UG End Year <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="ug_end"
+                    name="ug_end"
+                    value={formData.ug_end}
+                    onChange={handleChange}
+                    min={
+                      formData.ug_start ? parseInt(formData.ug_start) + 1 : ""
+                    }
+                    max={currentYear}
+                    className={`w-full p-2 border rounded-md ${
+                      errors.ug_end ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder={`Enter end year`}
+                  />
+                  {errors.ug_end && (
+                    <p className="mt-1 text-sm text-red-600">{errors.ug_end}</p>
+                  )}
+                </div>
+
+                <div className="col-span-1 md:col-span-2">
+                  <label
+                    htmlFor="ug_marks_file"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    UG Marksheet (PDF, max 2MB){" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="file"
+                    id="ug_marks_file"
+                    name="ug_marks_file"
+                    onChange={handleChange}
+                    accept=".pdf"
+                    className={`w-full p-2 border rounded-md ${
+                      errors.ug_marks_file
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  {errors.ug_marks_file && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.ug_marks_file}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Other Course Details - Optional */}
+            <div className="col-span-1 md:col-span-2">
+              <h3 className="font-semibold text-lg mb-2 text-blue-700">
+                Other Course Details (Optional)
+              </h3>
             </div>
-          </motion.div>
-        </div>
+
+            <div className="col-span-1 md:col-span-2">
+              <label
+                htmlFor="other_course"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Other Course Name
+              </label>
+              <input
+                type="text"
+                id="other_course"
+                name="other_course"
+                value={formData.other_course}
+                onChange={handleChange}
+                className={`w-full p-2 border rounded-md ${
+                  errors.other_course ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter other course name (if any)"
+              />
+              {errors.other_course && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.other_course}
+                </p>
+              )}
+            </div>
+
+            {formData.other_course && (
+              <>
+                <div className="col-span-1 md:col-span-2">
+                  <label
+                    htmlFor="other_course_marks"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Other Course Marks (%)
+                  </label>
+                  <input
+                    type="number"
+                    id="other_course_marks"
+                    name="other_course_marks"
+                    value={formData.other_course_marks}
+                    onChange={handleChange}
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    className={`w-full p-2 border rounded-md ${
+                      errors.other_course_marks
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                    placeholder="Enter percentage (0-100)"
+                  />
+                  {errors.other_course_marks && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.other_course_marks}
+                    </p>
+                  )}
+                </div>
+
+                <div className="col-span-1">
+                  <label
+                    htmlFor="other_course_start"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Other Course Start Year
+                  </label>
+                  <input
+                    type="number"
+                    id="other_course_start"
+                    name="other_course_start"
+                    value={formData.other_course_start}
+                    onChange={handleChange}
+                    className={`w-full p-2 border rounded-md ${
+                      errors.other_course_start
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                    placeholder="Enter start year"
+                  />
+                  {errors.other_course_start && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.other_course_start}
+                    </p>
+                  )}
+                </div>
+
+                <div className="col-span-1">
+                  <label
+                    htmlFor="other_course_end"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Other Course End Year
+                  </label>
+                  <input
+                    type="number"
+                    id="other_course_end"
+                    name="other_course_end"
+                    value={formData.other_course_end}
+                    onChange={handleChange}
+                    min={
+                      formData.other_course_start
+                        ? parseInt(formData.other_course_start) + 1
+                        : ""
+                    }
+                    className={`w-full p-2 border rounded-md ${
+                      errors.other_course_end
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                    placeholder="Enter end year"
+                  />
+                  {errors.other_course_end && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.other_course_end}
+                    </p>
+                  )}
+                </div>
+
+                <div className="col-span-1 md:col-span-2">
+                  <label
+                    htmlFor="other_marks_file"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Other Course Marksheet (PDF, max 2MB)
+                  </label>
+                  <input
+                    type="file"
+                    id="other_marks_file"
+                    name="other_marks_file"
+                    onChange={handleChange}
+                    accept=".pdf"
+                    className={`w-full p-2 border rounded-md ${
+                      errors.other_marks_file
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  {errors.other_marks_file && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.other_marks_file}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Rank Details */}
+            <div className="col-span-1 md:col-span-2">
+              <h3 className="font-semibold text-lg mb-2 text-blue-700">
+                Entrance Exam Details
+              </h3>
+            </div>
+
+            <div className="col-span-1 md:col-span-2">
+              <label
+                htmlFor="rank"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Entrance Exam Rank <span className="text-red-500">*</span>
+              </label>
+              <div className="flex items-center gap-4">
+                <input
+                  type="text"
+                  id="rank"
+                  name="rank"
+                  value={formData.rank !== "Not appeared" ? formData.rank : ""}
+                  onChange={handleChange}
+                  className={`w-full p-2 border rounded-md ${
+                    errors.rank ? "border-red-500" : "border-gray-300"
+                  }`}
+                  placeholder="Enter your rank"
+                  disabled={formData.rank === "Not appeared"}
+                />
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="not_appeared"
+                    checked={formData.rank === "Not appeared"}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        rank: e.target.checked ? "Not appeared" : "",
+                        rank_file: null,
+                      })
+                    }
+                    className="mr-2"
+                  />
+                  <label htmlFor="not_appeared" className="text-sm">
+                    Not appeared
+                  </label>
+                </div>
+              </div>
+              {errors.rank && (
+                <p className="mt-1 text-sm text-red-600">{errors.rank}</p>
+              )}
+            </div>
+
+            {formData.rank !== "Not appeared" && (
+              <div className="col-span-1 md:col-span-2">
+                <label
+                  htmlFor="rank_file"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Rank Certificate (PDF, max 2MB){" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="file"
+                  id="rank_file"
+                  name="rank_file"
+                  onChange={handleChange}
+                  accept=".pdf"
+                  className={`w-full p-2 border rounded-md ${
+                    errors.rank_file ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
+                {errors.rank_file && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.rank_file}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="mt-8 flex justify-center">
+            <button
+              type="submit"
+              disabled={loading}
+              className={`px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors ${
+                loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Submitting..." : "Submit"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-  ) : (
-    <Navigate to="/" />
   );
 };
 
-export default EnrollCourse;
+export default StudentAcademicForm;

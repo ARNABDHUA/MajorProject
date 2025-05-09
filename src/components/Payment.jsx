@@ -91,7 +91,7 @@ const Payment = () => {
         localStorage.setItem("user", JSON.stringify(userData));
         // Set payment status to true in local storage
         localStorage.setItem("payment", JSON.stringify(true));
-        setTimeout(() => navigate("/student-profile"), 1500);
+        setTimeout(() => navigate("/student-profile"), 2500);
       }
     } catch (error) {
       setMessage("Error generating Roll Number");

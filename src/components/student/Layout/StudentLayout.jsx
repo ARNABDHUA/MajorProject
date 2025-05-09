@@ -2,18 +2,29 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import StudentSidebar from "./StudentSidebar";
+import WelcomePage from "../HandleRetriction/WelcomePage";
+import VerificationStatus from "../../Courses/CourseModulesTab/VerificationStatus";
+import RejectionPage from "../HandleRetriction/RejectionPage";
 
 const StudentLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 1024);
   const [user, setUser] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState(null);
+  const [approval, setApproval] = useState(null);
+  const [rejected, setRejected] = useState(null);
   const location = useLocation();
 
   // Get user data from localStorage
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
-      setUser(JSON.parse(userData));
+      const parsedUserData = JSON.parse(userData);
+      setUser(parsedUserData);
+      console.log(parsedUserData.submit);
+      setApproval(parsedUserData.verify);
+      setSubmitStatus(parsedUserData.submit);
+      setRejected(parsedUserData.rejected);
     }
   }, []);
 
@@ -48,6 +59,17 @@ const StudentLayout = () => {
   };
 
   const sidebarWidth = isCollapsed ? "w-20" : "w-64";
+
+  // Check if we should render the welcome page or the main layout
+  if (!submitStatus) {
+    return <WelcomePage />;
+  }
+  if (submitStatus && !approval) {
+    return <VerificationStatus />;
+  }
+  if (submitStatus && rejected) {
+    return <RejectionPage />;
+  }
 
   return (
     <div className="min-h-screen">

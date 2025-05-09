@@ -88,6 +88,7 @@ import NewRegisterStudent from "./components/Admin/pages/AccountingAndFinancial/
 import RegularStudent from "./components/Admin/pages/AccountingAndFinancial/RegularStudent";
 import EmployeeSalary from "./components/Admin/pages/AccountingAndFinancial/EmployeeSalary";
 import AccountCommunication from "./components/Admin/pages/AccountingAndFinancial/AccountCommunication";
+import SemesterPayment from "./components/SemesterPayment";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -267,10 +268,18 @@ const DisplaySetup = () => {
 
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
-              path="/payment"
+              path="/pay-admission-fees"
               element={
                 <ProtectedRoute allowedRoles={["student"]}>
                   <Payment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pay-semester-fees"
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <SemesterPayment />
                 </ProtectedRoute>
               }
             />

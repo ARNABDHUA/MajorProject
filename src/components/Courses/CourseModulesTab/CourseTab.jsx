@@ -16,6 +16,7 @@ const CourseTab = () => {
   const [user, setUser] = useState(null);
   const [liveClass, setLiveClass] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [sem, setSem] = useState();
 
   const containerRef = useRef(null);
   const { id } = useParams();
@@ -28,6 +29,8 @@ const CourseTab = () => {
       if (userData) {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
+        setSem(parsedUser.sem);
+        console.log("ZuesKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK:", parsedUser.sem);
         setIsAuthenticated(true);
       }
     };
@@ -43,7 +46,7 @@ const CourseTab = () => {
       try {
         setLoading(true);
         const response = await axios.post(
-          `https://e-college-data.onrender.com/v1/adminroutine/routine-all/${id}/1`
+          `https://e-college-data.onrender.com/v1/adminroutine/routine-all/${id}/${sem}`
         );
 
         if (!response.data?.data?.[0]) {

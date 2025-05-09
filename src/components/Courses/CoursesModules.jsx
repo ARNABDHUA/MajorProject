@@ -446,6 +446,7 @@ const courses = [
 const CoursesModules = () => {
   const [paymentStatus, setPaymentStatus] = useState(false);
   const [role, setRole] = useState("");
+  const [submit, setSubmit] = useState();
   const { id } = useParams();
 
   useEffect(() => {
@@ -455,6 +456,7 @@ const CoursesModules = () => {
         const user = JSON.parse(userData);
         console.log("userData", user.role);
         setRole(user.role);
+        setSubmit(user.submit);
         setPaymentStatus(user.payment || false);
       }
     } catch (error) {
@@ -520,6 +522,9 @@ const CoursesModules = () => {
             <FaUserGraduate className="text-yellow-500" />
             {course.students} already enrolled
           </h1>
+          {submit && (
+            <p className="text-green-300">You are already registered</p>
+          )}
           {paymentStatus ? (
             <div className="bg-yellow-500 text-black font-semibold w-full rounded-lg h-12 mt-4 flex items-center justify-center">
               Already paid
@@ -527,7 +532,11 @@ const CoursesModules = () => {
           ) : (
             role === "student" && (
               <button className="bg-yellow-500 text-black font-semibold w-full rounded-lg h-12 mt-4 hover:bg-yellow-600 transition">
-                <Link to="Enrollment-course">Enroll Course</Link>
+                {submit ? (
+                  <Link to="Enrollment-course">Check Status</Link>
+                ) : (
+                  <Link to="Enrollment-course">Enroll Course</Link>
+                )}
               </button>
             )
           )}

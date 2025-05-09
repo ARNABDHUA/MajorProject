@@ -29,6 +29,7 @@ const Routine = ({ courseId }) => {
   const [schedule, setSchedule] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sem, setSem] = useState();
 
   // Get id either from props or URL params
   const params = useParams();
@@ -45,8 +46,10 @@ const Routine = ({ courseId }) => {
       try {
         setLoading(true);
         // Replace this URL with your actual API endpoint
+        const parsedUser = JSON.parse(localStorage.getItem("user"));
+
         const response = await axios.post(
-          `https://e-college-data.onrender.com/v1/adminroutine/routine-all/${id}/1`
+          `https://e-college-data.onrender.com/v1/adminroutine/routine-all/${id}/${parsedUser.sem}`
         );
 
         // Transform the API response into the format expected by the component

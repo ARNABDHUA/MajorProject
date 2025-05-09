@@ -61,14 +61,14 @@ const StudentLayout = () => {
   const sidebarWidth = isCollapsed ? "w-20" : "w-64";
 
   // Check if we should render the welcome page or the main layout
+  if (submitStatus && rejected) {
+    return <RejectionPage />;
+  }
   if (!submitStatus) {
     return <WelcomePage />;
   }
   if (submitStatus && !approval) {
     return <VerificationStatus />;
-  }
-  if (submitStatus && rejected) {
-    return <RejectionPage />;
   }
 
   return (

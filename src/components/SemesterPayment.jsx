@@ -12,6 +12,7 @@ const SemesterPayment = () => {
   const [name, setName] = useState();
   const [id, setId] = useState();
   const [phone, setPhone] = useState();
+  const [cc, setCc] = useState();
   const { email, setEmail, courseCode, setCourseCode } = ChatState();
 
   const generateUniqueId = () => {
@@ -29,6 +30,7 @@ const SemesterPayment = () => {
 
     // Get user data from localStorage safely
     const storedUser = JSON.parse(localStorage.getItem("user"));
+    setCc(storedUser.course_code);
     const userEmail = storedUser.email;
     setEmail(userEmail);
     // const cCode = storedUser.course_code;
@@ -70,7 +72,7 @@ const SemesterPayment = () => {
       const res = await axios.post(
         `https://e-college-data.onrender.com/v1/students/student-rollgenerate`,
         {
-          course_code: courseCode,
+          course_code: cc,
           email: email,
         }
       );

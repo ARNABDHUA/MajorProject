@@ -12,6 +12,7 @@ const Payment = () => {
   const [name, setName] = useState();
   const [id, setId] = useState();
   const [phone, setPhone] = useState();
+  const [cc, setcc] = useState();
   const { email, setEmail, courseCode, setCourseCode } = ChatState();
 
   const generateUniqueId = () => {
@@ -22,6 +23,7 @@ const Payment = () => {
     // Check if payment is already done
     const user = JSON.parse(localStorage.getItem("user"));
     console.log("Payment status", user.payment);
+    setcc(user.course_code);
     if (user.payment === true) {
       navigate("/student-profile");
       return;
@@ -70,7 +72,7 @@ const Payment = () => {
       const res = await axios.post(
         `https://e-college-data.onrender.com/v1/students/student-rollgenerate`,
         {
-          course_code: courseCode,
+          course_code: cc,
           email: email,
         }
       );

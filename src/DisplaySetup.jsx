@@ -283,6 +283,7 @@ const DisplaySetup = () => {
                 </ProtectedRoute>
               }
             />
+            <Route path="/test" element={<Payment />} />
             {/* Student Dashboard Routes */}
             <Route element={<StudentLayout />}>
               <Route
@@ -351,7 +352,7 @@ const DisplaySetup = () => {
                 }
               />
               <Route
-                path="/class-assesment"
+                path="/class-assessment"
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <ClassAssesment />

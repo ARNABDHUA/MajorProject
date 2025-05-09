@@ -13,6 +13,7 @@ const StudentLayout = () => {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [approval, setApproval] = useState(null);
   const [rejected, setRejected] = useState(null);
+  const [croll, setcroll] = useState();
   const location = useLocation();
 
   // Get user data from localStorage
@@ -25,6 +26,8 @@ const StudentLayout = () => {
       setApproval(parsedUserData.verify);
       setSubmitStatus(parsedUserData.submit);
       setRejected(parsedUserData.rejected);
+      const crollCheck = parsedUserData.c_roll || false;
+      setcroll(crollCheck);
     }
   }, []);
 
@@ -64,11 +67,12 @@ const StudentLayout = () => {
   if (submitStatus && rejected) {
     return <RejectionPage />;
   }
-  if (!submitStatus) {
-    return <WelcomePage />;
-  }
+
   if (submitStatus && !approval) {
     return <VerificationStatus />;
+  }
+  if (!croll && !submitStatus) {
+    return <WelcomePage />;
   }
 
   return (

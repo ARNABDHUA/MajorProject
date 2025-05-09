@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
 import {
-  Calendar,
   Filter,
   Loader,
-  User,
-  FileText,
   BookOpen,
   ListVideo,
 } from "lucide-react";
 import axios from "axios";
-import { FaChalkboardTeacher, FaFileAlt, FaRegCalendarAlt } from "react-icons/fa";
+import { FaChalkboardTeacher, FaFileAlt, FaLayerGroup, FaRegCalendarAlt } from "react-icons/fa";
+import { MdCastForEducation } from "react-icons/md";
 
 const RecordedClassPlayer = () => {
   const [paperCodes, setPaperCodes] = useState([]);
@@ -162,7 +160,7 @@ const RecordedClassPlayer = () => {
             <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-gray-700">
               <div className="flex items-center gap-1">
                 <FaChalkboardTeacher className="w-4 h-4 text-gray-600" />
-                <span className="font-bold">Paper Code: </span>
+                <span className="font-bold">Teacher: </span>
                 <span>{selectedVideo.teacher_name}</span>
               </div>
               <div className="flex items-center gap-1">
@@ -176,14 +174,14 @@ const RecordedClassPlayer = () => {
                 <span>{formatDate(selectedVideo.createdAt)}</span>
               </div>
               <div className="flex items-center gap-1">
-                <BookOpen className="w-4 h-4 text-gray-600" />
+                <MdCastForEducation className="w-4 h-4 text-gray-600" />
                 <span className="font-bold">Course Code: </span>
                 <span>
                   {JSON.parse(localStorage.getItem("user"))?.course_code || "N/A"}
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <Filter className="w-4 h-4 text-gray-600" />
+                <FaLayerGroup className="w-4 h-4 text-gray-600" />
                 <span className="font-bold">Semester: </span>
                 <span>Semester {selectedVideo.sem || "N/A"}</span>
               </div>

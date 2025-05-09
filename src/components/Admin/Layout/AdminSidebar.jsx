@@ -2,7 +2,12 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
-
+import { FaUserCheck } from "react-icons/fa6";
+import { HiUserAdd } from "react-icons/hi";
+import { GiTeacher } from "react-icons/gi";
+import { FaMoneyCheckAlt } from "react-icons/fa";
+import { HiOutlineDocumentAdd } from "react-icons/hi";
+import { MdOutlineConnectWithoutContact } from "react-icons/md";
 // Icons
 import {
   FiUsers,
@@ -17,6 +22,7 @@ import {
   FiBell,
   FiUser,
 } from "react-icons/fi";
+
 import {
   FaUserPlus,
   FaUserGraduate,
@@ -129,45 +135,27 @@ const menuItems = [
     subItems: [
       {
         id: "fa-1",
-        title: "Fee Structures",
-        icon: <AiOutlineFileText className="w-4 h-4" />,
-        path: "/admin-fee-structures",
+        title: "New registar student",
+        icon: <HiUserAdd className="w-4 h-4" />,
+        path: "/new-registerStudent",
       },
       {
         id: "fa-2",
-        title: "Collect Fees",
-        icon: <MdPayment className="w-4 h-4" />,
-        path: "/admin-collect-fees",
+        title: "Regular student",
+        icon: <FaUserGraduate className="w-4 h-4" />,
+        path: "/regular-student",
       },
       {
         id: "fa-3",
-        title: "Payment History",
-        icon: <BsFileEarmarkText className="w-4 h-4" />,
-        path: "/admin-payment-history",
+        title: "Employee salary",
+        icon: <FaMoneyCheckAlt className="w-4 h-4" />,
+        path: "/employees-salary",
       },
       {
         id: "fa-4",
-        title: "Receipts",
-        icon: <AiOutlineFileText className="w-4 h-4" />,
-        path: "/admin-receipts",
-      },
-      {
-        id: "fa-5",
-        title: "Due Fees",
-        icon: <FiBarChart2 className="w-4 h-4" />,
-        path: "/admin-due-fees",
-      },
-      {
-        id: "fa-6",
-        title: "Financial Reports",
-        icon: <BiExport className="w-4 h-4" />,
-        path: "/admin-financial-reports",
-      },
-      {
-        id: "fa-7",
-        title: "Salaries & Expenses",
-        icon: <FiDollarSign className="w-4 h-4" />,
-        path: "/admin-salaries-expenses",
+        title: "Communication",
+        icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
+        path: "/account-communication",
       },
     ],
   },
@@ -179,33 +167,39 @@ const menuItems = [
     subItems: [
       {
         id: "rr-1",
-        title: "New Registrations",
-        icon: <FaUserPlus className="w-4 h-4" />,
-        path: "/admin-new-registrations",
+        title: "Student Document Verification",
+        icon: <FaUserCheck className="w-4 h-4" />,
+        path: "/student-document-verification",
       },
       {
         id: "rr-2",
-        title: "Application Forms",
-        icon: <BsFileEarmarkText className="w-4 h-4" />,
-        path: "/admin-application-forms",
+        title: "Teacher Document Verification",
+        icon: <FaChalkboardTeacher className="w-4 h-4" />,
+        path: "/teacher-document-verification",
       },
       {
         id: "rr-3",
-        title: "Document Verification",
-        icon: <AiOutlineFileText className="w-4 h-4" />,
-        path: "/admin-document-verification",
+        title: "Students details",
+        icon: <FaUserGraduate className="w-4 h-4" />,
+        path: "/students-details",
       },
       {
         id: "rr-4",
-        title: "ID Management",
-        icon: <RiUserSettingsLine className="w-4 h-4" />,
-        path: "/admin-id-management",
+        title: "Teachers details",
+        icon: <GiTeacher className="w-4 h-4" />,
+        path: "/teachers-details",
       },
       {
         id: "rr-5",
-        title: "Admission Records",
-        icon: <AiOutlineDatabase className="w-4 h-4" />,
-        path: "/admin-admission-records",
+        title: "Document Issue",
+        icon: <HiOutlineDocumentAdd className="w-4 h-4" />,
+        path: "/document-issue",
+      },
+      {
+        id: "rr-6",
+        title: "Communication",
+        icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
+        path: "/register-communication",
       },
     ],
   },

@@ -78,6 +78,16 @@ import SalarySlip from "./components/Teachers/Pages/SalarySlip";
 import { Delete } from "lucide-react";
 import DeleteCourse from "./components/Teachers/Pages/DeleteCourse";
 import TeacherAssign from "./components/Teachers/Pages/TeacherAssign";
+import StudentDocumentVerficationn from "./components/Admin/pages/RegitrationManagement/StudentDocumentVerficationn";
+import TeacherDocumentVerfication from "./components/Admin/pages/RegitrationManagement/TeacherDocumentVerfication";
+import StudentDetails from "./components/Admin/pages/RegitrationManagement/StudentDetails";
+import TeacherDetails from "./components/Admin/pages/RegitrationManagement/TeacherDetails";
+import DocumentIssue from "./components/Admin/pages/RegitrationManagement/DocumentIssue";
+import RegistrationMessage from "./components/Admin/pages/RegitrationManagement/RegistrationMessage";
+import NewRegisterStudent from "./components/Admin/pages/AccountingAndFinancial/NewRegisterStudent";
+import RegularStudent from "./components/Admin/pages/AccountingAndFinancial/RegularStudent";
+import EmployeeSalary from "./components/Admin/pages/AccountingAndFinancial/EmployeeSalary";
+import AccountCommunication from "./components/Admin/pages/AccountingAndFinancial/AccountCommunication";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -223,6 +233,36 @@ const DisplaySetup = () => {
             {/* Admin */}
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<Admin />} />
+
+              {/* Register Admin */}
+              <Route
+                path="/student-document-verification"
+                element={<StudentDocumentVerficationn />}
+              />
+              <Route
+                path="/teacher-document-verification"
+                element={<TeacherDocumentVerfication />}
+              />
+              <Route path="/students-details" element={<StudentDetails />} />
+              <Route path="/teachers-details" element={<TeacherDetails />} />
+
+              <Route path="/document-issue" element={<DocumentIssue />} />
+              <Route
+                path="/register-communication"
+                element={<RegistrationMessage />}
+              />
+              {/* Financial Admin */}
+              <Route
+                path="/new-registerStudent"
+                element={<NewRegisterStudent />}
+              />
+              <Route path="/regular-student" element={<RegularStudent />} />
+              <Route path="/employees-salary" element={<EmployeeSalary />} />
+              <Route
+                path="/account-communication"
+                element={<AccountCommunication />}
+              />
+              {/* Academin Admin Routes */}
             </Route>
 
             <Route path="/forgot-password" element={<ForgotPassword />} />

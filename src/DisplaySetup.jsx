@@ -89,6 +89,9 @@ import RegularStudent from "./components/Admin/pages/AccountingAndFinancial/Regu
 import EmployeeSalary from "./components/Admin/pages/AccountingAndFinancial/EmployeeSalary";
 import AccountCommunication from "./components/Admin/pages/AccountingAndFinancial/AccountCommunication";
 import SemesterPayment from "./components/SemesterPayment";
+import VerificationStatus from "./components/Courses/CourseModulesTab/VerificationStatus";
+import RejectionPage from "./components/student/HandleRetriction/RejectionPage";
+import WelcomePage from "./components/student/HandleRetriction/WelcomePage";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -283,7 +286,7 @@ const DisplaySetup = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="/test" element={<Payment />} />
+            {/* <Route path="/test" element={<EnrollCourse />} /> */}
             {/* Student Dashboard Routes */}
             <Route element={<StudentLayout />}>
               <Route

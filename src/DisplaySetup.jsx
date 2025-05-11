@@ -40,8 +40,6 @@ import Student from "./components/Teachers/Pages/Student";
 import Examination from "./components/Teachers/Pages/Examination";
 import Courses from "./components/Teachers/Pages/Courses";
 import Schedule from "./components/Teachers/Pages/Schedule";
-import Reports from "./components/Teachers/Pages/Reports";
-import Settings from "./components/Teachers/Pages/Settings";
 import Admin from "./components/Admin/Admin";
 import TeacherLogin from "./components/Teachers/Auth/TeacherLogin";
 import TeacherProfile from "./components/Teachers/TeacherProfile";
@@ -75,7 +73,6 @@ import TeacherClassAssesment from "./components/Teachers/Pages/TeacherClassAsses
 import AdmitCardGeneration from "./components/student/AdmitCard/AdmitCardGeneration";
 import StudentIdentityCard from "./components/student/Pages/StudentIdentityCard";
 import SalarySlip from "./components/Teachers/Pages/SalarySlip";
-import { Delete } from "lucide-react";
 import DeleteCourse from "./components/Teachers/Pages/DeleteCourse";
 import TeacherAssign from "./components/Teachers/Pages/TeacherAssign";
 import StudentDocumentVerficationn from "./components/Admin/pages/RegitrationManagement/StudentDocumentVerficationn";
@@ -89,9 +86,8 @@ import RegularStudent from "./components/Admin/pages/AccountingAndFinancial/Regu
 import EmployeeSalary from "./components/Admin/pages/AccountingAndFinancial/EmployeeSalary";
 import AccountCommunication from "./components/Admin/pages/AccountingAndFinancial/AccountCommunication";
 import SemesterPayment from "./components/SemesterPayment";
-import VerificationStatus from "./components/Courses/CourseModulesTab/VerificationStatus";
-import RejectionPage from "./components/student/HandleRetriction/RejectionPage";
-import WelcomePage from "./components/student/HandleRetriction/WelcomePage";
+import TeacherApplication from "./components/HeaderandFooterComponents/Footer/TeacherApplication/TeacherApplication";
+import TeacherReg from "./components/HeaderandFooterComponents/Footer/TeacherApplication/TeacherReg";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -286,7 +282,7 @@ const DisplaySetup = () => {
                 </ProtectedRoute>
               }
             />
-            {/* <Route path="/test" element={<EnrollCourse />} /> */}
+            {/* <Route path="/test" element={<TeacherApplication />} /> */}
             {/* Student Dashboard Routes */}
             <Route element={<StudentLayout />}>
               <Route
@@ -417,7 +413,8 @@ const DisplaySetup = () => {
               <Route path="/newsblog" element={<NewsBlog />} />
               <Route path="/library" element={<Library />} />
               <Route path="/faq" element={<FAQ />} />
-
+              <Route path="/check-status" element={<TeacherApplication />} />
+              <Route path="/teacher-register" element={<TeacherReg />} />
               <Route path="/sitemap" element={<SiteMap />} />
               <Route
                 path="/howtobecometeacher"

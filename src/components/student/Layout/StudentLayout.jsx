@@ -26,7 +26,7 @@ const StudentLayout = () => {
       setApproval(parsedUserData.verify);
       setSubmitStatus(parsedUserData.submit);
       setRejected(parsedUserData.rejected);
-      const crollCheck = parsedUserData.c_roll || false;
+      const crollCheck = parsedUserData.c_roll ? true : false;
       setcroll(crollCheck);
     }
   }, []);
@@ -64,15 +64,17 @@ const StudentLayout = () => {
   const sidebarWidth = isCollapsed ? "w-20" : "w-64";
 
   // Check if we should render the welcome page or the main layout
-  if (submitStatus && rejected) {
-    return <RejectionPage />;
-  }
+  if (!croll) {
+    if (submitStatus && rejected) {
+      return <RejectionPage />;
+    }
 
-  if (submitStatus && !approval) {
-    return <VerificationStatus />;
-  }
-  if (!croll && !submitStatus) {
-    return <WelcomePage />;
+    if (submitStatus && !approval) {
+      return <VerificationStatus />;
+    }
+    if (!submitStatus) {
+      return <WelcomePage />;
+    }
   }
 
   return (

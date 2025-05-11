@@ -18,44 +18,394 @@ const EditProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const citiesByState = {
-    "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Kadapa", "Tirupati", "Rajahmundry", "Kakinada"],
-    "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat", "Tawang", "Ziro", "Bomdila", "Aalo", "Tezu"],
-    "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia", "Tezpur", "Karimganj"],
-    "Bihar": ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Purnia", "Arrah", "Begusarai"],
-    "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Raigarh", "Jagdalpur", "Ambikapur", "Durg"],
-    "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa", "Ponda", "Bicholim", "Curchorem", "Canacona"],
-    "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar", "Junagadh"],
-    "Haryana": ["Faridabad", "Gurgaon", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal"],
-    "Himachal Pradesh": ["Shimla", "Dharamshala", "Mandi", "Solan", "Nahan", "Bilaspur", "Hamirpur", "Kullu"],
-    "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Hazaribagh", "Deoghar", "Giridih", "Ramgarh"],
-    "Karnataka": ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum", "Gulbarga", "Davanagere", "Shimoga"],
-    "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur", "Kollam", "Palakkad", "Alappuzha", "Kannur"],
-    "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna"],
-    "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Solapur", "Amravati"],
-    "Manipur": ["Imphal", "Thoubal", "Bishnupur", "Churachandpur", "Ukhrul", "Chandel", "Senapati", "Tamenglong"],
-    "Meghalaya": ["Shillong", "Tura", "Jowai", "Nongstoin", "Williamnagar", "Baghmara", "Resubelpara", "Ampati"],
-    "Mizoram": ["Aizawl", "Lunglei", "Champhai", "Serchhip", "Kolasib", "Lawngtlai", "Mamit", "Saiha"],
-    "Nagaland": ["Kohima", "Dimapur", "Mokokchung", "Tuensang", "Wokha", "Zunheboto", "Mon", "Phek"],
-    "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore", "Bhadrak"],
-    "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Pathankot", "Hoshiarpur"],
-    "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer", "Bikaner", "Alwar", "Bhilwara"],
-    "Sikkim": ["Gangtok", "Namchi", "Gyalshing", "Mangan", "Ravangla", "Singtam", "Rangpo", "Jorethang"],
-    "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Erode", "Vellore"],
-    "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam", "Ramagundam", "Mahbubnagar", "Nalgonda"],
-    "Tripura": ["Agartala", "Udaipur", "Dharmanagar", "Kailashahar", "Belonia", "Ambassa", "Khowai", "Teliamura"],
-    "Uttar Pradesh": ["Lucknow", "Kanpur", "Agra", "Varanasi", "Meerut", "Allahabad", "Ghaziabad", "Noida"],
-    "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Kashipur", "Rishikesh", "Nainital"],
-    "West Bengal": ["Bankura","Purulia","Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri", "Bardhaman", "Baharampur", "Malda"],
-    "Andaman and Nicobar Islands": ["Port Blair", "Car Nicobar", "Havelock Island", "Neil Island", "Mayabunder", "Diglipur", "Rangat", "Little Andaman"],
-    "Chandigarh": ["Chandigarh"],
-    "Dadra and Nagar Haveli and Daman and Diu": ["Silvassa", "Daman", "Diu", "Amli", "Naroli", "Vapi", "Dunetha"],
-    "Delhi": ["New Delhi", "Delhi", "Noida", "Gurgaon", "Faridabad", "Ghaziabad", "Greater Noida"],
-    "Jammu and Kashmir": ["Srinagar", "Jammu", "Anantnag", "Baramulla", "Kathua", "Udhampur", "Sopore", "Poonch"],
-    "Ladakh": ["Leh", "Kargil", "Diskit", "Zanskar", "Nubra", "Khaltse", "Drass"],
-    "Lakshadweep": ["Kavaratti", "Agatti", "Amini", "Andrott", "Minicoy", "Kiltan", "Kadmat", "Kalpeni"],
-    "Puducherry": ["Puducherry", "Karaikal", "Mahe", "Yanam", "Villianur", "Ozhukarai", "Thirubhuvanai"]
+    "Andhra Pradesh": [
+      "Visakhapatnam",
+      "Vijayawada",
+      "Guntur",
+      "Nellore",
+      "Kurnool",
+      "Kadapa",
+      "Tirupati",
+      "Rajahmundry",
+      "Kakinada",
+    ],
+    "Arunachal Pradesh": [
+      "Itanagar",
+      "Naharlagun",
+      "Pasighat",
+      "Tawang",
+      "Ziro",
+      "Bomdila",
+      "Aalo",
+      "Tezu",
+    ],
+    Assam: [
+      "Guwahati",
+      "Silchar",
+      "Dibrugarh",
+      "Jorhat",
+      "Nagaon",
+      "Tinsukia",
+      "Tezpur",
+      "Karimganj",
+    ],
+    Bihar: [
+      "Patna",
+      "Gaya",
+      "Muzaffarpur",
+      "Bhagalpur",
+      "Darbhanga",
+      "Purnia",
+      "Arrah",
+      "Begusarai",
+    ],
+    Chhattisgarh: [
+      "Raipur",
+      "Bhilai",
+      "Bilaspur",
+      "Korba",
+      "Raigarh",
+      "Jagdalpur",
+      "Ambikapur",
+      "Durg",
+    ],
+    Goa: [
+      "Panaji",
+      "Margao",
+      "Vasco da Gama",
+      "Mapusa",
+      "Ponda",
+      "Bicholim",
+      "Curchorem",
+      "Canacona",
+    ],
+    Gujarat: [
+      "Ahmedabad",
+      "Surat",
+      "Vadodara",
+      "Rajkot",
+      "Bhavnagar",
+      "Jamnagar",
+      "Gandhinagar",
+      "Junagadh",
+    ],
+    Haryana: [
+      "Faridabad",
+      "Gurgaon",
+      "Panipat",
+      "Ambala",
+      "Yamunanagar",
+      "Rohtak",
+      "Hisar",
+      "Karnal",
+    ],
+    "Himachal Pradesh": [
+      "Shimla",
+      "Dharamshala",
+      "Mandi",
+      "Solan",
+      "Nahan",
+      "Bilaspur",
+      "Hamirpur",
+      "Kullu",
+    ],
+    Jharkhand: [
+      "Ranchi",
+      "Jamshedpur",
+      "Dhanbad",
+      "Bokaro",
+      "Hazaribagh",
+      "Deoghar",
+      "Giridih",
+      "Ramgarh",
+    ],
+    Karnataka: [
+      "Bangalore",
+      "Mysore",
+      "Hubli",
+      "Mangalore",
+      "Belgaum",
+      "Gulbarga",
+      "Davanagere",
+      "Shimoga",
+    ],
+    Kerala: [
+      "Thiruvananthapuram",
+      "Kochi",
+      "Kozhikode",
+      "Thrissur",
+      "Kollam",
+      "Palakkad",
+      "Alappuzha",
+      "Kannur",
+    ],
+    "Madhya Pradesh": [
+      "Bhopal",
+      "Indore",
+      "Jabalpur",
+      "Gwalior",
+      "Ujjain",
+      "Sagar",
+      "Dewas",
+      "Satna",
+    ],
+    Maharashtra: [
+      "Mumbai",
+      "Pune",
+      "Nagpur",
+      "Thane",
+      "Nashik",
+      "Aurangabad",
+      "Solapur",
+      "Amravati",
+    ],
+    Manipur: [
+      "Imphal",
+      "Thoubal",
+      "Bishnupur",
+      "Churachandpur",
+      "Ukhrul",
+      "Chandel",
+      "Senapati",
+      "Tamenglong",
+    ],
+    Meghalaya: [
+      "Shillong",
+      "Tura",
+      "Jowai",
+      "Nongstoin",
+      "Williamnagar",
+      "Baghmara",
+      "Resubelpara",
+      "Ampati",
+    ],
+    Mizoram: [
+      "Aizawl",
+      "Lunglei",
+      "Champhai",
+      "Serchhip",
+      "Kolasib",
+      "Lawngtlai",
+      "Mamit",
+      "Saiha",
+    ],
+    Nagaland: [
+      "Kohima",
+      "Dimapur",
+      "Mokokchung",
+      "Tuensang",
+      "Wokha",
+      "Zunheboto",
+      "Mon",
+      "Phek",
+    ],
+    Odisha: [
+      "Bhubaneswar",
+      "Cuttack",
+      "Rourkela",
+      "Berhampur",
+      "Sambalpur",
+      "Puri",
+      "Balasore",
+      "Bhadrak",
+    ],
+    Punjab: [
+      "Ludhiana",
+      "Amritsar",
+      "Jalandhar",
+      "Patiala",
+      "Bathinda",
+      "Mohali",
+      "Pathankot",
+      "Hoshiarpur",
+    ],
+    Rajasthan: [
+      "Jaipur",
+      "Jodhpur",
+      "Udaipur",
+      "Kota",
+      "Ajmer",
+      "Bikaner",
+      "Alwar",
+      "Bhilwara",
+    ],
+    Sikkim: [
+      "Gangtok",
+      "Namchi",
+      "Gyalshing",
+      "Mangan",
+      "Ravangla",
+      "Singtam",
+      "Rangpo",
+      "Jorethang",
+    ],
+    "Tamil Nadu": [
+      "Chennai",
+      "Coimbatore",
+      "Madurai",
+      "Tiruchirappalli",
+      "Salem",
+      "Tirunelveli",
+      "Erode",
+      "Vellore",
+    ],
+    Telangana: [
+      "Hyderabad",
+      "Warangal",
+      "Nizamabad",
+      "Karimnagar",
+      "Khammam",
+      "Ramagundam",
+      "Mahbubnagar",
+      "Nalgonda",
+    ],
+    Tripura: [
+      "Agartala",
+      "Udaipur",
+      "Dharmanagar",
+      "Kailashahar",
+      "Belonia",
+      "Ambassa",
+      "Khowai",
+      "Teliamura",
+    ],
+    "Uttar Pradesh": [
+      "Lucknow",
+      "Kanpur",
+      "Agra",
+      "Varanasi",
+      "Meerut",
+      "Allahabad",
+      "Ghaziabad",
+      "Noida",
+    ],
+    Uttarakhand: [
+      "Dehradun",
+      "Haridwar",
+      "Roorkee",
+      "Haldwani",
+      "Rudrapur",
+      "Kashipur",
+      "Rishikesh",
+      "Nainital",
+    ],
+    "West Bengal": [
+      "Alipurduar",
+      "Arambagh",
+      "Asansol",
+      "Baharampur",
+      "Balurghat",
+      "Bally",
+      "Bankura",
+      "Baranagar",
+      "Barasat",
+      "Bardhaman",
+      "Baruipur",
+      "Basirhat",
+      "Bhadreswar",
+      "Bidhannagar",
+      "Bongaon",
+      "Budge Budge",
+      "Chandannagar",
+      "Chandpur",
+      "Cooch Behar",
+      "Dankuni",
+      "Diamond Harbour",
+      "Dinhata",
+      "Durgapur",
+      "Habra",
+      "Haldia",
+      "Halisahar",
+      "Howrah",
+      "Jalpaiguri",
+      "Kalyani",
+      "Kamarhati",
+      "Kanchrapara",
+      "Katwa",
+      "Kharagpur",
+      "Kolkata",
+      "Krishnanagar",
+      "Malda",
+      "Midnapore",
+      "Nabadwip",
+      "Naihati",
+      "North Dum Dum",
+      "Panskura",
+      "Purulia",
+      "Raiganj",
+      "Rajpur Sonarpur",
+      "Raghunathganj",
+      "Rampurhat",
+      "Raniganj",
+      "Rishra",
+      "Serampore",
+      "Siliguri",
+      "South Dum Dum",
+      "Suri",
+      "Tamluk",
+      "Titagarh",
+      "Uluberia",
+    ],
+    "Andaman and Nicobar Islands": [
+      "Port Blair",
+      "Car Nicobar",
+      "Havelock Island",
+      "Neil Island",
+      "Mayabunder",
+      "Diglipur",
+      "Rangat",
+      "Little Andaman",
+    ],
+    Chandigarh: ["Chandigarh"],
+    "Dadra and Nagar Haveli and Daman and Diu": [
+      "Silvassa",
+      "Daman",
+      "Diu",
+      "Amli",
+      "Naroli",
+      "Vapi",
+      "Dunetha",
+    ],
+    Delhi: [
+      "New Delhi",
+      "Delhi",
+      "Noida",
+      "Gurgaon",
+      "Faridabad",
+      "Ghaziabad",
+      "Greater Noida",
+    ],
+    "Jammu and Kashmir": [
+      "Srinagar",
+      "Jammu",
+      "Anantnag",
+      "Baramulla",
+      "Kathua",
+      "Udhampur",
+      "Sopore",
+      "Poonch",
+    ],
+    Ladakh: ["Leh", "Kargil", "Diskit", "Zanskar", "Nubra", "Khaltse", "Drass"],
+    Lakshadweep: [
+      "Kavaratti",
+      "Agatti",
+      "Amini",
+      "Andrott",
+      "Minicoy",
+      "Kiltan",
+      "Kadmat",
+      "Kalpeni",
+    ],
+    Puducherry: [
+      "Puducherry",
+      "Karaikal",
+      "Mahe",
+      "Yanam",
+      "Villianur",
+      "Ozhukarai",
+      "Thirubhuvanai",
+    ],
   };
-
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("user"));
@@ -69,7 +419,7 @@ const EditProfile = () => {
         pincode: data.pincode || "",
         image: null, // Keep null for file input
       });
-     
+
       // If user has a profile imageture, show it in preview
       if (data.profileimage) {
         setPreviewImage(data.profileimage);
@@ -80,7 +430,10 @@ const EditProfile = () => {
   useEffect(() => {
     if (formData.state) {
       setAvailableCities(citiesByState[formData.state] || []);
-      if (formData.city && !citiesByState[formData.state]?.includes(formData.city)) {
+      if (
+        formData.city &&
+        !citiesByState[formData.state]?.includes(formData.city)
+      ) {
         setFormData((prev) => ({ ...prev, city: "" }));
       }
     } else {
@@ -100,18 +453,21 @@ const EditProfile = () => {
     const file = e.target.files[0];
     if (file) {
       // Validate file type
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
       if (!validTypes.includes(file.type)) {
-        showPopup("Please select a valid image file (JPEG, PNG, GIF, WEBP)", "error");
+        showPopup(
+          "Please select a valid image file (JPEG, PNG, GIF, WEBP)",
+          "error"
+        );
         return;
       }
-     
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         showPopup("Image size should be less than 5MB", "error");
         return;
       }
-     
+
       setFormData((prev) => ({ ...prev, image: file }));
       setPreviewImage(URL.createObjectURL(file));
     }
@@ -148,14 +504,14 @@ const EditProfile = () => {
 
       try {
         const payload = new FormData();
-       
+
         // Append all form fields to FormData
         payload.append("email", formData.email);
         payload.append("address", formData.address);
         payload.append("state", formData.state);
         payload.append("city", formData.city);
         payload.append("pincode", formData.pincode);
-       
+
         // Only append image if it exists and is a File object
         if (formData.image instanceof File) {
           payload.append("image", formData.image);
@@ -169,13 +525,15 @@ const EditProfile = () => {
         const response = await axios.post(
           "https://e-college-data.onrender.com/v1/students/student-update",
           payload
-         
         );
 
         if (response.data) {
-          const chatresponse=await axios.post("https://e-college-data.onrender.com/v1/chat/userimageget",{email:formData.email})
+          const chatresponse = await axios.post(
+            "https://e-college-data.onrender.com/v1/chat/userimageget",
+            { email: formData.email }
+          );
           // console.log("Profile update response:", response.data);
-         
+
           // Update local storage with new data
           const updatedUser = {
             ...user,
@@ -184,17 +542,18 @@ const EditProfile = () => {
             city: formData.city,
             pincode: formData.pincode,
             // If the API returns the updated profile image URL, use it
-            pic: response.data.student.pic
+            pic: response.data.student.pic,
           };
-         
+
           localStorage.setItem("user", JSON.stringify(updatedUser));
           setUser(updatedUser);
-         
+
           showPopup("Profile updated successfully!", "success");
         }
       } catch (error) {
         console.error("Profile update error:", error);
-        const errorMessage = error.response?.data?.message || "Profile update failed";
+        const errorMessage =
+          error.response?.data?.message || "Profile update failed";
         showPopup(errorMessage, "error");
       } finally {
         setIsSubmitting(false);
@@ -224,8 +583,10 @@ const EditProfile = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
-          <h1 className="block text-black font-medium ml-6 pb-4 text-10">Profile imageture</h1>
-         
+          <h1 className="block text-black font-medium ml-6 pb-4 text-10">
+            Profile imageture
+          </h1>
+
           {previewImage && (
             <div className="mb-3 ml-6">
               <img
@@ -235,11 +596,11 @@ const EditProfile = () => {
               />
             </div>
           )}
-         
+
           <input
-             type="file"
-             id="profile-image"
-             name="image"
+            type="file"
+            id="profile-image"
+            name="image"
             accept="image/jpeg,image/png,image/gif,image/webp"
             onChange={handleImageChange}
             className="block w-full text-sm text-gray-500
@@ -248,9 +609,10 @@ const EditProfile = () => {
               file:text-sm file:font-semibold
               file:bg-blue-50 file:text-blue-700
               hover:file:bg-blue-100 ml-6"
-              
           />
-          <p className="text-sm text-gray-400 ml-6 mt-1">Max file size: 5MB. Supported formats: JPEG, PNG, GIF, WEBP</p>
+          <p className="text-sm text-gray-400 ml-6 mt-1">
+            Max file size: 5MB. Supported formats: JPEG, PNG, GIF, WEBP
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-6 ml-6 mr-6">
@@ -283,10 +645,14 @@ const EditProfile = () => {
             name="address"
             value={formData.address}
             onChange={handleChange}
-            className={`w-full border rounded px-3 py-2 ${errors.address ? "border-red-500" : "border-gray-300"}`}
+            className={`w-full border rounded px-3 py-2 ${
+              errors.address ? "border-red-500" : "border-gray-300"
+            }`}
             rows="3"
           ></textarea>
-          {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
+          {errors.address && (
+            <p className="text-red-500 text-sm">{errors.address}</p>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 gap-4 mb-4 ml-6 mr-6">
@@ -298,16 +664,22 @@ const EditProfile = () => {
               name="state"
               value={formData.state}
               onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 ${errors.state ? "border-red-500" : "border-gray-300"}`}
+              className={`w-full border rounded px-3 py-2 ${
+                errors.state ? "border-red-500" : "border-gray-300"
+              }`}
             >
               <option value="">Select State</option>
-              {Object.keys(citiesByState).sort().map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
-              ))}
+              {Object.keys(citiesByState)
+                .sort()
+                .map((state) => (
+                  <option key={state} value={state}>
+                    {state}
+                  </option>
+                ))}
             </select>
-            {errors.state && <p className="text-red-500 text-sm">{errors.state}</p>}
+            {errors.state && (
+              <p className="text-red-500 text-sm">{errors.state}</p>
+            )}
           </div>
 
           <div>
@@ -318,7 +690,9 @@ const EditProfile = () => {
               name="city"
               value={formData.city}
               onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 ${errors.city ? "border-red-500" : "border-gray-300"}`}
+              className={`w-full border rounded px-3 py-2 ${
+                errors.city ? "border-red-500" : "border-gray-300"
+              }`}
               disabled={!formData.state}
             >
               <option value="">Select City</option>
@@ -328,7 +702,9 @@ const EditProfile = () => {
                 </option>
               ))}
             </select>
-            {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
+            {errors.city && (
+              <p className="text-red-500 text-sm">{errors.city}</p>
+            )}
           </div>
         </div>
 
@@ -342,10 +718,14 @@ const EditProfile = () => {
             maxLength={6}
             value={formData.pincode}
             onChange={handleChange}
-            className={`w-full border rounded px-3 py-2 ${errors.pincode ? "border-red-500" : "border-gray-300"}`}
+            className={`w-full border rounded px-3 py-2 ${
+              errors.pincode ? "border-red-500" : "border-gray-300"
+            }`}
             placeholder="Enter 6-digit pincode"
           />
-          {errors.pincode && <p className="text-red-500 text-sm">{errors.pincode}</p>}
+          {errors.pincode && (
+            <p className="text-red-500 text-sm">{errors.pincode}</p>
+          )}
         </div>
 
         <button

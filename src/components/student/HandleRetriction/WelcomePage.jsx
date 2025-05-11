@@ -216,60 +216,6 @@ const WelcomePage = () => {
           </motion.div>
 
           {/* Features section */}
-          <motion.div variants={itemVariants} className="mt-16">
-            <h2 className="text-2xl font-bold mb-8 text-center">
-              Everything you need to succeed
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <motion.div
-                whileHover={{ y: -5 }}
-                className="bg-white border border-gray-200 rounded-xl p-6 shadow-md"
-              >
-                <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <RiRocketLine size={24} className="text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  Self-paced Learning
-                </h3>
-                <p className="text-gray-600">
-                  Learn at your own pace with flexible schedules designed to fit
-                  your lifestyle.
-                </p>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ y: -5 }}
-                className="bg-white border border-gray-200 rounded-xl p-6 shadow-md"
-              >
-                <div className="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <FiUser size={24} className="text-purple-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  Expert Instructors
-                </h3>
-                <p className="text-gray-600">
-                  Learn from industry professionals who bring real-world
-                  experience to every lesson.
-                </p>
-              </motion.div>
-
-              <motion.div
-                whileHover={{ y: -5 }}
-                className="bg-white border border-gray-200 rounded-xl p-6 shadow-md"
-              >
-                <div className="bg-cyan-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <FiAward size={24} className="text-cyan-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  Recognized Certificates
-                </h3>
-                <p className="text-gray-600">
-                  Earn certificates that are recognized by leading companies and
-                  institutions.
-                </p>
-              </motion.div>
-            </div>
-          </motion.div>
         </motion.div>
       </main>
 

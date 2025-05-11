@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiAlertCircle, FiChevronRight, FiSearch, FiX } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 export default function RejectionPage() {
   const [showDetails, setShowDetails] = useState(false);
@@ -144,25 +145,12 @@ export default function RejectionPage() {
           variants={item}
           className="px-6 py-4 bg-gray-50 flex flex-col gap-4"
         >
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-100 shadow-sm cursor-pointer"
-          >
-            <div className="flex items-center">
-              <FiSearch className="text-blue-500 mr-3" />
-              <span className="text-gray-700 font-medium">
-                Find Other Courses
-              </span>
-            </div>
-            <FiChevronRight className="text-gray-400" />
-          </motion.div>
-
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="w-full py-3 px-4 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors"
           >
-            Return to Homepage
+            <Link to="/">Return to Homepage</Link>
           </motion.button>
         </motion.div>
       </motion.div>

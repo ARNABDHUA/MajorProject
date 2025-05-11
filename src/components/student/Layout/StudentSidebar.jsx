@@ -202,7 +202,7 @@ const StudentSidebar = ({
         confirmButtonText: "Go to Payment",
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate("/");
+          navigate("/pay-admission-fees");
         }
       });
     },

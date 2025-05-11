@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle, FileText, Clock, AlertCircle } from "lucide-react";
+import { CheckCircle, FileText, Clock, AlertCircle, Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Main component for the verification status
 export default function VerificationStatus() {
   const [progress, setProgress] = useState(0);
+  const navigate = useNavigate();
 
   // Simulate progress update
   useEffect(() => {
@@ -17,6 +19,11 @@ export default function VerificationStatus() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Handle redirect to home
+  const handleBackToHome = () => {
+    navigate("/");
+  };
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-8 max-w-3xl mx-auto">
@@ -177,18 +184,46 @@ export default function VerificationStatus() {
           </div>
         </motion.div>
 
+        {/* Additional information note */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="mt-6 p-4 bg-gray-100 rounded-lg text-sm text-gray-700 border-l-4 border-gray-400"
+        >
+          <p>
+            Your documents and details are currently under verification. You
+            will be notified once the verification process is complete. In the
+            meantime, please stay tuned. If any updates are not visible, try
+            logging out and logging back in, as changes may take some time to
+            reflect.
+          </p>
+        </motion.div>
+
         {/* Estimated time */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9 }}
-          className="mt-8 p-3 bg-blue-50 rounded-lg text-center text-sm text-blue-700"
+          className="mt-4 p-3 bg-blue-50 rounded-lg text-center text-sm text-blue-700"
         >
           <p>
             Estimated completion time:{" "}
             <span className="font-semibold">24-48 hours</span>
           </p>
         </motion.div>
+
+        {/* Back to Home button */}
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          onClick={handleBackToHome}
+          className="mt-8 flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200"
+        >
+          <Home className="w-5 h-5 mr-2" />
+          Back to Home
+        </motion.button>
       </div>
     </div>
   );

@@ -296,7 +296,7 @@ const CourseTab = () => {
       return dateStr; // Return original if parsing fails
     }
   };
-  if (!coursePurchaseVerfication) {
+  if (!coursePurchaseVerfication && user) {
     return (
       <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-md max-w-md mx-auto flex items-center space-x-4">
         <div className="bg-red-100 rounded-full p-3">

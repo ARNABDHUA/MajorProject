@@ -11,6 +11,7 @@ import MBA from "/images/leadership-development.png";
 import BBA from "/images/program.png";
 import MTECH from "/images/www.png";
 import BSCDS from "/images/training-program.png";
+import BSCANIM from "../../../../public/images/math.png";
 import { FiClock } from "react-icons/fi";
 import HashLoader from "react-spinners/HashLoader"; // Assuming you're using the same loader as in Login component
 
@@ -24,6 +25,7 @@ const Courses = () => {
     BBA: BBA,
     MTECH: MTECH,
     "BSC-CS": BSCDS,
+    "B.sc(Math)": BSCANIM,
   };
 
   const [reactions, setReactions] = useState({}); // Track reactions for each course by index

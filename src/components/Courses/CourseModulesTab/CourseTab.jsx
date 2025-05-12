@@ -20,6 +20,7 @@ const CourseTab = () => {
   const [sem, setSem] = useState();
   const [coursePurchaseVerfication, setCoursePurchaseverification] =
     useState(false);
+  const [isPaid, setIsPaid] = useState();
   const [myCourse, setMycourseCode] = useState();
 
   const containerRef = useRef(null);
@@ -34,6 +35,7 @@ const CourseTab = () => {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
         setSem(parsedUser.sem);
+        setIsPaid(parsedUser.payment);
         setMycourseCode(parsedUser.course_code);
         setCoursePurchaseverification(id === parsedUser.course_code);
         setIsAuthenticated(true);
@@ -296,7 +298,7 @@ const CourseTab = () => {
       return dateStr; // Return original if parsing fails
     }
   };
-  if (!coursePurchaseVerfication && user) {
+  if (!coursePurchaseVerfication && user && isPaid) {
     return (
       <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-md max-w-md mx-auto flex items-center space-x-4">
         <div className="bg-red-100 rounded-full p-3">

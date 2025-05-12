@@ -14,6 +14,9 @@ const ChatProvider = ({ children }) => {
   const [attendance_id, setAttendance_id] = useState(null);
   const [teacherAttandance, setTeacherAttandance] = useState([]);
 
+  const [teacherRegPhno, setTeacherRegPhno] = useState();
+  const [teacherRegMail, setTeacherRegMail] = useState();
+
   const history = useNavigate();
   // useEffect(() => {
   //   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -47,6 +50,10 @@ const ChatProvider = ({ children }) => {
         setAttendance_id,
         teacherAttandance,
         setTeacherAttandance,
+        teacherRegPhno,
+        setTeacherRegPhno,
+        teacherRegMail,
+        setTeacherRegMail,
       }}
     >
       {children}

@@ -17,6 +17,7 @@ import {
   FaSync,
 } from "react-icons/fa";
 import HodProtectedRoute from "../Auth/HodProtectRoute";
+import TeacherScheduleDisplay from "./TeacherScheduleDisplay";
 
 export default function RoutineScheduling() {
   // State variables
@@ -517,7 +518,7 @@ export default function RoutineScheduling() {
                 </h2>
               </div>
               <div className={loadingSchedule ? "opacity-50" : ""}>
-                <Routine
+                <TeacherScheduleDisplay
                   courseId={parseInt(selectedCourseId) || selectedCourseId}
                 />
               </div>

@@ -15,22 +15,21 @@ import {
 /**
  * Schedule Component
  *
- * A modern white-themed teacher's class schedule display with animations and improved UI.
+ * A modern white-themed teacher's class schedule display with multi-semester support
  * Features:
+ * - Dynamic semester selection
  * - Clean white design with subtle shadows and accents
  * - Framer Motion animations for smooth transitions
  * - React Icons for improved visual hierarchy
  * - Responsive layout for all screen sizes
- * - Default to current day tab
- * - Properly disabled buttons for ended classes
- * - Simple class displays
  */
 const Schedule = () => {
   // State variables
-  const [schedule, setSchedule] = useState([]); // Stores the schedule data
+  const [schedules, setSchedules] = useState([]); // Stores schedules for all semesters
   const [loading, setLoading] = useState(true); // Controls loading state
   const [error, setError] = useState(null); // Stores any error messages
-  const [activeDay, setActiveDay] = useState(null); // Tracks the currently selected day tab (0-4)
+  const [activeSemester, setActiveSemester] = useState(null); // Tracks the currently selected semester
+  const [activeDay, setActiveDay] = useState(null); // Tracks the currently selected day tab
   const [refreshing, setRefreshing] = useState(false); // Controls refresh animation
 
   // Animation variants for Framer Motion
@@ -51,16 +50,15 @@ const Schedule = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
   };
 
-  // Set initial active day based on current day of week
+  // Set initial active day and semester
   useEffect(() => {
-    const today = new Date().getDay(); // 0 (Sunday) through 6 (Saturday)
+    const today = new Date().getDay();
 
     // Only set activeDay for weekdays (Monday-Friday)
-    // Monday = 1 in Date.getDay() but we need 0 for our array indexing
     if (today >= 1 && today <= 5) {
-      setActiveDay(today - 1); // Convert to 0-indexed (Monday = 0, Friday = 4)
+      setActiveDay(today - 1); // Convert to 0-indexed
     } else {
-      // For weekend (Saturday/Sunday), don't select any day by default
+      // For weekend, don't select any day by default
       setActiveDay(null);
     }
   }, []);
@@ -72,7 +70,6 @@ const Schedule = () => {
 
   /**
    * Fetches schedule data from the API based on teacher's assigned courses
-   * Uses paper codes stored in localStorage or falls back to default courses
    */
   const fetchScheduleData = async () => {
     try {
@@ -90,8 +87,19 @@ const Schedule = () => {
 
       // Process and store the response data
       if (response.data && response.data.data) {
-        setSchedule(response.data.data);
-        console.log("Schedule data loaded:", response.data.data);
+        const fetchedSchedules = response.data.data;
+        setSchedules(fetchedSchedules);
+
+        // Set initial semester (first available or first semester)
+        if (fetchedSchedules.length > 0) {
+          // Prioritize setting current semester, fallback to first available
+          const currentSem =
+            fetchedSchedules.find((schedule) => schedule.sem === "3") ||
+            fetchedSchedules[0];
+          setActiveSemester(currentSem.sem);
+        }
+
+        console.log("Schedule data loaded:", fetchedSchedules);
       } else {
         console.warn("Empty or invalid schedule data received");
       }
@@ -127,7 +135,11 @@ const Schedule = () => {
 
     // Convert 24-hour format to 12-hour format
     try {
-      const [hours, minutes] = timeString.split(":");
+      const [hours, minutes] = timeString
+        .replace(/\s*[APM]+/gi, "")
+        .split("-")[0]
+        .trim()
+        .split(":");
       const hour = parseInt(hours);
       const suffix = hour >= 12 ? "PM" : "AM";
       const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
@@ -223,34 +235,80 @@ const Schedule = () => {
   );
 
   /**
-   * Renders empty state when no schedule is found
+   * Renders semester tabs for navigation
    */
-  const renderEmpty = () => (
-    <motion.div
-      className="bg-white border border-gray-100 rounded-xl p-10 text-center shadow-md"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
-      <div className="flex justify-center mb-4">
-        <FiCalendar size={56} className="text-gray-400" />
+  const renderSemesterTabs = () => {
+    if (schedules.length === 0) return null;
+
+    // Get unique semesters from schedules
+    const uniqueSemesters = [
+      ...new Set(schedules.map((schedule) => schedule.sem)),
+    ];
+
+    return (
+      <div className="mb-6 border-b border-gray-200 overflow-x-auto">
+        <div className="flex">
+          {uniqueSemesters.map((semester) => (
+            <motion.button
+              key={semester}
+              onClick={() => {
+                setActiveSemester(semester);
+                // Reset day when changing semester
+                setActiveDay(null);
+              }}
+              className={`px-5 py-3 font-medium text-sm transition-colors whitespace-nowrap
+                ${
+                  activeSemester === semester
+                    ? "border-b-2 border-blue-500 text-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              whileHover={{ y: -2 }}
+              whileTap={{ y: 0 }}
+            >
+              Semester {semester}
+            </motion.button>
+          ))}
+        </div>
       </div>
-      <h3 className="text-xl font-medium text-gray-900 mb-2">
-        No Classes Scheduled
-      </h3>
-      <p className="text-gray-500 mb-6 max-w-md mx-auto">
-        You don't have any classes assigned to your schedule yet. Check back
-        later or contact the administrator.
-      </p>
-      <button
-        onClick={refreshSchedule}
-        className="flex items-center justify-center mx-auto bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors font-medium shadow-sm"
-      >
-        <FiRefreshCw className={`mr-2 ${refreshing ? "animate-spin" : ""}`} />
-        Check Again
-      </button>
-    </motion.div>
-  );
+    );
+  };
+
+  /**
+   * Renders day tabs for navigation
+   */
+  const renderDayTabs = () => {
+    const days = [
+      { id: "day1", label: "Monday", icon: <FiCalendar /> },
+      { id: "day2", label: "Tuesday", icon: <FiCalendar /> },
+      { id: "day3", label: "Wednesday", icon: <FiCalendar /> },
+      { id: "day4", label: "Thursday", icon: <FiCalendar /> },
+      { id: "day5", label: "Friday", icon: <FiCalendar /> },
+    ];
+
+    return (
+      <div className="mb-6 border-b border-gray-200">
+        <div className="flex overflow-x-auto scrollbar-hide">
+          {days.map((day, index) => (
+            <motion.button
+              key={day.id}
+              onClick={() => setActiveDay(index)}
+              className={`px-5 py-3 font-medium text-sm transition-colors whitespace-nowrap flex items-center
+                ${
+                  activeDay === index
+                    ? "border-b-2 border-blue-500 text-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              whileHover={{ y: -2 }}
+              whileTap={{ y: 0 }}
+            >
+              <span className="mr-2">{day.icon}</span>
+              {day.label}
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   /**
    * Renders a single class card
@@ -332,57 +390,49 @@ const Schedule = () => {
   };
 
   /**
-   * Renders day tabs for navigation with smooth animations
-   * Now handles null activeDay state for weekends
-   */
-  const renderDayTabs = () => {
-    const days = [
-      { id: "day1", label: "Monday", icon: <FiCalendar /> },
-      { id: "day2", label: "Tuesday", icon: <FiCalendar /> },
-      { id: "day3", label: "Wednesday", icon: <FiCalendar /> },
-      { id: "day4", label: "Thursday", icon: <FiCalendar /> },
-      { id: "day5", label: "Friday", icon: <FiCalendar /> },
-    ];
-
-    return (
-      <div className="mb-6 border-b border-gray-200">
-        <div className="flex overflow-x-auto scrollbar-hide">
-          {days.map((day, index) => (
-            <motion.button
-              key={day.id}
-              onClick={() => setActiveDay(index)}
-              className={`px-5 py-3 font-medium text-sm transition-colors whitespace-nowrap flex items-center
-                ${
-                  activeDay === index
-                    ? "border-b-2 border-blue-500 text-blue-600"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              whileHover={{ y: -2 }}
-              whileTap={{ y: 0 }}
-            >
-              <span className="mr-2">{day.icon}</span>
-              {day.label}
-            </motion.button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  /**
-   * Renders the main schedule content with proper animations and transitions
+   * Renders the main schedule content with multiple semester support
    */
   const renderSchedule = () => {
     // Handle loading, error and empty states
     if (loading) return renderLoading();
     if (error) return renderError();
-    if (!schedule.length) return renderEmpty();
+    if (!schedules.length) return renderEmpty();
+
+    // Find the current semester's schedule
+    const currentSemesterSchedule = schedules.find(
+      (schedule) => schedule.sem === activeSemester
+    );
+
+    // If no schedule found for the current semester
+    if (!currentSemesterSchedule) {
+      return (
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          {renderSemesterTabs()}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="py-16 text-center"
+          >
+            <div className="inline-flex justify-center items-center w-20 h-20 rounded-full bg-red-100 mb-4">
+              <FiAlertCircle size={32} className="text-red-500" />
+            </div>
+            <h3 className="text-xl font-medium text-gray-800 mb-2">
+              No Data Found
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              There are no classes scheduled for Semester {activeSemester}.
+              Please check back later or contact the administrator.
+            </p>
+          </motion.div>
+        </div>
+      );
+    }
 
     // If activeDay is null (weekend), show a message to select a day
     if (activeDay === null) {
       return (
         <div className="bg-white rounded-xl shadow-lg p-6">
-          {/* Day navigation tabs */}
+          {renderSemesterTabs()}
           {renderDayTabs()}
 
           {/* Weekend message */}
@@ -407,16 +457,17 @@ const Schedule = () => {
 
     // Get classes for the active day
     const dayKey = `day${activeDay + 1}`;
-    const dayClasses = schedule[0]?.[dayKey] || [];
+    const dayClasses = currentSemesterSchedule[dayKey] || [];
 
     return (
       <div className="bg-white rounded-xl shadow-lg p-6">
-        {/* Day navigation tabs */}
+        {/* Semester and day navigation tabs */}
+        {renderSemesterTabs()}
         {renderDayTabs()}
 
         {/* Day schedule content with animation */}
         <motion.div
-          key={activeDay} // Force re-render animation when day changes
+          key={`${activeSemester}-${activeDay}`} // Force re-render animation when semester or day changes
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -447,6 +498,36 @@ const Schedule = () => {
       </div>
     );
   };
+
+  /**
+   * Renders empty state when no schedule is found
+   */
+  const renderEmpty = () => (
+    <motion.div
+      className="bg-white border border-gray-100 rounded-xl p-10 text-center shadow-md"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="flex justify-center mb-4">
+        <FiCalendar size={56} className="text-gray-400" />
+      </div>
+      <h3 className="text-xl font-medium text-gray-900 mb-2">
+        No Schedules Available
+      </h3>
+      <p className="text-gray-500 mb-6 max-w-md mx-auto">
+        You don't have any schedules assigned yet. Check back later or contact
+        the administrator.
+      </p>
+      <button
+        onClick={refreshSchedule}
+        className="flex items-center justify-center mx-auto bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors font-medium shadow-sm"
+      >
+        <FiRefreshCw className={`mr-2 ${refreshing ? "animate-spin" : ""}`} />
+        Check Again
+      </button>
+    </motion.div>
+  );
 
   return (
     <div className="bg-gray-50 min-h-screen">

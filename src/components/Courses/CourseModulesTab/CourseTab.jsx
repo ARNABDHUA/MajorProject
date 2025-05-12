@@ -3,6 +3,7 @@ import { FaPlus, FaMinus, FaLock } from "react-icons/fa";
 import { LuDot } from "react-icons/lu";
 import { CiStreamOn } from "react-icons/ci";
 import defaultImage from "../../../assets/python.png";
+
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -17,6 +18,9 @@ const CourseTab = () => {
   const [liveClass, setLiveClass] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sem, setSem] = useState();
+  const [coursePurchaseVerfication, setCoursePurchaseverification] =
+    useState(false);
+  const [myCourse, setMycourseCode] = useState();
 
   const containerRef = useRef(null);
   const { id } = useParams();
@@ -30,7 +34,8 @@ const CourseTab = () => {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
         setSem(parsedUser.sem);
-        console.log("ZuesKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK:", parsedUser.sem);
+        setMycourseCode(parsedUser.course_code);
+        setCoursePurchaseverification(id === parsedUser.course_code);
         setIsAuthenticated(true);
       }
     };
@@ -291,6 +296,28 @@ const CourseTab = () => {
       return dateStr; // Return original if parsing fails
     }
   };
+  if (!coursePurchaseVerfication) {
+    return (
+      <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-md max-w-md mx-auto flex items-center space-x-4">
+        <div className="bg-red-100 rounded-full p-3">
+          <FaLock className="text-red-600 w-8 h-8" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-red-800 mb-2">
+            Course Purchase Restricted
+          </h3>
+          <p className="text-red-700">
+            You have already purchased the course with ID:
+            <span className="font-bold ml-1">{myCourse}</span>
+          </p>
+          <div className="mt-3 text-sm text-red-600 flex items-center">
+            <FaLock className="mr-2 w-4 h-4" />
+            Additional courses are currently locked 🔏🔏🔏
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Render functions for different states
   const renderAuthenticatedView = () => (

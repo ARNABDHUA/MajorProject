@@ -38,6 +38,7 @@ const CoursesModules = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isCourseid, setisCourseId] = useState(null);
   const { id } = useParams();
 
   useEffect(() => {
@@ -48,6 +49,9 @@ const CoursesModules = () => {
         const user = JSON.parse(userData);
         setRole(user.role);
         setSubmit(user.submit);
+
+        const checker = user.course_code === id;
+        setisCourseId(checker);
         setPaymentStatus(user.payment || false);
       }
     } catch (error) {
@@ -210,7 +214,11 @@ const CoursesModules = () => {
             role === "student" && (
               <button className="bg-yellow-500 text-black font-semibold w-full rounded-lg h-12 mt-4 hover:bg-yellow-600 transition">
                 {submit ? (
-                  <Link to="Enrollment-course">Check Status</Link>
+                  isCourseid ? (
+                    <Link to="Enrollment-course">Check Status</Link>
+                  ) : (
+                    <p>Under Progress with different course</p>
+                  )
                 ) : (
                   <Link to="Enrollment-course">Enroll Course</Link>
                 )}

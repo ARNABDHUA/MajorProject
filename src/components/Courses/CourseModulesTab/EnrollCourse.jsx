@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import VerificationStatus from "./VerificationStatus";
 import axios from "axios";
+import RejectionPage from "../../student/HandleRetriction/RejectionPage";
+import StudentSidebar from "../../student/Layout/StudentSidebar";
 
 const StudentAcademicForm = () => {
   const navigate = useNavigate();
@@ -373,9 +375,17 @@ const StudentAcademicForm = () => {
       setLoading(false);
     }
   };
-  if (formSubmission) {
+  if (formSubmission && userData.verify && !userData.rejected) {
+    navigate("/student-profile");
+  }
+
+  if (formSubmission && !userData.rejected) {
     return <VerificationStatus />;
   }
+  if (formSubmission && !userData.verify && userData.rejected) {
+    return <RejectionPage />;
+  }
+
   return (
     <div className="bg-gray-50 min-h-screen py-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">

@@ -250,6 +250,7 @@ const DisplaySetup = () => {
               />
               <Route path="/students-details" element={<StudentDetails />} />
               <Route path="/teachers-details" element={<TeacherDetails />} />
+              <Route path="/register-communication" element={<Chatpage />} />
 
               <Route path="/document-issue" element={<DocumentIssue />} />
               <Route
@@ -263,16 +264,22 @@ const DisplaySetup = () => {
               />
               <Route path="/regular-student" element={<RegularStudent />} />
               <Route path="/employees-salary" element={<EmployeeSalary />} />
-              <Route
-                path="/account-communication"
-                element={<AccountCommunication />}
-              />
+              <Route path="/account-communication" element={<Chatpage />} />
               {/* Academin Admin Routes */}
-              <Route path="/course-code-management" element={<CourseCodeManagement />} />
-              <Route path="/teacher-course-management" element={<TeacherCourseManagement/>} />
+              <Route
+                path="/course-code-management"
+                element={<CourseCodeManagement />}
+              />
+              <Route
+                path="/teacher-course-management"
+                element={<TeacherCourseManagement />}
+              />
               <Route path="/student-semester" element={<StudentSemester />} />
-              <Route path="/academic-management-notice" element={<AcademicManagementNotice />} />
-
+              <Route
+                path="/academic-management-notice"
+                element={<AcademicManagementNotice />}
+              />
+              <Route path="/academic-communication" element={<Chatpage />} />
             </Route>
 
             <Route path="/forgot-password" element={<ForgotPassword />} />

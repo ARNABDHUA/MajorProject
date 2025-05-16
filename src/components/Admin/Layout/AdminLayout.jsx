@@ -36,7 +36,10 @@ const AdminLayout = () => {
     if (path === "/admin-reset-passwords") return "Reset Passwords";
     if (path === "/admin-registrations") return "New Registrations";
     if (path === "/admin-academic") return "Academic Management";
-    if (path === "/admin-courses") return "Courses";
+    if (path === "/course-code-management") return "Course Management";
+    if (path === "/teacher-course-management") return "Teacher Course Management";
+    if (path === "/student-semester") return "Student Semester Management";
+    if (path === "/academic-management-notice") return "Academic Mangement Notice";
     if (path === "/admin-teacher-assignments") return "Teacher Assignments";
     if (path === "/admin-enrollments") return "Student Enrollments";
     if (path === "/admin-study-materials") return "Study Materials";

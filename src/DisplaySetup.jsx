@@ -89,6 +89,11 @@ import SemesterPayment from "./components/SemesterPayment";
 import TeacherApplication from "./components/HeaderandFooterComponents/Footer/TeacherApplication/TeacherApplication";
 import TeacherReg from "./components/HeaderandFooterComponents/Footer/TeacherApplication/TeacherReg";
 
+import CourseCodeManagement from "./components/Admin/pages/AcademicManagement/CourseCodeManagement";
+import TeacherCourseManagement from "./components/Admin/pages/AcademicManagement/TeacherCourseManagement";
+import StudentSemester from "./components/Admin/pages/AcademicManagement/StudentSemester";
+import AcademicManagementNotice from "./components/Admin/pages/AcademicManagement/AcademicManagementNotice";
+
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
   return (
@@ -263,6 +268,11 @@ const DisplaySetup = () => {
                 element={<AccountCommunication />}
               />
               {/* Academin Admin Routes */}
+              <Route path="/course-code-management" element={<CourseCodeManagement />} />
+              <Route path="/teacher-course-management" element={<TeacherCourseManagement/>} />
+              <Route path="/student-semester" element={<StudentSemester />} />
+              <Route path="/academic-management-notice" element={<AcademicManagementNotice />} />
+
             </Route>
 
             <Route path="/forgot-password" element={<ForgotPassword />} />

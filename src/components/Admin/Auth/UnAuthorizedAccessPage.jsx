@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function UnauthorizedAccessPage() {
+export default function UnAuthorizedAccessPage() {
   const [glitch, setGlitch] = useState(false);
   const [scanLines, setScanLines] = useState(true);
   const [codeLines, setCodeLines] = useState([]);

@@ -98,7 +98,7 @@ import CreateCourseCode from "./components/Admin/pages/AcademicManagement/Create
 import AccountsAdminProtectedRoute from "./components/Admin/Auth/AccountsAdminProtectedRoute";
 import RegisterAdminProtectedRoute from "./components/Admin/Auth/RegisterAdminProtectedRoute";
 import AcademicAdminProtectedRoute from "./components/Admin/Auth/AcademicAdminProtectedRoute";
-import UnauthorizedAccessPage from "./components/Admin/Auth/UnAuthorizedAccesspage";
+import UnAuthorizedAccessPage from "./components/Admin/Auth/UnAuthorizedAccessPage";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -417,9 +417,13 @@ const DisplaySetup = () => {
               }
             />
             {/* <Route path="/test" element={<AdminLogin />} /> */}
-            <Route
+            {/* <Route
               path="/unauthenticated-user-found"
               element={<UnauthorizedAccessPage />}
+            /> */}
+            <Route
+              path="/unauthenticated-user-found"
+              element={<UnAuthorizedAccessPage />}
             />
             <Route path="/admin-login" element={<AdminLogin />} />
             {/* Student Dashboard Routes */}

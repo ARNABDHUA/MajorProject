@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import image from "/images/robot.gif";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,Link} from "react-router-dom";
 import { useEffect } from "react";
 
 export default function TeacherLogin() {
@@ -224,12 +224,12 @@ export default function TeacherLogin() {
                     >
                       Password
                     </label>
-                    <a
-                      href="#"
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    <Link
+                      to="/teacher-forgot-password"
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium" 
                     >
                       Forgot password?
-                    </a>
+                    </Link>
                   </div>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

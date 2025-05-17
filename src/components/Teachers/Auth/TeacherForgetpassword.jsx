@@ -25,7 +25,7 @@ const pageTransition = {
   duration: 0.5,
 };
 
-const ForgotPassword = () => {
+const TeacherForgetpassword = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -138,7 +138,7 @@ const ForgotPassword = () => {
     try {
       // Call the first API endpoint
       const response = await axios.post(
-        "https://e-college-data.onrender.com/v1/students/student-mail-resetpass-otp",
+        "https://e-college-data.onrender.com/v1/teachers/teachers-email-pass",
         {
           email: email,
           phoneNumber: phone
@@ -183,7 +183,7 @@ const ForgotPassword = () => {
     try {
       // Call the second API endpoint to validate OTP
       const response = await axios.post(
-        "https://e-college-data.onrender.com/v1/students/student-mail-otp-validate",
+        "https://e-college-data.onrender.com/v1/teachers/otp-validate",
         {
           email: email,
           otp: otp.join("")
@@ -230,7 +230,7 @@ const ForgotPassword = () => {
     try {
       // Call the third API endpoint to reset password
       const response = await axios.post(
-        "https://e-college-data.onrender.com/v1/students/student-resetpassword",
+        "https://e-college-data.onrender.com/v1/teachers/reset-pass",
         {
           email: email,
           newPassword: password
@@ -255,7 +255,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Progress indicator */}
         <div className="mb-8">
@@ -265,7 +265,7 @@ const ForgotPassword = () => {
                 <motion.div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     currentStep >= step
-                      ? "bg-indigo-600 text-white"
+                      ? "bg-green-600 text-white"
                       : "bg-gray-200 text-gray-600"
                   }`}
                   animate={{ scale: currentStep === step ? [1, 1.1, 1] : 1 }}
@@ -277,7 +277,7 @@ const ForgotPassword = () => {
                 {step < 3 && (
                   <div
                     className={`h-1 w-16 md:w-32 ${
-                      currentStep > step ? "bg-indigo-600" : "bg-gray-200"
+                      currentStep > step ? "bg-green-600" : "bg-gray-200"
                     }`}
                   ></div>
                 )}
@@ -302,9 +302,9 @@ const ForgotPassword = () => {
             transition={pageTransition}
             className="bg-white rounded-lg shadow-xl overflow-hidden"
           >
-            <div className="bg-indigo-600 p-6">
+            <div className="bg-green-600 p-6">
               <h2 className="text-xl font-bold text-white">Forgot Password</h2>
-              <p className="text-indigo-200 mt-1">
+              <p className="text-green-200 mt-1">
                 Enter your details to recover your account
               </p>
             </div>
@@ -323,7 +323,7 @@ const ForgotPassword = () => {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="John Doe"
                       required
                     />
@@ -345,7 +345,7 @@ const ForgotPassword = () => {
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="5551234567"
                       required
                     />
@@ -367,7 +367,7 @@ const ForgotPassword = () => {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="your@gmail.com"
                       required
                     />
@@ -395,7 +395,7 @@ const ForgotPassword = () => {
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center"
+                  className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center"
                   disabled={loading}
                 >
                   {loading ? (
@@ -421,9 +421,9 @@ const ForgotPassword = () => {
             transition={pageTransition}
             className="bg-white rounded-lg shadow-xl overflow-hidden"
           >
-            <div className="bg-indigo-600 p-6">
+            <div className="bg-green-600 p-6">
               <h2 className="text-xl font-bold text-white">OTP Verification</h2>
-              <p className="text-indigo-200 mt-1">
+              <p className="text-green-200 mt-1">
                 Enter the 4-digit code sent to {email}
               </p>
             </div>
@@ -443,7 +443,7 @@ const ForgotPassword = () => {
                         maxLength={1}
                         value={digit}
                         onChange={(e) => handleOtpChange(index, e.target.value)}
-                        className="w-full aspect-square text-center text-2xl font-bold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full aspect-square text-center text-2xl font-bold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         required
                       />
                     ))}
@@ -452,7 +452,7 @@ const ForgotPassword = () => {
                     Didn't receive code?{" "}
                     <button
                       type="button"
-                      className="text-indigo-600 font-medium"
+                      className="text-green-600 font-medium"
                       onClick={handleEmailSubmit}
                     >
                       Resend
@@ -479,7 +479,7 @@ const ForgotPassword = () => {
                     type="button"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-1/3 border border-indigo-600 text-indigo-600 py-2 px-4 rounded-md hover:bg-indigo-50"
+                    className="w-1/3 border border-green-600 text-green-600 py-2 px-4 rounded-md hover:bg-green-50"
                     onClick={() => setCurrentStep(1)}
                   >
                     Back
@@ -489,7 +489,7 @@ const ForgotPassword = () => {
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-2/3 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center"
+                    className="w-2/3 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center"
                     disabled={loading || otp.some((digit) => digit === "")}
                   >
                     {loading ? (
@@ -516,9 +516,9 @@ const ForgotPassword = () => {
             transition={pageTransition}
             className="bg-white rounded-lg shadow-xl overflow-hidden"
           >
-            <div className="bg-indigo-600 p-6">
+            <div className="bg-green-600 p-6">
               <h2 className="text-xl font-bold text-white">Reset Password</h2>
-              <p className="text-indigo-200 mt-1">
+              <p className="text-green-200 mt-1">
                 Create a new password for your account
               </p>
             </div>
@@ -537,7 +537,7 @@ const ForgotPassword = () => {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="pl-10 pr-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="Enter new password"
                       required
                     />
@@ -567,7 +567,7 @@ const ForgotPassword = () => {
                       type={showPassword ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="Confirm new password"
                       required
                     />
@@ -659,7 +659,7 @@ const ForgotPassword = () => {
                     type="button"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-1/3 border border-indigo-600 text-indigo-600 py-2 px-4 rounded-md hover:bg-indigo-50"
+                    className="w-1/3 border border-green-600 text-green-600 py-2 px-4 rounded-md hover:bg-green-50"
                     onClick={() => setCurrentStep(2)}
                   >
                     Back
@@ -669,7 +669,7 @@ const ForgotPassword = () => {
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-2/3 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center"
+                    className="w-2/3 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center"
                     disabled={loading}
                   >
                     {loading ? (
@@ -716,8 +716,8 @@ const ForgotPassword = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700"
-                onClick={() => (window.location.href = "/login")}
+                className="bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700"
+                onClick={() => (window.location.href = "/teacher-login")}
               >
                 Return to Login
               </motion.button>
@@ -729,4 +729,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default TeacherForgetpassword;

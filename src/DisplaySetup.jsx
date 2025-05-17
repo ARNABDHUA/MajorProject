@@ -93,6 +93,8 @@ import CourseCodeManagement from "./components/Admin/pages/AcademicManagement/Co
 import TeacherCourseManagement from "./components/Admin/pages/AcademicManagement/TeacherCourseManagement";
 import StudentSemester from "./components/Admin/pages/AcademicManagement/StudentSemester";
 import AcademicManagementNotice from "./components/Admin/pages/AcademicManagement/AcademicManagementNotice";
+import AdminLogin from "./components/Admin/Auth/AdminLogin";
+import CreateCourseCode from "./components/Admin/pages/AcademicManagement/CreateCourseCode";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -267,9 +269,10 @@ const DisplaySetup = () => {
               <Route path="/account-communication" element={<Chatpage />} />
               {/* Academin Admin Routes */}
               <Route
-                path="/course-code-management"
-                element={<CourseCodeManagement />}
+                path="/academic-Create-Course-Code"
+                element={<CreateCourseCode />}
               />
+
               <Route
                 path="/teacher-course-management"
                 element={<TeacherCourseManagement />}
@@ -299,7 +302,7 @@ const DisplaySetup = () => {
                 </ProtectedRoute>
               }
             />
-            {/* <Route path="/test" element={<TeacherApplication />} /> */}
+            <Route path="/test" element={<AdminLogin />} />
             {/* Student Dashboard Routes */}
             <Route element={<StudentLayout />}>
               <Route

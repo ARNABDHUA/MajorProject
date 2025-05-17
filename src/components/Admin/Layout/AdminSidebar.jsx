@@ -22,6 +22,7 @@ import {
   FiBell,
   FiUser,
 } from "react-icons/fi";
+import { FaRegFileCode } from "react-icons/fa";
 
 import {
   FaUserPlus,
@@ -78,6 +79,12 @@ const menuItems = [
       },
       {
         id: "am-5",
+        title: "Create Course Code ",
+        icon: <FaRegFileCode className="w-4 h-4" />,
+        path: "/academic-Create-Course-Code",
+      },
+      {
+        id: "am-6",
         title: "Communication",
         icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
         path: "/academic-communication",

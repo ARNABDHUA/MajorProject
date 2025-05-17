@@ -70,6 +70,7 @@ const Student = () => {
           const data = await response.json();
           if (data && data.success) {
             setAttendanceData(data);
+            console.log(data);
           } else {
             throw new Error("Failed to fetch attendance data");
           }
@@ -312,6 +313,9 @@ const Student = () => {
                 <th className="py-3 px-4 text-left font-medium text-gray-600 uppercase tracking-wider border-b">
                   Email
                 </th>
+                <th className="py-3 px-4 text-left font-medium text-gray-600 uppercase tracking-wider border-b">
+                  Type
+                </th>
                 <th className="py-3 px-4 text-center font-medium text-gray-600 uppercase tracking-wider border-b">
                   Present
                 </th>
@@ -334,6 +338,7 @@ const Student = () => {
                     <td className="py-3 px-4 border-b font-medium">
                       {student.name}
                     </td>
+                    <td className="py-3 px-4 border-b">{student.email}</td>
                     <td className="py-3 px-4 border-b">{student.email}</td>
                     <td className="py-3 px-4 border-b text-center">
                       {student.presentCount}

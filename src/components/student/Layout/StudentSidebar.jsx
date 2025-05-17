@@ -154,6 +154,16 @@ const StudentSidebar = ({
       },
     ];
 
+    if (isRollExist && registered && approval && !admissionFeesStatus) {
+      baseMenuItems.push({
+        id: 15,
+        title: "Pay Admission Fees",
+        icon: <MdOutlinePayments className="w-5 h-5" />,
+        path: "/pay-admission-fees",
+        requiresPayment: false,
+      });
+    }
+
     if (!isRollExist && registered && approval && !admissionFeesStatus) {
       baseMenuItems.push({
         id: 2,

@@ -49,8 +49,10 @@ const CoursesModules = () => {
         const user = JSON.parse(userData);
         setRole(user.role);
         setSubmit(user.submit);
-
         const checker = user.course_code === id;
+        console.log("id from params", id);
+        console.log("id from purchased", user.course_code);
+        console.log("Superman", checker);
         setisCourseId(checker);
         setPaymentStatus(user.payment || false);
       }

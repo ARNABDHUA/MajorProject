@@ -282,7 +282,7 @@ const Navbar = () => {
                       <motion.li
                         className="px-4 py-3 hover:bg-blue-50 text-gray-700 cursor-pointer"
                         onClick={() => {
-                          navigate("admin");
+                          navigate("/admin-login");
                           toggleAccounts();
                         }}
                         whileHover={{
@@ -446,7 +446,7 @@ const Navbar = () => {
                             onClick={() => {
                               toggleAccounts();
                               toggleMenu();
-                              navigate("/admin");
+                              navigate("/admin-login");
                             }}
                             whileHover={{ color: "#3B82F6" }}
                           >

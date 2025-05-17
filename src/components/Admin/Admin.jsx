@@ -1,11 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 const Admin = () => {
-  useEffect(() => {
-    const UserData = JSON.parse(localStorage.getItem("user"));
-    console.log("UserData From Admin:", UserData);
-  }, []);
-  return <div>admin</div>;
+  return <div></div>;
 };
 
 export default Admin;

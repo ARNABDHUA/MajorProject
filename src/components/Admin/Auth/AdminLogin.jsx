@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { IoMdPlanet } from "react-icons/io";
 import { TbSparkles, TbCircuitDiode } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -22,6 +23,7 @@ export default function AdminLogin() {
 
   // For animated background particles
   const [particles, setParticles] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Generate random particles for background effect
@@ -80,29 +82,37 @@ export default function AdminLogin() {
       );
 
       if (response.data) {
+        const { item, user } = response.data;
+        const admin_email = user.email;
+        const userData = { ...user, role: "admin" };
+        localStorage.setItem("item", item);
+        localStorage.setItem("user", JSON.stringify(userData));
+        console.log("User Data:", userData);
         // Make the second API call to get chat user data
         try {
           const chatResponse = await axios.post(
             "https://e-college-data.onrender.com/v1/chat/chat-user-data",
             {
-              email: email, // Using the email as teacher_email
+              email: email, // Using the email as admin_email
             }
           );
 
           // Store the response data in localStorage as requested
-          const { item, user } = chatResponse.data;
-          const admin_email = user.email;
-          const userData = { ...user, role: "admin" };
-          localStorage.setItem("item", item);
-          localStorage.setItem("user", JSON.stringify(userData));
-          console.log("User Data:", userData);
+          // Store the response data in localStorage as requested
+          console.log("Chat user added successfully:");
+          if (chatResponse.data) {
+            localStorage.setItem(
+              "userInfo",
+              JSON.stringify(chatResponse.data.user)
+            );
+          }
 
           // Redirect to admin page on successful login
-          window.location.href = "/admin";
+          navigate("/admin");
         } catch (chatErr) {
           console.error("Error fetching chat user data:", chatErr);
           // Still redirect even if second call fails
-          window.location.href = "/admin";
+          navigate("/admin");
         }
       }
     } catch (err) {
@@ -117,6 +127,44 @@ export default function AdminLogin() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  // CSS for grid pattern and animations
+  const gridPatternStyle = {
+    backgroundImage: `linear-gradient(
+      to right,
+      rgba(128, 90, 213, 0.1) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(128, 90, 213, 0.1) 1px,
+      transparent 1px
+    )`,
+    backgroundSize: "40px 40px",
+  };
+
+  // Define the shine animation in a style element that will be inserted in the document head
+  useEffect(() => {
+    const styleEl = document.createElement("style");
+    styleEl.textContent = `
+      @keyframes shine {
+        from {
+          transform: translateX(-100%) skewX(-12deg);
+        }
+        to {
+          transform: translateX(300%) skewX(-12deg);
+        }
+      }
+      .animate-shine {
+        animation: shine 3s infinite;
+      }
+    `;
+    document.head.appendChild(styleEl);
+
+    return () => {
+      document.head.removeChild(styleEl);
+    };
+  }, []);
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-black overflow-hidden">
@@ -154,7 +202,10 @@ export default function AdminLogin() {
       ))}
 
       {/* Grid lines */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
+      <div
+        className="absolute inset-0 opacity-5 pointer-events-none"
+        style={gridPatternStyle}
+      ></div>
 
       {/* Main container */}
       <motion.div
@@ -319,36 +370,6 @@ export default function AdminLogin() {
           transition={{ delay: 1.4, duration: 1 }}
         />
       </motion.div>
-
-      {/* CSS for grid pattern */}
-      <style jsx>{`
-        .bg-grid-pattern {
-          background-image: linear-gradient(
-              to right,
-              rgba(128, 90, 213, 0.1) 1px,
-              transparent 1px
-            ),
-            linear-gradient(
-              to bottom,
-              rgba(128, 90, 213, 0.1) 1px,
-              transparent 1px
-            );
-          background-size: 40px 40px;
-        }
-
-        @keyframes shine {
-          from {
-            transform: translateX(-100%) skewX(-12deg);
-          }
-          to {
-            transform: translateX(300%) skewX(-12deg);
-          }
-        }
-
-        .animate-shine {
-          animation: shine 3s infinite;
-        }
-      `}</style>
     </div>
   );
 }

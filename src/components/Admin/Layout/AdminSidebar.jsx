@@ -38,144 +38,6 @@ import { IoSchool, IoStatsChart } from "react-icons/io5";
 import { RiUserSettingsLine } from "react-icons/ri";
 import { BiCog, BiExport } from "react-icons/bi";
 
-// Sidebar menu items with nested structure
-const menuItems = [
-  {
-    id: 1,
-    title: "Dashboard",
-    icon: <FiHome className="w-5 h-5" />,
-    path: "/admin-dashboard",
-  },
-
-  {
-    id: 2,
-    title: "Academic Management",
-    icon: <BsBook className="w-5 h-5" />,
-    path: "/admin-academic",
-    subItems: [
-      {
-        id: "am-1",
-        title: "Course Code Management",
-        icon: <IoSchool className="w-4 h-4" />,
-        path: "/course-code-management",
-      },
-      {
-        id: "am-2",
-        title: "Teacher Course Management",
-        icon: <MdAssignment className="w-4 h-4" />,
-        path: "/teacher-course-management",
-      },
-      {
-        id: "am-3",
-        title: "Student Semester Management",
-        icon: <AiOutlineFileText className="w-4 h-4" />,
-        path: "/student-semester",
-      },
-      {
-        id: "am-4",
-        title: "Academic Management Notice",
-        icon: <BsFileEarmarkText className="w-4 h-4" />,
-        path: "/academic-management-notice",
-      },
-      {
-        id: "am-5",
-        title: "Create Course Code ",
-        icon: <FaRegFileCode className="w-4 h-4" />,
-        path: "/academic-Create-Course-Code",
-      },
-      {
-        id: "am-6",
-        title: "Communication",
-        icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
-        path: "/academic-communication",
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Finance & Accounting",
-    icon: <FiDollarSign className="w-5 h-5" />,
-    path: "/admin-finance",
-    subItems: [
-      {
-        id: "fa-1",
-        title: "New registar student",
-        icon: <HiUserAdd className="w-4 h-4" />,
-        path: "/new-registerStudent",
-      },
-      {
-        id: "fa-2",
-        title: "Regular student",
-        icon: <FaUserGraduate className="w-4 h-4" />,
-        path: "/regular-student",
-      },
-      {
-        id: "fa-3",
-        title: "Employee salary",
-        icon: <FaMoneyCheckAlt className="w-4 h-4" />,
-        path: "/employees-salary",
-      },
-      {
-        id: "fa-4",
-        title: "Communication",
-        icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
-        path: "/account-communication",
-      },
-    ],
-  },
-  {
-    id: 4,
-    title: "Registration & Records",
-    icon: <AiOutlineDatabase className="w-5 h-5" />,
-    path: "/admin-records",
-    subItems: [
-      {
-        id: "rr-1",
-        title: "Student Document Verification",
-        icon: <FaUserCheck className="w-4 h-4" />,
-        path: "/student-document-verification",
-      },
-      {
-        id: "rr-2",
-        title: "Teacher Document Verification",
-        icon: <FaChalkboardTeacher className="w-4 h-4" />,
-        path: "/teacher-document-verification",
-      },
-      {
-        id: "rr-3",
-        title: "Students details",
-        icon: <FaUserGraduate className="w-4 h-4" />,
-        path: "/students-details",
-      },
-      {
-        id: "rr-4",
-        title: "Teachers details",
-        icon: <GiTeacher className="w-4 h-4" />,
-        path: "/teachers-details",
-      },
-      {
-        id: "rr-5",
-        title: "Document Issue",
-        icon: <HiOutlineDocumentAdd className="w-4 h-4" />,
-        path: "/document-issue",
-      },
-      {
-        id: "rr-6",
-        title: "Communication",
-        icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
-        path: "/register-communication",
-      },
-    ],
-  },
-];
-
-// Mock user data - replace localStorage references with this
-const mockAdminData = {
-  name: "Admin User",
-  email: "admin@example.com",
-  role: "Administrator",
-};
-
 const AdminSidebar = ({
   isCollapsedProp = false,
   isMobile = false,
@@ -183,14 +45,48 @@ const AdminSidebar = ({
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(isCollapsedProp);
   const [expandedMenus, setExpandedMenus] = useState({});
+  const [adminData, setAdminData] = useState(null);
+  const [isRegister, setisRegister] = useState(false);
+  const [isAccountant, setisAccountant] = useState(false);
+  const [isAcademic, setisAcademic] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Load user data from localStorage once on component mount
+  useEffect(() => {
+    const loadUserData = () => {
+      try {
+        const localData = localStorage.getItem("user");
+        if (localData) {
+          const parsedData = JSON.parse(localData);
+          console.log("pspspspspspsps", parsedData);
+          setAdminData(parsedData);
+          if (parsedData.registration_admin) {
+            setisRegister(parsedData.registration_admin);
+            console.log("Register Admin");
+          }
+          if (parsedData.academic_admin) {
+            setisAcademic(parsedData.academic_admin);
+            console.log("Academic Admin");
+          }
+          if (parsedData.accounts_admin) {
+            setisAccountant(parsedData.accounts_admin);
+            console.log("Accounting Admin");
+          }
+        }
+      } catch (err) {
+        console.error("Error loading admin data:", err);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   // Check if a menu should be expanded based on current location
   useEffect(() => {
     if (!isCollapsed) {
       const expanded = {};
-      menuItems.forEach((item) => {
+      getMenuItems().forEach((item) => {
         if (item.subItems) {
           const isActive = item.subItems.some(
             (subItem) => location.pathname === subItem.path
@@ -203,6 +99,149 @@ const AdminSidebar = ({
       setExpandedMenus(expanded);
     }
   }, [location.pathname, isCollapsed]);
+
+  // Define menu items
+  const getMenuItems = () => {
+    const menuItems = [
+      {
+        id: 1,
+        title: "Dashboard",
+        icon: <FiHome className="w-5 h-5" />,
+        path: "/admin",
+      },
+    ];
+
+    if (isAcademic) {
+      menuItems.push({
+        id: 2,
+        title: "Academic Management",
+        icon: <BsBook className="w-5 h-5" />,
+        path: "/admin-academic",
+        subItems: [
+          {
+            id: "am-1",
+            title: "Course Code Management",
+            icon: <IoSchool className="w-4 h-4" />,
+            path: "/course-code-management",
+          },
+          {
+            id: "am-2",
+            title: "Teacher Course Management",
+            icon: <MdAssignment className="w-4 h-4" />,
+            path: "/teacher-course-management",
+          },
+          {
+            id: "am-3",
+            title: "Student Semester Management",
+            icon: <AiOutlineFileText className="w-4 h-4" />,
+            path: "/student-semester",
+          },
+          {
+            id: "am-4",
+            title: "Academic Management Notice",
+            icon: <BsFileEarmarkText className="w-4 h-4" />,
+            path: "/academic-management-notice",
+          },
+          {
+            id: "am-5",
+            title: "Create Course Code",
+            icon: <FaRegFileCode className="w-4 h-4" />,
+            path: "/academic-Create-Course-Code",
+          },
+          {
+            id: "am-6",
+            title: "Communication",
+            icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
+            path: "/academic-communication",
+          },
+        ],
+      });
+    }
+
+    if (isAccountant) {
+      menuItems.push({
+        id: 3,
+        title: "Finance & Accounting",
+        icon: <FiDollarSign className="w-5 h-5" />,
+        path: "/admin-finance",
+        subItems: [
+          {
+            id: "fa-1",
+            title: "New register student",
+            icon: <HiUserAdd className="w-4 h-4" />,
+            path: "/new-registerStudent",
+          },
+          {
+            id: "fa-2",
+            title: "Regular student",
+            icon: <FaUserGraduate className="w-4 h-4" />,
+            path: "/regular-student",
+          },
+          {
+            id: "fa-3",
+            title: "Employee salary",
+            icon: <FaMoneyCheckAlt className="w-4 h-4" />,
+            path: "/employees-salary",
+          },
+          {
+            id: "fa-4",
+            title: "Communication",
+            icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
+            path: "/account-communication",
+          },
+        ],
+      });
+    }
+
+    if (isRegister) {
+      menuItems.push({
+        id: 4,
+        title: "Registration & Records",
+        icon: <AiOutlineDatabase className="w-5 h-5" />,
+        path: "/admin-records",
+        subItems: [
+          {
+            id: "rr-1",
+            title: "Student Document Verification",
+            icon: <FaUserCheck className="w-4 h-4" />,
+            path: "/student-document-verification",
+          },
+          {
+            id: "rr-2",
+            title: "Teacher Document Verification",
+            icon: <FaChalkboardTeacher className="w-4 h-4" />,
+            path: "/teacher-document-verification",
+          },
+          {
+            id: "rr-3",
+            title: "Students details",
+            icon: <FaUserGraduate className="w-4 h-4" />,
+            path: "/students-details",
+          },
+          {
+            id: "rr-4",
+            title: "Teachers details",
+            icon: <GiTeacher className="w-4 h-4" />,
+            path: "/teachers-details",
+          },
+          {
+            id: "rr-5",
+            title: "Document Issue",
+            icon: <HiOutlineDocumentAdd className="w-4 h-4" />,
+            path: "/document-issue",
+          },
+          {
+            id: "rr-6",
+            title: "Communication",
+            icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
+            path: "/register-communication",
+          },
+        ],
+      });
+    }
+
+    return menuItems;
+  };
 
   const handleLogout = useCallback(() => {
     Swal.fire({
@@ -287,6 +326,19 @@ const AdminSidebar = ({
       onCloseMobile();
     }
   }, [onCloseMobile]);
+
+  // Get menu items for rendering
+  const menuItems = getMenuItems();
+
+  // Mock user data - used as fallback
+  const mockAdminData = {
+    name: "Admin User",
+    email: "admin@example.com",
+    role: "Administrator",
+  };
+
+  // Use admin data from state or fallback to mock data
+  const displayAdminData = adminData || mockAdminData;
 
   return (
     <>
@@ -582,7 +634,7 @@ const AdminSidebar = ({
             >
               {/* Status indicator for admins */}
               <AnimatePresence>
-                {showText && mockAdminData?.role && (
+                {showText && displayAdminData?.role && (
                   <motion.div
                     className="px-4 py-2"
                     variants={textVariants}
@@ -630,10 +682,10 @@ const AdminSidebar = ({
                         exit="hidden"
                       >
                         <p className="text-sm font-medium text-gray-200 truncate">
-                          {mockAdminData.name}
+                          {displayAdminData.name}
                         </p>
                         <p className="text-xs text-gray-400 truncate">
-                          {mockAdminData.email}
+                          {displayAdminData.email}
                         </p>
                       </motion.div>
                     )}

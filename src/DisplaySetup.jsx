@@ -95,6 +95,10 @@ import StudentSemester from "./components/Admin/pages/AcademicManagement/Student
 import AcademicManagementNotice from "./components/Admin/pages/AcademicManagement/AcademicManagementNotice";
 import AdminLogin from "./components/Admin/Auth/AdminLogin";
 import CreateCourseCode from "./components/Admin/pages/AcademicManagement/CreateCourseCode";
+import AccountsAdminProtectedRoute from "./components/Admin/Auth/AccountsAdminProtectedRoute";
+import RegisterAdminProtectedRoute from "./components/Admin/Auth/RegisterAdminProtectedRoute";
+import AcademicAdminProtectedRoute from "./components/Admin/Auth/AcademicAdminProtectedRoute";
+import UnauthorizedAccessPage from "./components/Admin/Auth/UnAuthorizedAccesspage";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -244,45 +248,155 @@ const DisplaySetup = () => {
               {/* Register Admin */}
               <Route
                 path="/student-document-verification"
-                element={<StudentDocumentVerficationn />}
+                element={
+                  <RegisterAdminProtectedRoute allowedRoles={["registerAdmin"]}>
+                    <StudentDocumentVerficationn />
+                  </RegisterAdminProtectedRoute>
+                }
               />
+
               <Route
                 path="/teacher-document-verification"
-                element={<TeacherDocumentVerfication />}
+                element={
+                  <RegisterAdminProtectedRoute allowedRoles={["registerAdmin"]}>
+                    <TeacherDocumentVerfication />
+                  </RegisterAdminProtectedRoute>
+                }
               />
-              <Route path="/students-details" element={<StudentDetails />} />
-              <Route path="/teachers-details" element={<TeacherDetails />} />
-              <Route path="/register-communication" element={<Chatpage />} />
 
-              <Route path="/document-issue" element={<DocumentIssue />} />
+              <Route
+                path="/students-details"
+                element={
+                  <RegisterAdminProtectedRoute allowedRoles={["registerAdmin"]}>
+                    <StudentDetails />
+                  </RegisterAdminProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/teachers-details"
+                element={
+                  <RegisterAdminProtectedRoute allowedRoles={["registerAdmin"]}>
+                    <TeacherDetails />
+                  </RegisterAdminProtectedRoute>
+                }
+              />
+
               <Route
                 path="/register-communication"
-                element={<RegistrationMessage />}
+                element={
+                  <RegisterAdminProtectedRoute allowedRoles={["registerAdmin"]}>
+                    <Chatpage />
+                  </RegisterAdminProtectedRoute>
+                }
               />
+
+              <Route
+                path="/document-issue"
+                element={
+                  <RegisterAdminProtectedRoute allowedRoles={["registerAdmin"]}>
+                    <DocumentIssue />
+                  </RegisterAdminProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/register-communication"
+                element={
+                  <RegisterAdminProtectedRoute allowedRoles={["registerAdmin"]}>
+                    <RegistrationMessage />
+                  </RegisterAdminProtectedRoute>
+                }
+              />
+
               {/* Financial Admin */}
+
               <Route
                 path="/new-registerStudent"
-                element={<NewRegisterStudent />}
+                element={
+                  <AccountsAdminProtectedRoute allowedRoles={["accountsAdmin"]}>
+                    <NewRegisterStudent />
+                  </AccountsAdminProtectedRoute>
+                }
               />
-              <Route path="/regular-student" element={<RegularStudent />} />
-              <Route path="/employees-salary" element={<EmployeeSalary />} />
-              <Route path="/account-communication" element={<Chatpage />} />
-              {/* Academin Admin Routes */}
+
               <Route
-                path="/academic-Create-Course-Code"
-                element={<CreateCourseCode />}
+                path="/regular-student"
+                element={
+                  <AccountsAdminProtectedRoute allowedRoles={["accountsAdmin"]}>
+                    <RegularStudent />
+                  </AccountsAdminProtectedRoute>
+                }
               />
+
+              <Route
+                path="/employees-salary"
+                element={
+                  <AccountsAdminProtectedRoute allowedRoles={["accountsAdmin"]}>
+                    <EmployeeSalary />
+                  </AccountsAdminProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/account-communication"
+                element={
+                  <AccountsAdminProtectedRoute allowedRoles={["accountsAdmin"]}>
+                    <Chatpage />
+                  </AccountsAdminProtectedRoute>
+                }
+              />
+
+              {/* Academin Admin Routes */}
 
               <Route
                 path="/teacher-course-management"
-                element={<TeacherCourseManagement />}
+                element={
+                  <AcademicAdminProtectedRoute allowedRoles={["academicAdmin"]}>
+                    <TeacherCourseManagement />
+                  </AcademicAdminProtectedRoute>
+                }
               />
-              <Route path="/student-semester" element={<StudentSemester />} />
+              <Route
+                path="/course-code-management"
+                element={
+                  <AcademicAdminProtectedRoute allowedRoles={["academicAdmin"]}>
+                    <CourseCodeManagement />
+                  </AcademicAdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/academic-Create-Course-Code"
+                element={
+                  <AcademicAdminProtectedRoute allowedRoles={["academicAdmin"]}>
+                    <CreateCourseCode />
+                  </AcademicAdminProtectedRoute>
+                }
+              />
+              <Route
+                path="/student-semester"
+                element={
+                  <AcademicAdminProtectedRoute allowedRoles={["academicAdmin"]}>
+                    <StudentSemester />
+                  </AcademicAdminProtectedRoute>
+                }
+              />
               <Route
                 path="/academic-management-notice"
-                element={<AcademicManagementNotice />}
+                element={
+                  <AcademicAdminProtectedRoute allowedRoles={["academicAdmin"]}>
+                    <AcademicManagementNotice />
+                  </AcademicAdminProtectedRoute>
+                }
               />
-              <Route path="/academic-communication" element={<Chatpage />} />
+              <Route
+                path="  "
+                element={
+                  <AcademicAdminProtectedRoute allowedRoles={["academicAdmin"]}>
+                    <Chatpage />
+                  </AcademicAdminProtectedRoute>
+                }
+              />
             </Route>
 
             <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -302,7 +416,12 @@ const DisplaySetup = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="/test" element={<AdminLogin />} />
+            {/* <Route path="/test" element={<AdminLogin />} /> */}
+            <Route
+              path="/unauthenticated-user-found"
+              element={<UnauthorizedAccessPage />}
+            />
+            <Route path="/admin-login" element={<AdminLogin />} />
             {/* Student Dashboard Routes */}
             <Route element={<StudentLayout />}>
               <Route
@@ -434,6 +553,7 @@ const DisplaySetup = () => {
               <Route path="/library" element={<Library />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/check-status" element={<TeacherApplication />} />
+
               <Route path="/teacher-register" element={<TeacherReg />} />
               <Route path="/sitemap" element={<SiteMap />} />
               <Route

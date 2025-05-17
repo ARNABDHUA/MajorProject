@@ -37,7 +37,6 @@ import Footer from "./components/Footer";
 import Teacherlive from "./components/Teachers/Live/TeacherLive";
 import Room from "./components/Teachers/Live/Room";
 import Student from "./components/Teachers/Pages/Student";
-import Examination from "./components/Teachers/Pages/Examination";
 import Courses from "./components/Teachers/Pages/Courses";
 import Schedule from "./components/Teachers/Pages/Schedule";
 import Admin from "./components/Admin/Admin";
@@ -99,6 +98,7 @@ import AccountsAdminProtectedRoute from "./components/Admin/Auth/AccountsAdminPr
 import RegisterAdminProtectedRoute from "./components/Admin/Auth/RegisterAdminProtectedRoute";
 import AcademicAdminProtectedRoute from "./components/Admin/Auth/AcademicAdminProtectedRoute";
 import UnAuthorizedAccessPage from "./components/Admin/Auth/UnAuthorizedAccessPage";
+import TeacherForgetpassword from "./components/Teachers/Auth/TeacherForgetpassword";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -156,14 +156,6 @@ const DisplaySetup = () => {
                 element={
                   <TeacherProtectedRoute allowedRoles={["teacher"]}>
                     <TeacherQuiz />
-                  </TeacherProtectedRoute>
-                }
-              />
-              <Route
-                path="/teacher-examination"
-                element={
-                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
-                    <Examination />
                   </TeacherProtectedRoute>
                 }
               />
@@ -400,6 +392,7 @@ const DisplaySetup = () => {
             </Route>
 
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/teacher-forgot-password" element={<TeacherForgetpassword/>} />
             <Route
               path="/pay-admission-fees"
               element={

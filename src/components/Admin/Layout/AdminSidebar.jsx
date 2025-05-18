@@ -59,11 +59,9 @@ const AdminSidebar = ({
         const localData = localStorage.getItem("user");
         if (localData) {
           const parsedData = JSON.parse(localData);
-          console.log("pspspspspspsps", parsedData);
           setAdminData(parsedData);
           if (parsedData.registration_admin) {
             setisRegister(parsedData.registration_admin);
-            console.log("Register Admin");
           }
           if (parsedData.academic_admin) {
             setisAcademic(parsedData.academic_admin);
@@ -254,7 +252,7 @@ const AdminSidebar = ({
       confirmButtonText: "Yes, log me out!",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Removed localStorage.removeItem("user");
+        localStorage.removeItem("user");
 
         Swal.fire({
           title: "Logged Out!",
@@ -379,10 +377,7 @@ const AdminSidebar = ({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Link
-                  to="/admin-dashboard"
-                  className="text-white font-bold text-lg"
-                >
+                <Link to="/" className="text-white font-bold text-lg">
                   E
                 </Link>
               </motion.div>
@@ -396,7 +391,7 @@ const AdminSidebar = ({
                     animate="visible"
                     exit="hidden"
                   >
-                    <Link to="/admin-dashboard">ECollege Admin</Link>
+                    <Link to="/">ECollege Admin</Link>
                   </motion.span>
                 )}
               </AnimatePresence>

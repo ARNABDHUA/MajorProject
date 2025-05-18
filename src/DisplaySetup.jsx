@@ -382,7 +382,7 @@ const DisplaySetup = () => {
                 }
               />
               <Route
-                path="  "
+                path="/academic-communication"
                 element={
                   <AcademicAdminProtectedRoute allowedRoles={["academicAdmin"]}>
                     <Chatpage />
@@ -392,7 +392,10 @@ const DisplaySetup = () => {
             </Route>
 
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/teacher-forgot-password" element={<TeacherForgetpassword/>} />
+            <Route
+              path="/teacher-forgot-password"
+              element={<TeacherForgetpassword />}
+            />
             <Route
               path="/pay-admission-fees"
               element={

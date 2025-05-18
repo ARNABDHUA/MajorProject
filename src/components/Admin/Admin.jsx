@@ -6,16 +6,14 @@ const Admin = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [time, setTime] = useState(new Date());
-  const [Isadmin, SetisAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       setUserData(user);
       console.log("User data loaded:", user);
-      if (user.admin) {
-        SetisAdmin(user.admin);
-      }
+      if (user.admin) setIsAdmin(user.admin);
     } catch (error) {
       console.error("Error loading user data:", error);
     } finally {
@@ -49,12 +47,15 @@ const Admin = () => {
     },
   };
 
-  if (Isadmin) {
-    <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="text-red-400 text-lg">
-        Unauthorized Access. please check other routes
+  // Fixed the unauthorized access render - it was missing a return statement
+  if (!isAdmin) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900">
+        <div className="text-red-400 text-lg">
+          Unauthorized Access. please check other routes
+        </div>
       </div>
-    </div>;
+    );
   }
 
   if (loading) {
@@ -91,12 +92,12 @@ const Admin = () => {
       />
 
       {/* Main content */}
-      <div className="p-8">
+      <div className="p-4 md:p-8 max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
             <motion.h1
-              className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500"
+              className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -104,7 +105,7 @@ const Admin = () => {
               Admin Dashboard
             </motion.h1>
             <motion.p
-              className="text-gray-400 mt-1"
+              className="text-gray-400 mt-1 text-sm md:text-base"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -130,9 +131,9 @@ const Admin = () => {
         </div>
 
         {/* Admin info cards */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-6 md:mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           <motion.div
-            className="bg-gray-800 bg-opacity-70 backdrop-blur rounded-xl p-6 border border-gray-700 overflow-hidden relative"
+            className="bg-gray-800 bg-opacity-70 backdrop-blur rounded-xl p-4 md:p-6 border border-gray-700 overflow-hidden relative"
             variants={cardVariants}
             initial="hidden"
             animate="visible"
@@ -147,7 +148,7 @@ const Admin = () => {
             <h3 className="text-gray-400 text-sm font-medium mb-2">
               Admin Name
             </h3>
-            <p className="text-white text-lg font-semibold truncate">
+            <p className="text-white text-lg font-semibold truncate max-w-full">
               {userData.name || "N/A"}
             </p>
             <p className="text-gray-400 text-xs mt-1">
@@ -157,7 +158,7 @@ const Admin = () => {
           </motion.div>
 
           <motion.div
-            className="bg-gray-800 bg-opacity-70 backdrop-blur rounded-xl p-6 border border-gray-700 overflow-hidden relative"
+            className="bg-gray-800 bg-opacity-70 backdrop-blur rounded-xl p-4 md:p-6 border border-gray-700 overflow-hidden relative"
             variants={cardVariants}
             initial="hidden"
             animate="visible"
@@ -172,7 +173,7 @@ const Admin = () => {
             <h3 className="text-gray-400 text-sm font-medium mb-2">
               Email Address
             </h3>
-            <p className="text-white text-lg font-semibold truncate">
+            <p className="text-white text-lg font-semibold truncate max-w-full">
               {userData.email || "N/A"}
             </p>
             <p className="text-gray-400 text-xs mt-1">Verified Account</p>
@@ -180,7 +181,7 @@ const Admin = () => {
           </motion.div>
 
           <motion.div
-            className="bg-gray-800 bg-opacity-70 backdrop-blur rounded-xl p-6 border border-gray-700 overflow-hidden relative"
+            className="bg-gray-800 bg-opacity-70 backdrop-blur rounded-xl p-4 md:p-6 border border-gray-700 overflow-hidden relative"
             variants={cardVariants}
             initial="hidden"
             animate="visible"
@@ -195,7 +196,7 @@ const Admin = () => {
             <h3 className="text-gray-400 text-sm font-medium mb-2">
               Phone Number
             </h3>
-            <p className="text-white text-lg font-semibold">
+            <p className="text-white text-lg font-semibold truncate max-w-full">
               {userData.phoneNumber || "N/A"}
             </p>
             <p className="text-gray-400 text-xs mt-1">Contact Information</p>
@@ -205,14 +206,16 @@ const Admin = () => {
 
         {/* Authorization Status */}
         <motion.div
-          className="mt-8 bg-gray-800 bg-opacity-70 backdrop-blur rounded-xl p-6 border border-gray-700"
+          className="mt-6 md:mt-8 bg-gray-800 bg-opacity-70 backdrop-blur rounded-xl p-4 md:p-6 border border-gray-700"
           variants={cardVariants}
           initial="hidden"
           animate="visible"
           custom={3}
         >
-          <h3 className="text-xl font-semibold mb-6">Authorization Status</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <h3 className="text-lg md:text-xl font-semibold mb-4 md:mb-6">
+            Authorization Status
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             <AuthStatus
               title="Admin"
               active={userData.admin}
@@ -242,7 +245,7 @@ const Admin = () => {
 
         {/* Footer */}
         <motion.div
-          className="mt-12 text-center text-gray-500 text-sm"
+          className="mt-8 md:mt-12 text-center text-gray-500 text-xs md:text-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
@@ -273,15 +276,17 @@ const AuthStatus = ({ title, active, color, delay }) => {
 
   return (
     <motion.div
-      className="bg-gray-700 bg-opacity-50 rounded-lg p-4 flex items-center gap-3"
+      className="bg-gray-700 bg-opacity-50 rounded-lg p-3 md:p-4 flex items-center gap-3"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay + 0.8 }}
       whileHover={{ scale: 1.03 }}
     >
       <div className={`w-3 h-3 rounded-full ${getColorClass()}`}></div>
-      <div>
-        <p className="text-sm font-medium">{title}</p>
+      <div className="overflow-hidden">
+        <p className="text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+          {title}
+        </p>
         <p className="text-xs text-gray-400">
           {active ? "Active" : "Inactive"}
         </p>

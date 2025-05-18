@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   CalendarDays,
   Users,
@@ -6,76 +7,70 @@ import {
   Award,
   ChevronDown,
   ChevronUp,
+  Filter,
 } from "lucide-react";
 
 const Student = () => {
   const [attendanceData, setAttendanceData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedPaperCode, setSelectedPaperCode] = useState("");
+  const [selectedCourseCode, setSelectedCourseCode] = useState("");
   const [expandedStudent, setExpandedStudent] = useState(null);
+  const [filterType, setFilterType] = useState("all"); // "all", "online", "offline"
+  const [teacherInfo, setTeacherInfo] = useState({
+    name: "Teacher",
+    paperCodes: [],
+    courseCodes: [],
+  });
 
-  // Get teacher courses from localStorage
-  const getTeacherInfo = () => {
+  // Get teacher info from localStorage
+  useEffect(() => {
     try {
       const userData = localStorage.getItem("user");
       if (userData) {
         const parsedData = JSON.parse(userData);
-        return {
+        setTeacherInfo({
           name: parsedData.name || "Teacher",
-          courses: parsedData.teacher_course || [],
-        };
+          paperCodes: parsedData.teacher_course || [],
+          courseCodes: parsedData.course_code || [],
+        });
+
+        // Set default selected paper code
+        if (parsedData.teacher_course && parsedData.teacher_course.length > 0) {
+          setSelectedPaperCode(parsedData.teacher_course[0]);
+        }
+
+        // Set default selected course code
+        if (parsedData.course_code && parsedData.course_code.length > 0) {
+          setSelectedCourseCode(parsedData.course_code[0]);
+        }
       }
-      return { name: "Teacher", courses: [] };
     } catch (error) {
       console.error("Error parsing localStorage data:", error);
-      return { name: "Teacher", courses: [] };
     }
-  };
-
-  const { name: teacherName, courses: teacherCourses } = getTeacherInfo();
+  }, []);
 
   useEffect(() => {
-    // Set default selected course when component mounts
-    if (teacherCourses.length > 0 && !selectedCourse) {
-      setSelectedCourse(teacherCourses[0]);
-    }
-  }, [teacherCourses]);
-
-  useEffect(() => {
-    if (!selectedCourse) return;
+    if (!selectedPaperCode || !selectedCourseCode) return;
 
     const fetchAttendanceData = async () => {
       setLoading(true);
       try {
-        // Get course code from paper code (e.g., "MCA-101" -> "101")
-        const course_code = selectedCourse.split("-")[1];
-
-        // Make API call to fetch attendance data
-        const response = await fetch(
+        // Make API call using axios to fetch attendance data
+        const response = await axios.post(
           "https://e-college-data.onrender.com/v1/students/student-attendance-report",
           {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              course_code: "101",
-              paper_code: selectedCourse,
-            }),
+            course_code: selectedCourseCode,
+            paper_code: selectedPaperCode,
           }
         );
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.success) {
-            setAttendanceData(data);
-            console.log(data);
-          } else {
-            throw new Error("Failed to fetch attendance data");
-          }
+        if (response.data && response.data.success) {
+          setAttendanceData(response.data);
+          console.log(response.data);
         } else {
-          throw new Error("API request failed");
+          throw new Error("Failed to fetch attendance data");
         }
 
         setLoading(false);
@@ -87,11 +82,21 @@ const Student = () => {
     };
 
     fetchAttendanceData();
-  }, [selectedCourse]);
+  }, [selectedPaperCode, selectedCourseCode]);
 
-  const handleCourseChange = (e) => {
-    setSelectedCourse(e.target.value);
+  const handlePaperCodeChange = (e) => {
+    setSelectedPaperCode(e.target.value);
     setExpandedStudent(null); // Reset expanded student when changing course
+  };
+
+  const handleCourseCodeChange = (e) => {
+    setSelectedCourseCode(e.target.value);
+    setExpandedStudent(null); // Reset expanded student when changing course code
+  };
+
+  const handleFilterChange = (e) => {
+    setFilterType(e.target.value);
+    setExpandedStudent(null); // Reset expanded student when changing filter
   };
 
   const toggleStudentDetails = (studentRoll) => {
@@ -147,25 +152,41 @@ const Student = () => {
     );
   }
 
-  // Calculate attendance statistics
+  // Filter students based on the selected filter type
+  const filteredStudents = attendanceData.attendanceData.filter((student) => {
+    if (filterType === "all") return true;
+    if (filterType === "online") return student.type === false;
+    if (filterType === "offline") return student.type === true;
+    return true;
+  });
+
+  // Calculate attendance statistics for filtered students
   const attendanceStatistics = {
-    perfect: attendanceData.attendanceData.filter(
+    perfect: filteredStudents.filter(
       (student) => student.attendancePercentage === "100.00%"
     ).length,
-    good: attendanceData.attendanceData.filter(
+    good: filteredStudents.filter(
       (student) =>
         parseFloat(student.attendancePercentage) >= 75 &&
         parseFloat(student.attendancePercentage) < 100
     ).length,
-    average: attendanceData.attendanceData.filter(
+    average: filteredStudents.filter(
       (student) =>
         parseFloat(student.attendancePercentage) >= 50 &&
         parseFloat(student.attendancePercentage) < 75
     ).length,
-    poor: attendanceData.attendanceData.filter(
+    poor: filteredStudents.filter(
       (student) => parseFloat(student.attendancePercentage) < 50
     ).length,
   };
+
+  // Calculate totals for each type
+  const totalOnline = attendanceData.attendanceData.filter(
+    (student) => student.type === false
+  ).length;
+  const totalOffline = attendanceData.attendanceData.filter(
+    (student) => student.type === true
+  ).length;
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -174,28 +195,72 @@ const Student = () => {
           <h1 className="text-2xl font-bold text-gray-800">
             Student Attendance Dashboard
           </h1>
-          <p className="text-gray-600">Welcome, {teacherName}</p>
+          <p className="text-gray-600">Welcome, {teacherInfo.name}</p>
         </div>
 
-        <div className="mt-4 md:mt-0 flex items-center">
-          <label
-            htmlFor="courseSelect"
-            className="mr-2 font-medium text-gray-700"
-          >
-            Select Course:
-          </label>
-          <select
-            id="courseSelect"
-            value={selectedCourse}
-            onChange={handleCourseChange}
-            className="bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {teacherCourses.map((course, index) => (
-              <option key={index} value={course}>
-                {course}
+        <div className="mt-4 md:mt-0 flex flex-col md:flex-row items-start md:items-center gap-4 flex-wrap">
+          <div className="flex items-center">
+            <label
+              htmlFor="courseCodeSelect"
+              className="mr-2 font-medium text-gray-700"
+            >
+              Course Code:
+            </label>
+            <select
+              id="courseCodeSelect"
+              value={selectedCourseCode}
+              onChange={handleCourseCodeChange}
+              className="bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {teacherInfo.courseCodes.map((code, index) => (
+                <option key={`course-${index}`} value={code}>
+                  {code}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center">
+            <label
+              htmlFor="paperCodeSelect"
+              className="mr-2 font-medium text-gray-700"
+            >
+              Paper Code:
+            </label>
+            <select
+              id="paperCodeSelect"
+              value={selectedPaperCode}
+              onChange={handlePaperCodeChange}
+              className="bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {teacherInfo.paperCodes.map((code, index) => (
+                <option key={`paper-${index}`} value={code}>
+                  {code}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center">
+            <label
+              htmlFor="filterTypeSelect"
+              className="mr-2 font-medium text-gray-700 flex items-center"
+            >
+              <Filter size={16} className="mr-1" /> Filter:
+            </label>
+            <select
+              id="filterTypeSelect"
+              value={filterType}
+              onChange={handleFilterChange}
+              className="bg-white border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">
+                All Students ({attendanceData.totalEnrolledStudents})
               </option>
-            ))}
-          </select>
+              <option value="online">Online ({totalOnline})</option>
+              <option value="offline">Offline ({totalOffline})</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -207,11 +272,13 @@ const Student = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm text-blue-600 font-medium">
-                Total Students
+                {filterType === "all"
+                  ? "Total Students"
+                  : filterType === "online"
+                  ? "Online Students"
+                  : "Offline Students"}
               </p>
-              <p className="text-xl font-bold">
-                {attendanceData.totalEnrolledStudents}
-              </p>
+              <p className="text-xl font-bold">{filteredStudents.length}</p>
             </div>
           </div>
         </div>
@@ -258,7 +325,14 @@ const Student = () => {
       </div>
 
       <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">Attendance Statistics</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          Attendance Statistics
+          {filterType !== "all" && (
+            <span className="text-gray-600 font-normal">
+              ({filterType === "online" ? "Online" : "Offline"} Students)
+            </span>
+          )}
+        </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-green-100 p-3 rounded-md text-center">
             <h3 className="text-sm font-medium text-green-800">
@@ -299,6 +373,11 @@ const Student = () => {
       <div>
         <h2 className="text-lg font-semibold mb-4">
           Student Attendance Details
+          {filterType !== "all" && (
+            <span className="text-gray-600 font-normal ml-2">
+              ({filterType === "online" ? "Online" : "Offline"})
+            </span>
+          )}
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200">
@@ -331,7 +410,7 @@ const Student = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {attendanceData.attendanceData.map((student, index) => (
+              {filteredStudents.map((student, index) => (
                 <React.Fragment key={`student-${student.c_roll}`}>
                   <tr className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                     <td className="py-3 px-4 border-b">{student.c_roll}</td>
@@ -339,7 +418,17 @@ const Student = () => {
                       {student.name}
                     </td>
                     <td className="py-3 px-4 border-b">{student.email}</td>
-                    <td className="py-3 px-4 border-b">{student.email}</td>
+                    <td className="py-3 px-4 border-b">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          student.type
+                            ? "bg-green-100 text-green-800"
+                            : "bg-blue-100 text-blue-800"
+                        }`}
+                      >
+                        {student.type ? "Offline" : "Online"}
+                      </span>
+                    </td>
                     <td className="py-3 px-4 border-b text-center">
                       {student.presentCount}
                     </td>
@@ -383,7 +472,7 @@ const Student = () => {
                   </tr>
                   {expandedStudent === student.c_roll && (
                     <tr>
-                      <td colSpan="7" className="bg-gray-50 p-4">
+                      <td colSpan="8" className="bg-gray-50 p-4">
                         <div className="rounded-md border border-gray-200 p-4">
                           <h4 className="text-md font-semibold mb-2">
                             Absent Dates ({student.absentCount})
@@ -430,6 +519,14 @@ const Student = () => {
               ))}
             </tbody>
           </table>
+
+          {filteredStudents.length === 0 && (
+            <div className="text-center py-8 bg-gray-50 border border-gray-200">
+              <p className="text-gray-500">
+                No students match the selected filter criteria.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

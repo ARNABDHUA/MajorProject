@@ -341,6 +341,7 @@ const StudentAcademicForm = () => {
       //added
       const user = JSON.parse(localStorage.getItem("user")); // assuming it's saved as 'user'
       user.submit = true;
+      user.course_code = formData.course_code;
       localStorage.setItem("user", JSON.stringify(user));
 
       // Show success message

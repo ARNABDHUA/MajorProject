@@ -113,6 +113,12 @@ const Sidebar = ({
       },
       {
         id: 14,
+        title: "Notice",
+        icon: <SiGoogleclassroom className="w-5 h-5" />,
+        path: "/teacher-notice",
+      },
+      {
+        id: 15,
         title: "Salary Slip",
         icon: <FaMoneyCheckAlt className="w-5 h-5" />,
         path: "/salary-slip",

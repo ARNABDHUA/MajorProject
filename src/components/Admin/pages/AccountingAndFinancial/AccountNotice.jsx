@@ -15,7 +15,7 @@ import {
   FiList,
 } from "react-icons/fi";
 
-export default function AcademicManagementNotice() {
+export default function AccountNotice() {
   const [formData, setFormData] = useState({
     label: "",
     short_description: "",

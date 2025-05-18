@@ -99,6 +99,9 @@ import RegisterAdminProtectedRoute from "./components/Admin/Auth/RegisterAdminPr
 import AcademicAdminProtectedRoute from "./components/Admin/Auth/AcademicAdminProtectedRoute";
 import UnAuthorizedAccessPage from "./components/Admin/Auth/UnAuthorizedAccessPage";
 import TeacherForgetpassword from "./components/Teachers/Auth/TeacherForgetpassword";
+import AccountNotice from "./components/Admin/pages/AccountingAndFinancial/AccountNotice";
+import RegisterAdmin from "./components/Admin/pages/RegitrationManagement/RegisterAdmin";
+import TeacherNotice from "./components/Teachers/Pages/TeacherNotice";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -185,6 +188,14 @@ const DisplaySetup = () => {
                 }
               />
               <Route
+                path="/teacher-notice"
+                element={
+                  <TeacherProtectedRoute allowedRoles={["teacher"]}>
+                    <TeacherNotice />
+                  </TeacherProtectedRoute>
+                }
+              />
+              <Route
                 path="/teacher-chat"
                 element={
                   <TeacherProtectedRoute allowedRoles={["teacher"]}>
@@ -236,7 +247,6 @@ const DisplaySetup = () => {
             {/* Admin */}
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<Admin />} />
-
               {/* Register Admin */}
               <Route
                 path="/student-document-verification"
@@ -246,7 +256,6 @@ const DisplaySetup = () => {
                   </RegisterAdminProtectedRoute>
                 }
               />
-
               <Route
                 path="/teacher-document-verification"
                 element={
@@ -255,7 +264,6 @@ const DisplaySetup = () => {
                   </RegisterAdminProtectedRoute>
                 }
               />
-
               <Route
                 path="/students-details"
                 element={
@@ -264,7 +272,6 @@ const DisplaySetup = () => {
                   </RegisterAdminProtectedRoute>
                 }
               />
-
               <Route
                 path="/teachers-details"
                 element={
@@ -273,7 +280,6 @@ const DisplaySetup = () => {
                   </RegisterAdminProtectedRoute>
                 }
               />
-
               <Route
                 path="/register-communication"
                 element={
@@ -282,7 +288,14 @@ const DisplaySetup = () => {
                   </RegisterAdminProtectedRoute>
                 }
               />
-
+              <Route
+                path="/register-management-notice"
+                element={
+                  <RegisterAdminProtectedRoute allowedRoles={["registerAdmin"]}>
+                    <RegisterAdmin />
+                  </RegisterAdminProtectedRoute>
+                }
+              />
               <Route
                 path="/document-issue"
                 element={
@@ -291,7 +304,6 @@ const DisplaySetup = () => {
                   </RegisterAdminProtectedRoute>
                 }
               />
-
               <Route
                 path="/register-communication"
                 element={
@@ -300,9 +312,7 @@ const DisplaySetup = () => {
                   </RegisterAdminProtectedRoute>
                 }
               />
-
               {/* Financial Admin */}
-
               <Route
                 path="/new-registerStudent"
                 element={
@@ -311,7 +321,6 @@ const DisplaySetup = () => {
                   </AccountsAdminProtectedRoute>
                 }
               />
-
               <Route
                 path="/regular-student"
                 element={
@@ -320,7 +329,6 @@ const DisplaySetup = () => {
                   </AccountsAdminProtectedRoute>
                 }
               />
-
               <Route
                 path="/employees-salary"
                 element={
@@ -329,7 +337,14 @@ const DisplaySetup = () => {
                   </AccountsAdminProtectedRoute>
                 }
               />
-
+              <Route
+                path="/financial-management-notice"
+                element={
+                  <AccountsAdminProtectedRoute allowedRoles={["accountsAdmin"]}>
+                    <AccountNotice />
+                  </AccountsAdminProtectedRoute>
+                }
+              />
               <Route
                 path="/account-communication"
                 element={
@@ -338,9 +353,7 @@ const DisplaySetup = () => {
                   </AccountsAdminProtectedRoute>
                 }
               />
-
-              {/* Academin Admin Routes */}
-
+              /{/* Academin Admin Routes */}
               <Route
                 path="/teacher-course-management"
                 element={

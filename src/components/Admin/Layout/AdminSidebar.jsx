@@ -136,15 +136,15 @@ const AdminSidebar = ({
           },
           {
             id: "am-4",
-            title: "Academic Management Notice",
-            icon: <BsFileEarmarkText className="w-4 h-4" />,
-            path: "/academic-management-notice",
-          },
-          {
-            id: "am-5",
             title: "Create Course Code",
             icon: <FaRegFileCode className="w-4 h-4" />,
             path: "/academic-Create-Course-Code",
+          },
+          {
+            id: "am-5",
+            title: "Academic Management Notice",
+            icon: <BsFileEarmarkText className="w-4 h-4" />,
+            path: "/academic-management-notice",
           },
           {
             id: "am-6",
@@ -183,6 +183,12 @@ const AdminSidebar = ({
           },
           {
             id: "fa-4",
+            title: "Financial Management Notice",
+            icon: <BsFileEarmarkText className="w-4 h-4" />,
+            path: "/financial-management-notice",
+          },
+          {
+            id: "fa-5",
             title: "Communication",
             icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
             path: "/account-communication",
@@ -224,12 +230,18 @@ const AdminSidebar = ({
           },
           {
             id: "rr-5",
+            title: "Register Management Notice",
+            icon: <BsFileEarmarkText className="w-4 h-4" />,
+            path: "/register-management-notice",
+          },
+          {
+            id: "rr-6",
             title: "Document Issue",
             icon: <HiOutlineDocumentAdd className="w-4 h-4" />,
             path: "/document-issue",
           },
           {
-            id: "rr-6",
+            id: "rr-7",
             title: "Communication",
             icon: <MdOutlineConnectWithoutContact className="w-4 h-4" />,
             path: "/register-communication",

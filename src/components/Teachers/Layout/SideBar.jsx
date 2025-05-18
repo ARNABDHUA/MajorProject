@@ -70,12 +70,6 @@ const Sidebar = ({
         path: "/teacher-students",
       },
       {
-        id: 3,
-        title: "Examination",
-        icon: <FaRegNoteSticky className="w-5 h-5" />,
-        path: "/teacher-examination",
-      },
-      {
         id: 4,
         title: "Schedule",
         icon: <FiCalendar className="w-5 h-5" />,

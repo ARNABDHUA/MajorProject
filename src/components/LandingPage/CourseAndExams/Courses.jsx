@@ -4,30 +4,11 @@ import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
 import { RiLiveFill } from "react-icons/ri";
 import axios from "axios";
-import MCA from "/images/artificial-intelligence.png";
-import BCA from "/images/computer-science.png";
-import BTECH from "/images/data-science.png";
-import MBA from "/images/leadership-development.png";
-import BBA from "/images/program.png";
-import MTECH from "/images/www.png";
-import BSCDS from "/images/training-program.png";
-import BSCANIM from "/images/math.png";
 import { FiClock } from "react-icons/fi";
-import HashLoader from "react-spinners/HashLoader"; // Assuming you're using the same loader as in Login component
+import HashLoader from "react-spinners/HashLoader";
 
 const Courses = () => {
   const navigate = useNavigate();
-  const imageMap = {
-    MCA: MCA,
-    BCA: BCA,
-    BTECH: BTECH,
-    MBA: MBA,
-    BBA: BBA,
-    MTECH: MTECH,
-    "BSC-CS": BSCDS,
-    "B.sc(Math)": BSCANIM,
-  };
-
   const [reactions, setReactions] = useState({}); // Track reactions for each course by index
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Add loading state
@@ -88,11 +69,15 @@ const Courses = () => {
             key={index}
             className="flex flex-col w-72 rounded-xl shadow-lg shadow-gray-300"
           >
-            <img
-              src={imageMap[course.code]}
-              alt={course.name}
+            <div
               className={`w-72 rounded-t-lg ${course.bgColor} opacity-85 p-8 h-55`}
-            />
+            >
+              <img
+                src={course.imageUrl}
+                alt={course.name}
+                className="w-full h-full object-contain"
+              />
+            </div>
             <div className="flex justify-between items-center px-4 pt-2">
               <div className="flex space-x-2 justify-between items-center">
                 <span className="bg-violet-200 text-violet-600 text-xs px-2 py-1 mt-2 rounded">

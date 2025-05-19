@@ -321,9 +321,19 @@ export default function StaffSalaryComponent() {
     return courses.join(", ");
   };
 
+  // Function to check if a staff member is selected
+  const isSelected = (staff) => {
+    if (!selectedStaff) return false;
+    return (
+      (staff.c_roll && staff.c_roll === selectedStaff.c_roll) ||
+      (staff.teacherId && staff.teacherId === selectedStaff.teacherId) ||
+      staff.id === selectedStaff.id
+    );
+  };
+
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 w-full">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+    <div className="bg-black shadow-lg rounded-lg p-6 w-full text-white">
+      <h2 className="text-2xl font-bold text-white mb-6">
         Teacher Salary Management
       </h2>
 
@@ -331,14 +341,14 @@ export default function StaffSalaryComponent() {
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <div className="w-full">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-white mb-2">
               Search Teachers
             </label>
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search by name, email, or teacher ID..."
-                className="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-black border border-gray-700 rounded-md py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-purple-600 text-white"
                 value={searchQuery}
                 onChange={handleSearch}
               />
@@ -352,88 +362,125 @@ export default function StaffSalaryComponent() {
 
       {/* Status Messages */}
       {errorMessage && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+        <div className="bg-red-900 border border-red-700 text-white px-4 py-3 rounded relative mb-4">
           {errorMessage}
         </div>
       )}
 
       {successMessage && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+        <div className="bg-purple-900 border border-purple-700 text-white px-4 py-3 rounded relative mb-4">
           {successMessage}
         </div>
       )}
 
       {/* Teachers List */}
       <div className="mb-6">
-        <h3 className="text-lg font-medium text-gray-700 mb-3">
-          Teachers List
-        </h3>
-        <div className="bg-gray-50 border border-gray-200 rounded-md overflow-hidden">
+        <h3 className="text-lg font-medium text-white mb-3">Teachers List</h3>
+        <div className="bg-black border border-gray-800 rounded-md overflow-hidden">
           {staffMembers.length > 0 ? (
             <div className="max-h-80 overflow-y-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-100">
+              <table className="min-w-full divide-y divide-gray-800">
+                <thead className="bg-gray-900">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Name
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Teacher ID
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Phone No
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Current Salary
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Action
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-black divide-y divide-gray-800">
                   {staffMembers.map((staff) => (
                     <tr
                       key={staff.id || staff.teacherId || staff.c_roll}
-                      className={`hover:bg-blue-50 cursor-pointer ${
-                        selectedStaff?.id === staff.id ||
-                        selectedStaff?.teacherId === staff.teacherId ||
-                        selectedStaff?.c_roll === staff.c_roll
-                          ? "bg-blue-50"
-                          : ""
-                      }`}
+                      className={`
+                        hover:bg-gray-900 cursor-pointer transition-all duration-300
+                        ${
+                          isSelected(staff)
+                            ? "bg-purple-900/20 shadow-lg shadow-purple-500/30 border-l-4 border-purple-500 scale-[1.02] relative z-10 transform transition-transform"
+                            : "hover:scale-[1.005]"
+                        }
+                      `}
                       onClick={() => setSelectedStaff(staff)}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
+                          isSelected(staff) ? "text-purple-100" : "text-white"
+                        }`}
+                      >
                         {staff.name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm ${
+                          isSelected(staff)
+                            ? "text-purple-200"
+                            : "text-gray-300"
+                        }`}
+                      >
                         {staff.teacherId || staff.c_roll}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm ${
+                          isSelected(staff)
+                            ? "text-purple-200"
+                            : "text-gray-300"
+                        }`}
+                      >
                         {staff.email}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm ${
+                          isSelected(staff)
+                            ? "text-purple-200"
+                            : "text-gray-300"
+                        }`}
+                      >
                         {staff.phone || staff.phoneNumber}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm ${
+                          isSelected(staff)
+                            ? "text-purple-200"
+                            : "text-gray-300"
+                        }`}
+                      >
                         {staff.salary
                           ? formatCurrency(staff.salary)
                           : "Not set"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td
+                        className={`px-6 py-4 whitespace-nowrap text-sm ${
+                          isSelected(staff)
+                            ? "text-purple-300 font-medium"
+                            : "text-purple-600"
+                        }`}
+                      >
                         <button
-                          className="text-blue-600 hover:text-blue-800"
+                          className={`hover:text-purple-400 transition-colors ${
+                            isSelected(staff)
+                              ? "text-purple-300 font-medium"
+                              : "text-purple-600"
+                          }`}
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedStaff(staff);
                             setShowSalaryInput(false);
                           }}
                         >
-                          View Details
+                          {isSelected(staff) ? "Selected" : "View Details"}
                         </button>
                       </td>
                     </tr>
@@ -442,11 +489,11 @@ export default function StaffSalaryComponent() {
               </table>
             </div>
           ) : isLoading ? (
-            <div className="p-6 text-center text-gray-500">
+            <div className="p-6 text-center text-gray-400">
               Loading teacher data...
             </div>
           ) : (
-            <div className="p-6 text-center text-gray-500">
+            <div className="p-6 text-center text-gray-400">
               No teachers found
             </div>
           )}
@@ -457,14 +504,12 @@ export default function StaffSalaryComponent() {
       {selectedStaff && (
         <div className="mb-6">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-medium text-gray-700">
-              Salary Details
-            </h3>
+            <h3 className="text-lg font-medium text-white">Salary Details</h3>
             <div className="flex space-x-2">
               {!showSalaryInput ? (
                 <button
                   onClick={() => setShowSalaryInput(true)}
-                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                 >
                   <span className="mr-2">
                     <PlusIcon />
@@ -478,12 +523,12 @@ export default function StaffSalaryComponent() {
                     value={newSalary}
                     onChange={(e) => setNewSalary(e.target.value)}
                     placeholder="Enter total salary"
-                    className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+                    className="bg-black border border-gray-700 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-purple-600 text-white w-40"
                   />
                   <button
                     onClick={handleUpdateSalary}
                     disabled={submitting}
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
+                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:bg-purple-400 disabled:opacity-50"
                   >
                     {submitting ? "Updating..." : "Submit"}
                   </button>
@@ -492,7 +537,7 @@ export default function StaffSalaryComponent() {
                       setShowSalaryInput(false);
                       setNewSalary("");
                     }}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                    className="inline-flex items-center px-3 py-2 border border-gray-700 text-sm leading-4 font-medium rounded-md text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                   >
                     Cancel
                   </button>
@@ -502,31 +547,31 @@ export default function StaffSalaryComponent() {
           </div>
 
           {salaryDetails ? (
-            <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
+            <div className="bg-black border border-gray-800 rounded-md p-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <div className="mb-4">
-                    <h4 className="text-sm font-bold text-gray-600 uppercase mb-2">
+                    <h4 className="text-sm font-bold text-gray-300 uppercase mb-2">
                       Teacher Information
                     </h4>
-                    <p className="text-sm text-gray-800">
+                    <p className="text-sm text-white">
                       <span className="font-medium">Name:</span>{" "}
                       {selectedStaff.name}
                     </p>
-                    <p className="text-sm text-gray-800">
+                    <p className="text-sm text-white">
                       <span className="font-medium">Teacher ID:</span>{" "}
                       {selectedStaff.teacherId || selectedStaff.c_roll}
                     </p>
-                    <p className="text-sm text-gray-800">
+                    <p className="text-sm text-white">
                       <span className="font-medium">Email:</span>{" "}
                       {selectedStaff.email}
                     </p>
-                    <p className="text-sm text-gray-800">
+                    <p className="text-sm text-white">
                       <span className="font-medium">Phone:</span>{" "}
                       {selectedStaff.phone || selectedStaff.phoneNumber}
                     </p>
                     {selectedStaff.courses && (
-                      <p className="text-sm text-gray-800">
+                      <p className="text-sm text-white">
                         <span className="font-medium">Courses:</span>{" "}
                         {formatCourses(selectedStaff.courses)}
                       </p>
@@ -534,46 +579,44 @@ export default function StaffSalaryComponent() {
                   </div>
                 </div>
 
-                <div className="md:border-l md:border-gray-200 md:pl-6">
+                <div className="md:border-l md:border-gray-800 md:pl-6">
                   <div className="mb-4">
-                    <h4 className="text-sm font-bold text-gray-600 uppercase mb-2">
+                    <h4 className="text-sm font-bold text-gray-300 uppercase mb-2">
                       Earnings (40-20-10-10-20 Split)
                     </h4>
                     <div className="grid grid-cols-2 gap-2">
-                      <p className="text-sm text-gray-800">
-                        Basic Salary (40%)
-                      </p>
-                      <p className="text-sm text-gray-800 text-right">
+                      <p className="text-sm text-white">Basic Salary (40%)</p>
+                      <p className="text-sm text-white text-right">
                         {formatCurrency(salaryDetails.basic)}
                       </p>
-                      <p className="text-sm text-gray-800">
+                      <p className="text-sm text-white">
                         House Rent Allowance (20%)
                       </p>
-                      <p className="text-sm text-gray-800 text-right">
+                      <p className="text-sm text-white text-right">
                         {formatCurrency(salaryDetails.hra)}
                       </p>
-                      <p className="text-sm text-gray-800">
+                      <p className="text-sm text-white">
                         Dearness Allowance (10%)
                       </p>
-                      <p className="text-sm text-gray-800 text-right">
+                      <p className="text-sm text-white text-right">
                         {formatCurrency(salaryDetails.da)}
                       </p>
-                      <p className="text-sm text-gray-800">
+                      <p className="text-sm text-white">
                         Conveyance Allowance (10%)
                       </p>
-                      <p className="text-sm text-gray-800 text-right">
+                      <p className="text-sm text-white text-right">
                         {formatCurrency(salaryDetails.ta)}
                       </p>
-                      <p className="text-sm text-gray-800">
+                      <p className="text-sm text-white">
                         Other Allowances (20%)
                       </p>
-                      <p className="text-sm text-gray-800 text-right">
+                      <p className="text-sm text-white text-right">
                         {formatCurrency(salaryDetails.otherAllowances)}
                       </p>
-                      <p className="text-sm font-medium text-gray-800">
+                      <p className="text-sm font-medium text-white">
                         Total Earnings
                       </p>
-                      <p className="text-sm font-medium text-gray-800 text-right">
+                      <p className="text-sm font-medium text-white text-right">
                         {formatCurrency(salaryDetails.totalEarnings)}
                       </p>
                     </div>
@@ -581,24 +624,22 @@ export default function StaffSalaryComponent() {
                 </div>
               </div>
 
-              <div className="mt-6 border-t border-gray-200 pt-4">
+              <div className="mt-6 border-t border-gray-800 pt-4">
                 <div className="flex justify-between items-center">
-                  <h4 className="text-base font-bold text-gray-800">
-                    Net Salary
-                  </h4>
-                  <p className="text-lg font-bold text-blue-600">
+                  <h4 className="text-base font-bold text-white">Net Salary</h4>
+                  <p className="text-lg font-bold text-purple-600">
                     {formatCurrency(salaryDetails.netSalary)}
                   </p>
                 </div>
               </div>
             </div>
           ) : isLoading ? (
-            <div className="p-6 text-center text-gray-500 bg-gray-50 rounded-md">
+            <div className="p-6 text-center text-gray-400 bg-black rounded-md border border-gray-800">
               Loading salary details...
             </div>
           ) : (
-            <div className="p-6 text-center text-gray-500 bg-gray-50 rounded-md border border-dashed border-gray-300">
-              <div className="mx-auto text-gray-400 mb-2">
+            <div className="p-6 text-center text-gray-400 bg-black rounded-md border border-dashed border-gray-700">
+              <div className="mx-auto text-gray-500 mb-2">
                 <FileTextIcon />
               </div>
               <p>
@@ -608,7 +649,7 @@ export default function StaffSalaryComponent() {
               {!showSalaryInput && (
                 <button
                   onClick={() => setShowSalaryInput(true)}
-                  className="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                 >
                   <span className="mr-2">
                     <PlusIcon />
@@ -623,8 +664,8 @@ export default function StaffSalaryComponent() {
 
       {/* Message when no staff is selected */}
       {!selectedStaff && (
-        <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-md border border-dashed border-gray-300">
-          <div className="mx-auto text-gray-400 mb-2">
+        <div className="p-8 text-center text-gray-400 bg-black rounded-md border border-dashed border-gray-700">
+          <div className="mx-auto text-gray-500 mb-2">
             <FileTextIcon />
           </div>
           <p>Select a teacher to view salary details</p>

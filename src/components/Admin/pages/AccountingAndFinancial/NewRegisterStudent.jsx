@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { ChevronDown, Search, RefreshCw, Download } from "lucide-react";
-import axios from "axios";
 
 export default function NewRegisterStudents() {
   const [loading, setLoading] = useState(true);
@@ -8,21 +7,16 @@ export default function NewRegisterStudents() {
   const [courseCode, setCourseCode] = useState("101");
   const [searchTerm, setSearchTerm] = useState("");
   const [courses, setCourses] = useState([]);
-  const [codes, setCodes] = useState([]);
 
-  // const courses = [{ code: "101" }, { code: "102" }, { code: "103" }];
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await axios.get(
+        const response = await fetch(
           "https://e-college-data.onrender.com/v1/adminroutine/course-all-id"
         );
-        const Data = response.data;
-        const courseData = Data.map((e) => e.course_id);
-        // const courseName=Data.map((e)=>e.code)
-        console.log("helooooooo", courseData);
+        const Data = await response.json();
+        console.log("Got courses data:", Data);
         setCourses(Data);
-        // setCodes(courseData)
       } catch (error) {
         console.error("Error in fetching Courses:", error);
       }
@@ -73,14 +67,12 @@ export default function NewRegisterStudents() {
   );
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-black rounded-lg shadow p-6 text-white">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">
-          New Register Students
-        </h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-white">New Register Students</h2>
+        {/* <p className="text-gray-400">
           Students who have applied, are verified but haven't made payment yet
-        </p>
+        </p> */}
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -90,7 +82,7 @@ export default function NewRegisterStudents() {
           </div>
           <input
             type="text"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5"
+            className="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg focus:ring-purple-600 focus:border-purple-600 block w-full pl-10 p-2.5"
             placeholder="Search by name, email or phone"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -100,7 +92,7 @@ export default function NewRegisterStudents() {
         <div className="flex gap-4 w-full md:w-auto">
           <div className="relative w-full md:w-64">
             <select
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 appearance-none"
+              className="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg focus:ring-purple-600 focus:border-purple-600 block w-full p-2.5 appearance-none"
               value={courseCode}
               onChange={(e) => setCourseCode(e.target.value)}
             >
@@ -110,20 +102,20 @@ export default function NewRegisterStudents() {
                 </option>
               ))}
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
               <ChevronDown className="w-4 h-4" />
             </div>
           </div>
 
           <button
             onClick={fetchStudents}
-            className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2.5 px-4 rounded-lg transition-colors"
+            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Refresh</span>
           </button>
 
-          <button className="flex items-center gap-2 bg-green-100 hover:bg-green-200 text-green-700 font-medium py-2.5 px-4 rounded-lg transition-colors">
+          <button className="flex items-center gap-2 bg-purple-900 hover:bg-purple-800 text-white font-medium py-2.5 px-4 rounded-lg transition-colors">
             <Download className="w-4 h-4" />
             <span>Export</span>
           </button>
@@ -131,8 +123,8 @@ export default function NewRegisterStudents() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+        <table className="w-full text-sm text-left text-gray-300">
+          <thead className="text-xs text-gray-300 uppercase bg-gray-800">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Name
@@ -162,8 +154,8 @@ export default function NewRegisterStudents() {
               <tr>
                 <td colSpan="7" className="px-6 py-12 text-center">
                   <div className="flex flex-col items-center justify-center">
-                    <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mb-2" />
-                    <span className="text-gray-500">
+                    <RefreshCw className="w-8 h-8 text-purple-600 animate-spin mb-2" />
+                    <span className="text-gray-400">
                       Loading student data...
                     </span>
                   </div>
@@ -172,7 +164,7 @@ export default function NewRegisterStudents() {
             ) : filteredStudents.length === 0 ? (
               <tr>
                 <td colSpan="7" className="px-6 py-12 text-center">
-                  <p className="text-gray-500">
+                  <p className="text-gray-400">
                     No students found for the selected criteria
                   </p>
                 </td>
@@ -181,9 +173,9 @@ export default function NewRegisterStudents() {
               filteredStudents.map((student) => (
                 <tr
                   key={student._id}
-                  className="bg-white border-b hover:bg-gray-50"
+                  className="bg-gray-900 border-b border-gray-800 hover:bg-gray-800"
                 >
-                  <td className="px-6 py-4 font-medium text-gray-900">
+                  <td className="px-6 py-4 font-medium text-white">
                     {student.name}
                   </td>
                   <td className="px-6 py-4">{student.email}</td>
@@ -192,7 +184,7 @@ export default function NewRegisterStudents() {
                   <td className="px-6 py-4">{student.tenth_marks}%</td>
                   <td className="px-6 py-4">{student.twelfth_marks}%</td>
                   <td className="px-6 py-4">
-                    <button className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-lg text-xs font-medium transition-colors">
+                    <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg text-xs font-medium transition-colors">
                       Assign Roll
                     </button>
                   </td>
@@ -203,7 +195,7 @@ export default function NewRegisterStudents() {
         </table>
       </div>
 
-      <div className="mt-4 text-sm text-gray-500">
+      <div className="mt-4 text-sm text-gray-400">
         {!loading &&
           `Showing ${filteredStudents.length} out of ${students.length} students`}
       </div>

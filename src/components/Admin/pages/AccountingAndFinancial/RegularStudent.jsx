@@ -120,7 +120,7 @@ export default function StudentFinanceDashboard() {
 
       setStudents(filteredData);
     } catch (err) {
-      setError(" to fetch student data. Please try agaiFailedn.");
+      setError("Failed to fetch student data. Please try again.");
       console.error("Error fetching students:", err);
     } finally {
       setLoading(false);
@@ -155,21 +155,21 @@ export default function StudentFinanceDashboard() {
     : [];
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-black min-h-screen p-6 text-white">
       <div className="max-w-7xl mx-auto">
         {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-black rounded-lg shadow-sm p-6 border border-purple-600">
           {/* Filter Controls */}
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
             <div className="flex flex-col md:flex-row gap-4">
-              {/* Course ID Selection - New Dropdown */}
+              {/* Course ID Selection */}
               <div className="w-full md:w-48">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium mb-1 text-white">
                   Course Name
                 </label>
                 <div className="relative">
                   <select
-                    className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="block w-full rounded-md border border-purple-600 bg-black py-2 pl-3 pr-10 text-sm focus:border-purple-600 focus:outline-none focus:ring-1 focus:ring-purple-600 text-white"
                     value={selectedCourse}
                     onChange={(e) => setSelectedCourse(e.target.value)}
                     disabled={loadingCourses}
@@ -193,7 +193,7 @@ export default function StudentFinanceDashboard() {
                       ))
                     )}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
                     <ChevronDown size={16} />
                   </div>
                 </div>
@@ -201,19 +201,19 @@ export default function StudentFinanceDashboard() {
 
               {/* Student Type Selection */}
               <div className="w-full md:w-48">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium mb-1 text-white">
                   Student Type
                 </label>
                 <div className="relative">
                   <select
-                    className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="block w-full rounded-md border border-purple-600 bg-black py-2 pl-3 pr-10 text-sm focus:border-purple-600 focus:outline-none focus:ring-1 focus:ring-purple-600 text-white"
                     value={studentType}
                     onChange={(e) => setStudentType(e.target.value)}
                   >
                     <option value="offline">Offline</option>
                     <option value="online">Online</option>
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
                     <ChevronDown size={16} />
                   </div>
                 </div>
@@ -221,12 +221,12 @@ export default function StudentFinanceDashboard() {
 
               {/* Semester Selection */}
               <div className="w-full md:w-48">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium mb-1 text-white">
                   Semester
                 </label>
                 <div className="relative">
                   <select
-                    className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="block w-full rounded-md border border-purple-600 bg-black py-2 pl-3 pr-10 text-sm focus:border-purple-600 focus:outline-none focus:ring-1 focus:ring-purple-600 text-white"
                     value={semester}
                     onChange={(e) => setSemester(e.target.value)}
                   >
@@ -237,7 +237,7 @@ export default function StudentFinanceDashboard() {
                       </option>
                     ))}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
                     <ChevronDown size={16} />
                   </div>
                 </div>
@@ -248,8 +248,8 @@ export default function StudentFinanceDashboard() {
                 <button
                   className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md border ${
                     showDueOnly
-                      ? "bg-red-50 text-red-700 border-red-200"
-                      : "bg-white text-gray-700 border-gray-300"
+                      ? "bg-purple-600 text-white border-purple-600"
+                      : "bg-black text-white border-purple-600"
                   }`}
                   onClick={() => setShowDueOnly(!showDueOnly)}
                 >
@@ -265,11 +265,11 @@ export default function StudentFinanceDashboard() {
                 <input
                   type="text"
                   placeholder="Search by name, email or ID..."
-                  className="w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-md border border-purple-600 bg-black py-2 pl-10 pr-4 text-sm focus:border-purple-600 focus:outline-none focus:ring-1 focus:ring-purple-600 text-white placeholder-gray-400"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-purple-600">
                   <Search size={16} />
                 </div>
               </div>
@@ -279,7 +279,7 @@ export default function StudentFinanceDashboard() {
           {/* Action Buttons */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <button
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
               onClick={fetchStudents}
               disabled={!selectedCourse || loading}
             >
@@ -290,7 +290,7 @@ export default function StudentFinanceDashboard() {
 
           {/* Action Feedback */}
           {actionComplete && (
-            <div className="mb-4 p-3 bg-green-50 text-green-700 rounded-md flex items-center gap-2">
+            <div className="mb-4 p-3 bg-black text-purple-600 rounded-md flex items-center gap-2 border border-purple-600">
               <Check size={16} />
               Action completed successfully!
             </div>
@@ -298,67 +298,67 @@ export default function StudentFinanceDashboard() {
 
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md flex items-center gap-2">
-              <AlertCircle size={16} />
+            <div className="mb-4 p-3 bg-black text-white rounded-md flex items-center gap-2 border border-purple-600">
+              <AlertCircle size={16} className="text-purple-600" />
               {error}
             </div>
           )}
 
           {/* Student Table */}
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-purple-600">
+              <thead className="bg-black">
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider"
                   >
                     Student ID
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider"
                   >
                     Name
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider"
                   >
                     Email
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider"
                   >
                     Semester
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider"
                   >
                     Payment Status
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider"
                   >
                     Account Status
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-purple-600 uppercase tracking-wider"
                   >
                     Access control
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-black divide-y divide-purple-600">
                 {loading ? (
                   <tr>
                     <td
                       colSpan="7"
-                      className="px-6 py-4 text-center text-gray-500"
+                      className="px-6 py-4 text-center text-white"
                     >
                       Loading student data...
                     </td>
@@ -367,7 +367,7 @@ export default function StudentFinanceDashboard() {
                   <tr>
                     <td
                       colSpan="7"
-                      className="px-6 py-4 text-center text-gray-500"
+                      className="px-6 py-4 text-center text-white"
                     >
                       Please select a course to view students.
                     </td>
@@ -376,69 +376,59 @@ export default function StudentFinanceDashboard() {
                   <tr>
                     <td
                       colSpan="7"
-                      className="px-6 py-4 text-center text-gray-500"
+                      className="px-6 py-4 text-center text-white"
                     >
                       No students found matching your criteria.
                     </td>
                   </tr>
                 ) : (
                   filteredStudents.map((student) => (
-                    <tr key={student.c_roll} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr key={student.c_roll} className="hover:bg-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                         {student.c_roll || "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {student.name || "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {student.email || "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                         {student.sem || "N/A"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 py-1 text-xs font-semibold rounded-full ${
                             student.sem_payment === true
-                              ? " text-green-800"
-                              : " text-red-800"
+                              ? "bg-black text-purple-600 border border-purple-600"
+                              : "bg-black text-white border border-purple-600"
                           }`}
                         >
-                          {student.sem_payment ? (
-                            <div>paid</div>
-                          ) : (
-                            <div>due</div>
-                          )}
+                          {student.sem_payment ? "Paid" : "Due"}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full ${
-                            student.accountStatus === "Active"
-                              ? "bg-green-100 text-green-800"
-                              : student.accountStatus === "Inactive"
-                              ? "bg-gray-100 text-gray-800"
-                              : "bg-yellow-100 text-yellow-800"
+                            student.payment
+                              ? "bg-black text-purple-600 border border-purple-600"
+                              : "bg-black text-white border border-purple-600"
                           }`}
                         >
-                          {student.payment === true ? (
+                          {student.payment ? (
                             <Check size={12} />
                           ) : (
                             <X size={12} />
                           )}
-                          {student.payment ? (
-                            <div>Active</div>
-                          ) : (
-                            <div>Disable</div>
-                          )}
+                          {student.payment ? "Active" : "Disabled"}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           onClick={() => changeAccess(student.email)}
-                          className="text-red-600 hover:text-red-800 hover:underline"
+                          className="text-purple-600 hover:text-purple-400 hover:underline"
                         >
-                          Acount Block
+                          Block Account
                         </button>
                       </td>
                     </tr>
@@ -449,24 +439,26 @@ export default function StudentFinanceDashboard() {
           </div>
 
           {/* Summary Card */}
-          <div className="mt-6 bg-gray-50 rounded-lg p-4">
+          <div className="mt-6 bg-black rounded-lg p-4 border border-purple-600">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white p-4 rounded-md shadow-sm">
-                <p className="text-sm text-gray-500">Total Students</p>
-                <p className="text-2xl font-bold">{filteredStudents.length}</p>
+              <div className="bg-black p-4 rounded-md shadow-sm border border-purple-600">
+                <p className="text-sm text-purple-600">Total Students</p>
+                <p className="text-2xl font-bold text-white">
+                  {filteredStudents.length}
+                </p>
               </div>
-              <div className="bg-white p-4 rounded-md shadow-sm">
-                <p className="text-sm text-gray-500">Payments Pending</p>
-                <p className="text-2xl font-bold text-red-600">
+              <div className="bg-black p-4 rounded-md shadow-sm border border-purple-600">
+                <p className="text-sm text-purple-600">Payments Pending</p>
+                <p className="text-2xl font-bold text-white">
                   {
                     filteredStudents.filter((s) => s.sem_payment === false)
                       .length
                   }
                 </p>
               </div>
-              <div className="bg-white p-4 rounded-md shadow-sm">
-                <p className="text-sm text-gray-500">Active Accounts</p>
-                <p className="text-2xl font-bold text-green-600">
+              <div className="bg-black p-4 rounded-md shadow-sm border border-purple-600">
+                <p className="text-sm text-purple-600">Active Accounts</p>
+                <p className="text-2xl font-bold text-white">
                   {filteredStudents.filter((s) => s.payment === true).length}
                 </p>
               </div>

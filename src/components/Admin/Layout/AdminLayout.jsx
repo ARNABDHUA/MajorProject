@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { FiMenu, FiSearch, FiUser, FiBell } from "react-icons/fi";
 import AdminSidebar from "./AdminSidebar";
+import UnAuthorizedAccessPage from "../Auth/UnAuthorizedAccessPage";
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 1024);
-  const [notifications, setNotifications] = useState(3); // Example notification count
+  const [role, setRole] = useState("");
   const location = useLocation();
 
   // Handle resize events
@@ -20,6 +21,13 @@ const AdminLayout = () => {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  useEffect(() => {
+    const localData = localStorage.getItem("user");
+    if (localData) {
+      const parsedData = JSON.parse(localData);
+      setRole(parsedData.role);
+    }
   }, []);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -37,9 +45,11 @@ const AdminLayout = () => {
     if (path === "/admin-registrations") return "New Registrations";
     if (path === "/admin-academic") return "Academic Management";
     if (path === "/course-code-management") return "Course Management";
-    if (path === "/teacher-course-management") return "Teacher Course Management";
+    if (path === "/teacher-course-management")
+      return "Teacher Course Management";
     if (path === "/student-semester") return "Student Semester Management";
-    if (path === "/academic-management-notice") return "Academic Mangement Notice";
+    if (path === "/academic-management-notice")
+      return "Academic Mangement Notice";
     if (path === "/admin-teacher-assignments") return "Teacher Assignments";
     if (path === "/admin-enrollments") return "Student Enrollments";
     if (path === "/admin-study-materials") return "Study Materials";
@@ -78,6 +88,9 @@ const AdminLayout = () => {
   };
 
   const sidebarWidth = isCollapsed ? "w-20" : "w-64";
+  if (!role || !role === "admin") {
+    return <UnAuthorizedAccessPage />;
+  }
 
   return (
     <div className="min-h-screen bg-black">

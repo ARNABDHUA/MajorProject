@@ -127,13 +127,13 @@ const StudentDetails = () => {
         <table className="min-w-full border border-gray-300 divide-y divide-gray-300">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">ID</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Name</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Roll No</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Semester</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Course Code</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
-              <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Actions</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Name</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Roll No</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Semester</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Course Code</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Email</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-300">

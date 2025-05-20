@@ -123,19 +123,19 @@ const TeacherDocumentVerification = () => {
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 shadow rounded">
           <thead>
-            <tr className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
-              <th className="py-2 px-4 border-b">Name</th>
-              <th className="py-2 px-4 border-b">Email</th>
-              <th className="py-2 px-4 border-b">Phone</th>
-              <th className="py-2 px-4 border-b">Address</th>
-              <th className="py-2 px-4 border-b">Action</th>
+            <tr className="bg-gray-100 text-left text-sm font-semibold text-black">
+              <th className="py-2 px-4 border-b border-black">Name</th>
+              <th className="py-2 px-4 border-b border-black">Email</th>
+              <th className="py-2 px-4 border-b border-black">Phone</th>
+              <th className="py-2 px-4 border-b border-black">Address</th>
+              <th className="py-2 px-4 border-b border-black">Action</th>
             </tr>
           </thead>
           <tbody>
             {teachers.map((teacher, index) => (
               <React.Fragment key={index}>
-                <tr className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border-b">
+                <tr className="hover:bg-gray-50 text-black">
+                  <td className="px-4 py-2 border-b border-black">
                     <div className="flex items-center h-full">
                       <span>{teacher.name}</span>
                       {verifiedTeachers.has(teacher._id) && (
@@ -147,20 +147,20 @@ const TeacherDocumentVerification = () => {
                       )}
                     </div>
                   </td>
-                  <td className="py-2 px-4 border-b">
+                  <td className="py-2 px-4 border-b border-black">
                     {teacher.email || "N/A"}
                   </td>
-                  <td className="py-2 px-4 border-b">
+                  <td className="py-2 px-4 border-b border-black">
                     {teacher.phoneNumber || "N/A"}
                   </td>
-                  <td className="py-2 px-2 border-b">
+                  <td className="py-2 px-2 border-b border-black">
                     {teacher.address || "N/A"}
                   </td>
-                  <td className="py-2 px-4 border-b align-top">
+                  <td className="py-2 px-4 border-b border-black align-top">
                     <div className="flex flex-col items-center gap-2 min-w-[100px]">
                       <button
                         onClick={() => toggleDetails(index)}
-                        className="w-20 bg-blue-500 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-600"
+                        className="w-20 bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700"
                       >
                         {expandedIndex === index ? "Hide" : "Details"}
                       </button>
@@ -177,6 +177,7 @@ const TeacherDocumentVerification = () => {
                           ? "Verified"
                           : "Verify"}
                       </button>
+
                       <button
                         onClick={() => handleReject(teacher.email, teacher._id)}
                         className="w-20 text-sm px-3 py-1.5 rounded bg-red-600 hover:bg-red-700 text-white shadow"
@@ -187,8 +188,8 @@ const TeacherDocumentVerification = () => {
                   </td>
                 </tr>
                 {expandedIndex === index && (
-                  <tr className="bg-gray-50">
-                    <td colSpan="5" className="py-3 px-4 border-b">
+                  <tr className="bg-gray-50 text-black">
+                    <td colSpan="5" className="py-3 px-4 border-b border-black">
                       <div className="text-sm space-y-1">
                         <div>
                           <strong>10th year:</strong>{" "}
@@ -271,14 +272,14 @@ const TeacherDocumentVerification = () => {
                                         email: teacher.email,
                                       }
                                     );
-                                    if(res.data){
-                                      const response=await axios.post(
+                                    if (res.data) {
+                                      const response = await axios.post(
                                         "https://e-college-data.onrender.com/v1/chat/chat-register-teacher",
                                         {
-                                          name:teacher.name,
-                                           email: teacher.email,
+                                          name: teacher.name,
+                                          email: teacher.email,
                                         }
-                                      )
+                                      );
                                     }
                                     toast.success(
                                       "Teacher created successfully!"

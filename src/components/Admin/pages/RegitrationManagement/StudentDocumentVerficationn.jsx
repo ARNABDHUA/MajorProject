@@ -13,7 +13,6 @@ const StudentDocumentVerification = () => {
   const [expandedStudentId, setExpandedStudentId] = useState(null);
   const [verifiedStudents, setVerifiedStudents] = useState(new Set());
 
-  // Load verified students from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("verifiedStudents");
     if (stored) {
@@ -21,7 +20,6 @@ const StudentDocumentVerification = () => {
     }
   }, []);
 
-  // Save verified student to localStorage
   const addVerifiedStudent = (id) => {
     setVerifiedStudents((prev) => {
       const newSet = new Set(prev.add(id));
@@ -151,11 +149,11 @@ const StudentDocumentVerification = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-purple-100 p-6">
+    <div className="min-h-screen bg-black text-purple-600 p-6">
       <Toaster position="top-right" reverseOrder={false} />
 
       <div className="mb-6">
-        <label className="block mb-2 text-purple-300 font-semibold">
+        <label className="block mb-2 font-semibold">
           Select Course Code <span className="text-red-500">*</span>
         </label>
         <select
@@ -171,12 +169,10 @@ const StudentDocumentVerification = () => {
         </select>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4 text-purple-200">
-        Student Information
-      </h2>
+      <h2 className="text-2xl font-bold mb-4">Student Information</h2>
 
       {loading ? (
-        <p className="text-white">Loading...</p>
+        <p>Loading...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : students.length === 0 ? (
@@ -184,7 +180,7 @@ const StudentDocumentVerification = () => {
       ) : (
         <div className="overflow-x-auto rounded shadow-lg border border-purple-400">
           <table className="min-w-full bg-white text-black text-sm">
-            <thead className="bg-purple-200 text-purple-800 font-semibold">
+            <thead className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
               <tr>
                 <th className="px-4 py-2 text-left">Name</th>
                 <th className="px-4 py-2 text-left">Type</th>
@@ -227,7 +223,7 @@ const StudentDocumentVerification = () => {
                     <td className="px-4 py-2 space-y-1">
                       <button
                         onClick={() => toggleDetails(student._id)}
-                        className="block w-full mb-1 text-sm bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded shadow"
+                        className="block w-full mb-1 text-sm bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded shadow"
                       >
                         {expandedStudentId === student._id ? "Hide" : "Details"}
                       </button>
@@ -322,7 +318,7 @@ const StudentDocumentVerification = () => {
                           </p>
                           <p>
                             <strong>Other Course End:</strong>{" "}
-                            {student.other_course_start}
+                            {student.other_course_end}
                           </p>
                           <p>
                             <strong>Other Course Marks File:</strong>{" "}

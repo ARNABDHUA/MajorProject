@@ -16,9 +16,13 @@ const Navbar = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchFocus, setSearchFocus] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Set loading state
+    setIsLoading(true);
+
     // Get user data from localStorage
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -29,6 +33,14 @@ const Navbar = () => {
         console.error("Failed to parse user data from localStorage", error);
       }
     }
+
+    // Simulate network delay for demonstration purposes
+    // In a real app, this would be the actual loading time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -56,6 +68,18 @@ const Navbar = () => {
 
   const logoVariants = {
     hover: { scale: 1.02, transition: { duration: 0.2 } },
+  };
+
+  // Loading animation for profile spinner
+  const spinnerVariants = {
+    animate: {
+      rotate: 360,
+      transition: {
+        duration: 1,
+        repeat: Infinity,
+        ease: "linear",
+      },
+    },
   };
 
   const handleSignOut = () => {
@@ -99,6 +123,20 @@ const Navbar = () => {
   };
 
   const renderProfileImage = () => {
+    // Show loading spinner while loading
+    if (isLoading) {
+      return (
+        <motion.div
+          className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center"
+          variants={spinnerVariants}
+          animate="animate"
+        >
+          <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full" />
+        </motion.div>
+      );
+    }
+
+    // Show user profile after loading
     if (userProfile && userProfile.pic) {
       return (
         <motion.div
@@ -167,7 +205,7 @@ const Navbar = () => {
         <motion.div
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/login", { replace: true })}
         >
           <FaUserCircle className="text-3xl text-blue-600 cursor-pointer" />
         </motion.div>

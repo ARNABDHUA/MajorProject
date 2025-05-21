@@ -93,7 +93,7 @@ const TeacherComponent = () => {
       ) : (
         <div className="overflow-x-auto rounded border border-purple-300">
           <table className="min-w-full bg-white text-black text-sm">
-            <thead className="bg-purple-100 text-purple-800 font-semibold">
+            <thead className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
               <tr>
                 <th className="px-4 py-2 text-left">Name</th>
                 <th className="px-4 py-2 text-left">Email</th>

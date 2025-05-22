@@ -106,9 +106,7 @@ export default function TeacherNotice() {
           <h2 className="text-xl font-semibold text-gray-800 mb-2">
             No Notices Found
           </h2>
-          <p className="text-green-600">
-            There are currently no notices where student is set to false.
-          </p>
+          <p className="text-green-600">There are currently no notices .</p>
         </div>
       </div>
     );

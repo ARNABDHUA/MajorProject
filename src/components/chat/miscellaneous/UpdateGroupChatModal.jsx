@@ -4,8 +4,9 @@ import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChatState } from "../../../context/ChatProvider";
 import UserBadgeItem from "../userAvatar/UserBadgeItem";
+
 import UserListItem from "../userAvatar/UserListItem";
-import { FiEye, FiX, FiSearch, FiPlus, FiLogOut, FiEdit, FiUsers, FiSettings, FiAlertTriangle, FiMail, FiUser, FiMessageSquare, FiLock, FiUnlock } from "react-icons/fi";
+import { FiEye, FiX, FiSearch, FiPlus, FiLogOut, FiEdit, FiUsers, FiSettings, FiAlertTriangle, FiMail, FiUser, FiMessageSquare, FiLock, FiUnlock, FiShield, FiUserPlus } from "react-icons/fi";
 
 const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,15 +15,16 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [renameloading, setRenameLoading] = useState(false);
-  const [adminOnlyMode, setAdminOnlyMode] = useState(false); // New state for admin-only mode
-  const [updatingMode, setUpdatingMode] = useState(false); // New state for loading state when updating mode
+  const [adminOnlyMode, setAdminOnlyMode] = useState(false);
+  const [updatingMode, setUpdatingMode] = useState(false);
+  const [addingAdmin, setAddingAdmin] = useState(false); // New state for adding admin
   const { selectedChat, setSelectedChat } = ChatState();
   const [user, setUser] = useState();
   const [token, setToken] = useState();
-  const [activeTab, setActiveTab] = useState("members"); // "members", "add", or "settings"
+  const [activeTab, setActiveTab] = useState("members"); // "members", "add", "admins", or "settings"
   const modalRef = useRef(null);
   const [modalMaxHeight, setModalMaxHeight] = useState("85vh");
-  const [confirmRemove, setConfirmRemove] = useState(null); // State to track user to remove
+  const [confirmRemove, setConfirmRemove] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -37,9 +39,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       const width = window.innerWidth;
       setWindowWidth(width);
       
-      // Handle responsive height
       const windowHeight = window.innerHeight;
-      // Set modal max height based on screen size
       const newMaxHeight = windowHeight < 600 
         ? '95vh' 
         : windowHeight < 800 
@@ -49,7 +49,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     };
     
     window.addEventListener('resize', handleResize);
-    handleResize(); // Set initial values
+    handleResize();
     
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -57,7 +57,6 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   useEffect(() => {
     if (isOpen && selectedChat) {
       setGroupChatName(selectedChat.chatName);
-      // Check if adminOnlyMode is set in the chat document
       setAdminOnlyMode(selectedChat.adminOnlyMode || false);
     }
   }, [isOpen, selectedChat]);
@@ -101,7 +100,9 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   };
 
   const handleRename = async () => {
-    if (selectedChat.groupAdmin._id !== user._id) {
+    if (selectedChat?.groupAdmin?.every(
+      admin => admin._id !== user?._id
+    )) {
       showToast("Only admins can rename group", "", "error");
       return;
     }
@@ -125,9 +126,10 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     }
   };
 
-  // New function to toggle admin-only mode
   const toggleAdminOnlyMode = async () => {
-    if (selectedChat.groupAdmin._id !== user._id) {
+    if(selectedChat?.groupAdmin?.every(
+      admin => admin._id !== user?._id
+    )) {
       showToast("Only admins can change message permissions", "", "error");
       return;
     }
@@ -137,10 +139,9 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       const { data } = await axios.post(`https://e-college-data.onrender.com/v1/chat/chat-group-admin-mode`, {
         chatId: selectedChat._id,
         adminOnlyMode: !adminOnlyMode,
-        ownId:user._id
+        ownId: user._id
       });
       
-      // Update local state
       setAdminOnlyMode(!adminOnlyMode);
       setSelectedChat({...selectedChat, adminOnlyMode: !adminOnlyMode});
       setFetchAgain(!fetchAgain);
@@ -159,13 +160,47 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     }
   };
 
+  // New function to add admin
+  const handleAddAdmin = async (userToPromote) => {
+    // Check if user is already an admin
+    if (selectedChat.groupAdmin.some(admin => admin._id === userToPromote._id)) {
+      showToast("User is already an admin", "", "error");
+      return;
+    }
+
+    // Check if current user is admin
+    if (selectedChat?.groupAdmin?.every(admin => admin._id !== user?._id)) {
+      showToast("Only admins can promote users to admin", "", "error");
+      return;
+    }
+
+    try {
+      setAddingAdmin(true);
+      const response = await axios.post(`https://e-college-data.onrender.com/v1/chat/chat-group-add-admin`, {
+        chatId: selectedChat._id,
+        userId: userToPromote._id,
+        ownId: user._id
+      });
+      
+      setSelectedChat(response.data.data);
+      setFetchAgain(!fetchAgain);
+      showToast("Success", `${userToPromote.name} is now an admin`, "success");
+    } catch (error) {
+      showToast("Error", error.response?.data?.message || "Failed to add admin", "error");
+    } finally {
+      setAddingAdmin(false);
+    }
+  };
+
   const handleAddUser = async (user1) => {
     if (selectedChat.users.find((u) => u._id === user1._id)) {
       showToast("User already in group", "", "error");
       return;
     }
 
-    if (selectedChat.groupAdmin._id !== user._id) {
+    if(selectedChat?.groupAdmin?.every(
+      admin => admin._id !== user?._id
+    )) {
       showToast("Only admins can add someone", "", "error");
       return;
     }
@@ -186,19 +221,16 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     }
   };
 
-  // Show confirmation dialog before removing
   const confirmRemoveUser = (user1) => {
     setConfirmRemove(user1);
   };
 
-  // Cancel confirmation
   const cancelRemove = () => {
     setConfirmRemove(null);
   };
 
-  // Actually remove the user after confirmation
   const handleRemove = async (user1) => {
-    if (selectedChat.groupAdmin._id !== user._id && user1._id !== user._id) {
+    if(selectedChat?.groupAdmin?.every(admin => admin._id !== user?._id) && user1._id !== user._id ) {
       showToast("Only admins can remove someone", "", "error");
       return;
     }
@@ -216,7 +248,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       if (user1._id === user._id) {
         setIsOpen(false);
       }
-      setConfirmRemove(null); // Clear confirmation state
+      setConfirmRemove(null);
     } catch (error) {
       showToast("Error", error.response?.data?.message || "Failed to remove user", "error");
     } finally {
@@ -224,7 +256,6 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     }
   };
 
-  // Animation variants
   const overlayVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 }
@@ -252,10 +283,11 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     }
   };
 
-  const isAdmin = selectedChat?.groupAdmin?._id === user?._id;
+  const isAdmin = selectedChat?.groupAdmin?.some(
+    admin => admin._id === user?._id
+  );
   const isMobile = windowWidth < 640;
 
-  // Calculate content height based on screen size
   const getContentMaxHeight = () => {
     const windowHeight = window.innerHeight;
     if (windowHeight < 500) return "30vh";
@@ -263,9 +295,18 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     return "50vh";
   };
 
-  // Modified UserBadgeItem component that incorporates user image
+  // Get non-admin users for the admin promotion tab
+  const getNonAdminUsers = () => {
+    return selectedChat.users.filter(chatUser => 
+      !selectedChat.groupAdmin.some(admin => admin._id === chatUser._id)
+    );
+  };
+
   const ModifiedUserBadgeItem = ({ user: badgeUser, admin, handleFunction }) => {
     const canRemove = isAdmin || badgeUser._id === user?._id;
+    const isUserAdmin = Array.isArray(admin) 
+      ? admin.some(a => a._id === badgeUser._id)
+      : admin._id === badgeUser._id;
     
     return (
       <motion.div
@@ -286,7 +327,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             </div>
           )}
           <span className="truncate">{badgeUser.name}</span>
-          {badgeUser._id === admin._id && (
+          {isUserAdmin && (
             <span className="ml-1 bg-blue-200 text-blue-800 text-xs px-1 rounded flex-shrink-0">
               Admin
             </span>
@@ -304,6 +345,50 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       </motion.div>
     );
   };
+
+  // Component for admin promotion list item
+  const AdminPromotionItem = ({ user: promotionUser, onPromote, loading }) => (
+    <motion.div 
+      className="flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg border border-gray-100 mb-2"
+      whileHover={{ scale: 1.02 }}
+      initial={{ opacity: 0, y: 5 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <div className="flex items-center gap-3 flex-1 overflow-hidden">
+        {promotionUser.pic ? (
+          <img 
+            src={promotionUser.pic} 
+            alt={promotionUser.name} 
+            className="h-8 w-8 rounded-full object-cover border border-gray-200 flex-shrink-0"
+          />
+        ) : (
+          <div className="h-8 w-8 rounded-full bg-blue-400 text-white flex items-center justify-center text-sm flex-shrink-0">
+            {promotionUser.name?.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <div className="overflow-hidden">
+          <p className="text-sm font-medium text-gray-900 truncate">{promotionUser.name}</p>
+          <p className="text-xs text-gray-500 truncate">{promotionUser.email}</p>
+        </div>
+      </div>
+      <motion.button
+        onClick={() => onPromote(promotionUser)}
+        className="bg-orange-500 text-white px-3 py-1 text-xs rounded-lg shadow-sm hover:bg-orange-600 disabled:opacity-60 flex items-center gap-1 flex-shrink-0"
+        disabled={loading}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        {loading ? (
+          <div className="h-3 w-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <>
+            <FiShield className="h-3 w-3" />
+            <span>Make Admin</span>
+          </>
+        )}
+      </motion.button>
+    </motion.div>
+  );
 
   return (
     <>
@@ -340,7 +425,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 variants={modalVariants}
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Header - Compact for small screens */}
+                {/* Header */}
                 <div className="relative px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 bg-gradient-to-r from-teal-500 to-emerald-400">
                   <motion.h2 
                     className="text-lg sm:text-xl font-bold text-white text-center pr-8"
@@ -351,7 +436,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                     {selectedChat.chatName}
                   </motion.h2>
                   <p className="text-teal-50 text-xs sm:text-sm text-center mt-0.5">
-                    {selectedChat.users.length} member{selectedChat.users.length !== 1 ? "s" : ""}
+                    {selectedChat?.users?.length || 0} member
+                    {selectedChat?.users?.length !== 1 ? "s" : ""||""}
                     {adminOnlyMode && (
                       <span className="ml-2 inline-flex items-center bg-teal-600 text-white text-xs px-1.5 py-0.5 rounded">
                         <FiLock className="mr-1 h-3 w-3" /> Admin Only
@@ -368,10 +454,10 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                   </motion.button>
                 </div>
 
-                {/* Tabs - More visible on smaller screens with icons */}
-                <div className="flex border-b border-gray-100">
+                {/* Tabs */}
+                <div className="flex border-b border-gray-100 overflow-x-auto">
                   <button
-                    className={`flex-1 py-2 sm:py-3 text-center relative ${
+                    className={`flex-1 py-2 sm:py-3 text-center relative whitespace-nowrap ${
                       activeTab === "members" ? "text-teal-600 font-medium" : "text-gray-500"
                     }`}
                     onClick={() => setActiveTab("members")}
@@ -389,13 +475,13 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                   </button>
                   {isAdmin && (
                     <button
-                      className={`flex-1 py-2 sm:py-3 text-center relative ${
+                      className={`flex-1 py-2 sm:py-3 text-center relative whitespace-nowrap ${
                         activeTab === "add" ? "text-teal-600 font-medium" : "text-gray-500"
                       }`}
                       onClick={() => setActiveTab("add")}
                     >
                       <div className="flex justify-center items-center gap-1 sm:gap-2">
-                        <FiPlus className="h-4 w-4" />
+                        <FiUserPlus className="h-4 w-4" />
                         <span className="text-xs sm:text-sm">Add Users</span>
                       </div>
                       {activeTab === "add" && (
@@ -408,7 +494,26 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                   )}
                   {isAdmin && (
                     <button
-                      className={`flex-1 py-2 sm:py-3 text-center relative ${
+                      className={`flex-1 py-2 sm:py-3 text-center relative whitespace-nowrap ${
+                        activeTab === "admins" ? "text-teal-600 font-medium" : "text-gray-500"
+                      }`}
+                      onClick={() => setActiveTab("admins")}
+                    >
+                      <div className="flex justify-center items-center gap-1 sm:gap-2">
+                        <FiShield className="h-4 w-4" />
+                        <span className="text-xs sm:text-sm">Add Admin</span>
+                      </div>
+                      {activeTab === "admins" && (
+                        <motion.div
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-500"
+                          layoutId="activeTabIndicator"
+                        />
+                      )}
+                    </button>
+                  )}
+                  {isAdmin && (
+                    <button
+                      className={`flex-1 py-2 sm:py-3 text-center relative whitespace-nowrap ${
                         activeTab === "settings" ? "text-teal-600 font-medium" : "text-gray-500"
                       }`}
                       onClick={() => setActiveTab("settings")}
@@ -427,7 +532,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                   )}
                 </div>
 
-                {/* Content area with dynamic height */}
+                {/* Content area */}
                 <div 
                   className="p-3 sm:p-4 space-y-4 overflow-y-auto"
                   style={{ maxHeight: getContentMaxHeight() }}
@@ -484,7 +589,6 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                         <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
                       </div>
 
-                      {/* Search results - More compact for small screens */}
                       <div className="max-h-32 sm:max-h-40 overflow-y-auto rounded-lg border border-gray-100 bg-gray-50 p-1 mt-2">
                         {loading ? (
                           <div className="flex justify-center py-4">
@@ -501,7 +605,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                               <UserListItem 
                                 user={user} 
                                 handleFunction={() => handleAddUser(user)} 
-                                compact={isMobile} // Use compact version for small screens
+                                compact={isMobile}
                               />
                             </motion.div>
                           ))
@@ -517,6 +621,42 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                     </motion.div>
                   )}
 
+                  {/* Add Admin tab */}
+                  {isAdmin && activeTab === "admins" && (
+                    <motion.div 
+                      className="space-y-2"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-sm font-medium text-gray-500">Promote to Admin</h3>
+                        <span className="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full">
+                          {getNonAdminUsers().length} eligible
+                        </span>
+                      </div>
+                      
+                      <div className="max-h-32 sm:max-h-40 overflow-y-auto rounded-lg border border-gray-100 bg-gray-50 p-2">
+                        {getNonAdminUsers().length > 0 ? (
+                          getNonAdminUsers().map((chatUser) => (
+                            <AdminPromotionItem
+                              key={chatUser._id}
+                              user={chatUser}
+                              onPromote={handleAddAdmin}
+                              loading={addingAdmin}
+                            />
+                          ))
+                        ) : (
+                          <div className="text-center py-6 text-gray-500 text-sm">
+                            <FiShield className="h-8 w-8 mx-auto text-gray-300 mb-2" />
+                            <p>All members are already admins</p>
+                            <p className="text-xs mt-1">Add new members first to promote them</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+
                   {/* Settings tab */}
                   {isAdmin && activeTab === "settings" && (
                     <motion.div 
@@ -525,7 +665,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.2 }}
                     >
-                      {/* Group Rename Section */}
+                     {/* Group Rename Section */}
                       <div className="space-y-2">
                         <h3 className="text-sm font-medium text-gray-500">Rename Group</h3>
                         <div className="flex gap-2 flex-col sm:flex-row">

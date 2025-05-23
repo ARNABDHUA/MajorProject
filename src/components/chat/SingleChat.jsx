@@ -438,7 +438,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       );
 
       setIsAdminOnlyMode(data.adminOnlyMode === true);
-      setIsUserAdmin(data.groupAdmin && data.groupAdmin._id === userInfo._id);
+      // setIsUserAdmin(data.groupAdmin && data.groupAdmin._id === userInfo._id);
+      setIsUserAdmin(data.groupAdmin && data?.groupAdmin?.some(admin => admin._id === userInfo?._id));//add today
     } catch (error) {
       console.error("Error checking admin status:", error);
     }

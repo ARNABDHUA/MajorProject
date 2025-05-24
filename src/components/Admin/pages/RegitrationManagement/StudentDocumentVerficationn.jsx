@@ -172,33 +172,37 @@ const StudentDocumentVerification = () => {
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : students.length === 0 ? (
-        <p className="text-white">No students found for course code {selectedCourse}.</p>
+        <p className="text-white">
+          No students found for course code {selectedCourse}.
+        </p>
       ) : (
         <div className="overflow-x-auto rounded shadow-lg border border-[#7f1dff]">
-          <table className="min-w-full bg-[#2a2a40] text-white text-sm">
-            <thead className="bg-[#1e1e2f] text-left text-sm font-semibold text-[#c084fc]">
+          <table className="min-w-full bg-[#2a2a40] text-white text-sm text-center">
+            <thead className="bg-[#1e1e2f] font-semibold text-[#c084fc]">
               <tr>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Type</th>
-                <th className="px-4 py-2">Email</th>
-                <th className="px-4 py-2">Phone</th>
-                <th className="px-4 py-2">Rank</th>
-                <th className="px-4 py-2">10th Marks</th>
-                <th className="px-4 py-2">12th Marks</th>
-                <th className="px-4 py-2">UG Marks</th>
-                <th className="px-4 py-2">Other Course</th>
-                <th className="px-4 py-2">Actions</th>
+                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Type</th>
+                <th className="px-4 py-3">Email</th>
+                <th className="px-4 py-3">Phone</th>
+                <th className="px-4 py-3">Rank</th>
+                <th className="px-4 py-3">10th Marks</th>
+                <th className="px-4 py-3">12th Marks</th>
+                <th className="px-4 py-3">UG Marks</th>
+                <th className="px-4 py-3">Other Course</th>
+                <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#7f1dff]">
               {students.map((student) => (
                 <React.Fragment key={student._id}>
-                  <tr className="border-t border-[#7f1dff] align-middle text-left">
-                    <td className="px-4 py-3 flex items-center">
-                      {student.name}
-                      {verifiedStudents.has(student._id) && (
-                        <Check className="ml-2 text-green-400" size={20} strokeWidth={3} />
-                      )}
+                  <tr className="align-top text-center">
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center items-center">
+                        {student.name}
+                        {verifiedStudents.has(student._id) && (
+                          <Check className="ml-2 text-green-400" size={20} strokeWidth={3} />
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">{student.select_offline ? "Offline" : "Online"}</td>
                     <td className="px-4 py-3">{student.email}</td>
@@ -230,9 +234,8 @@ const StudentDocumentVerification = () => {
                       </button>
                     </td>
                   </tr>
-
                   {expandedStudentId === student._id && (
-                    <tr className="bg-[#2a2a40] text-[#e9d5ff]">
+                    <tr className="bg-[#2a2a40] text-[#e9d5ff] text-center">
                       <td colSpan="10" className="px-4 py-3">
                         <div className="space-y-2">
                           <p><strong>10th Year:</strong> {student.tenth_year}</p>

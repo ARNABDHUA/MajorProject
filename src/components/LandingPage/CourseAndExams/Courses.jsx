@@ -7,6 +7,51 @@ import axios from "axios";
 import { FiClock } from "react-icons/fi";
 import HashLoader from "react-spinners/HashLoader";
 
+// Skeleton component for individual course card
+const CourseSkeleton = () => {
+  return (
+    <div className="flex flex-col w-72 rounded-xl shadow-lg shadow-gray-300 animate-pulse">
+      {/* Image skeleton */}
+      <div className="w-72 rounded-t-lg bg-gray-300 p-8 h-55">
+        <div className="w-full h-full bg-gray-400 rounded"></div>
+      </div>
+
+      {/* Header with badge and heart */}
+      <div className="flex justify-between items-center px-4 pt-2">
+        <div className="bg-gray-300 h-6 w-16 rounded mt-2"></div>
+        <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+      </div>
+
+      {/* Content area */}
+      <div className="flex px-4 pt-4 flex-col">
+        <div className="border-gray-300 space-y-4 min-h-[170px] border-b">
+          {/* Title skeleton */}
+          <div className="space-y-2">
+            <div className="h-6 bg-gray-300 rounded w-full"></div>
+            <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+          </div>
+
+          {/* Description skeleton */}
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-300 rounded w-full"></div>
+            <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="m-4 flex justify-between items-center">
+        <div className="flex items-center space-x-2">
+          <div className="w-4 h-4 bg-gray-300 rounded"></div>
+          <div className="h-4 bg-gray-300 rounded w-16"></div>
+        </div>
+        <div className="w-4 h-4 bg-gray-300 rounded"></div>
+      </div>
+    </div>
+  );
+};
+
 const Courses = () => {
   const navigate = useNavigate();
   const [reactions, setReactions] = useState({}); // Track reactions for each course by index
@@ -40,12 +85,16 @@ const Courses = () => {
     navigate(`/courseModules/${courseId}`);
   };
 
-  // Show loader while data is being fetched
+  // Show skeleton loader while data is being fetched
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <HashLoader size={50} color="#3B82F6" />
-        <p className="ml-4 text-gray-600 font-medium">Loading courses...</p>
+      <div className="flex justify-center items-center">
+        <div className="flex flex-wrap gap-2 md:gap-6 lg:gap-8 items-center justify-center">
+          {/* Render 6 skeleton cards */}
+          {Array.from({ length: 6 }).map((_, index) => (
+            <CourseSkeleton key={index} />
+          ))}
+        </div>
       </div>
     );
   }

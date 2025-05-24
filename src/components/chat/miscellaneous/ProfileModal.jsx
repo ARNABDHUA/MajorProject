@@ -66,6 +66,18 @@ const ProfileModal = ({ user, children, isOpen: externalIsOpen, onClose: externa
               <p className="text-lg sm:text-xl text-gray-700 font-medium break-all text-center">
                 Email: {user.email}
               </p>
+              {
+                user.isstudent ?(<p className="text-lg sm:text-xl bg-blue-400 p-1 rounded-xl text-gray-700 font-medium break-all text-center">
+                Student
+              </p>):(user.valid_teacher?(<p className="text-lg bg-green-400 rounded-xl p-1 sm:text-xl text-gray-700 font-medium break-all text-center">
+                Teacher
+              </p>):(<p className="text-lg sm:text-xl bg-amber-400 rounded-xl p-1 text-gray-700 font-medium break-all text-center">
+                Admin
+              </p>))
+              }
+              {/* <p className="text-lg sm:text-xl text-gray-700 font-medium break-all text-center">
+                Email: {user.email}
+              </p> */}
             </div>
 
             {/* Footer */}

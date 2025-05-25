@@ -1675,7 +1675,7 @@ function Room() {
           <div className="backdrop-blur-xl bg-white/10 px-4 py-2 rounded-full border border-white/20 shadow-lg">
             <div className="flex items-center space-x-2">
               <div className={`w-2 h-2 rounded-full animate-pulse ${
-                attendanceData[name]?.success ? 'bg-green-400' : 'bg-yellow-400'
+                attendanceData[name]?.success ? 'bg-yellow-400' : 'bg-yellow-400'
               }`}></div>
               <span className="text-sm text-white/80">
                 {/* {attendanceData[name]?.success ? 'Attendance Recorded' : 'Recording Attendance...'} */}

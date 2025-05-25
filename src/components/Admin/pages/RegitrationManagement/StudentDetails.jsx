@@ -149,7 +149,7 @@ const StudentDetails = () => {
                 Name
               </th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-white">
-                Roll No
+                Phone Number
               </th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-white">
                 Semester

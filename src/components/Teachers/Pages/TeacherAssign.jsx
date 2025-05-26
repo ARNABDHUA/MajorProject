@@ -34,9 +34,11 @@ export default function TeacherManagement() {
 
         // If no course code is selected, use the default API endpoint
         if (!selectedCourseCode) {
-          const response = await axios.post(
-            "https://e-college-data.onrender.com/v1/teachers/teachers"
-          );
+          const response = await axios.post(//add by arnab
+            "https://e-college-data.onrender.com/v1/teachers/teachers-bycoursecode",{
+              course_code: selectedCourseCode,
+            }
+          );//add by arnab
           setTeachers(response.data);
         } else {
           // Use the new API endpoint with course_code filter

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { ChevronDown, Search, RefreshCw, Download } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ChevronDown, Search, RefreshCw } from "lucide-react";
 
-export default function NewRegisterStudents() {
+const NewRegisterStudents = () => {
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [courseCode, setCourseCode] = useState("101");
@@ -114,11 +114,6 @@ export default function NewRegisterStudents() {
             <RefreshCw className="w-4 h-4" />
             <span>Refresh</span>
           </button>
-
-          <button className="flex items-center gap-2 bg-purple-900 hover:bg-purple-800 text-white font-medium py-2.5 px-4 rounded-lg transition-colors">
-            <Download className="w-4 h-4" />
-            <span>Export</span>
-          </button>
         </div>
       </div>
 
@@ -145,7 +140,7 @@ export default function NewRegisterStudents() {
                 12th Marks
               </th>
               <th scope="col" className="px-6 py-3">
-                Actions
+                Status
               </th>
             </tr>
           </thead>
@@ -184,9 +179,9 @@ export default function NewRegisterStudents() {
                   <td className="px-6 py-4">{student.tenth_marks}%</td>
                   <td className="px-6 py-4">{student.twelfth_marks}%</td>
                   <td className="px-6 py-4">
-                    <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg text-xs font-medium transition-colors">
-                      Assign Roll
-                    </button>
+                    <span className="text-gray-400 text-xs italic">
+                      Assigning roll soon
+                    </span>
                   </td>
                 </tr>
               ))
@@ -201,4 +196,6 @@ export default function NewRegisterStudents() {
       </div>
     </div>
   );
-}
+};
+
+export default NewRegisterStudents;

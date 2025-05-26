@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, User, Book, Award, CheckCircle, XCircle, ArrowLeft, ArrowRight, ChevronDown } from 'lucide-react';
+import { Users,Calendar, Clock, User, Book, Award, CheckCircle, XCircle,UserX, ArrowLeft, ArrowRight, ChevronDown,UserCheck ,RefreshCw } from 'lucide-react';
 import axios from 'axios';
 
 const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
+  const [studentAttendanceData, setStudentAttendanceData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,8 +46,28 @@ const Attendance = () => {
   useEffect(() => {
     if (selectedPaperCode && teacherData) {
       fetchAttendanceData();
+      fetchAttendance()
     }
   }, [selectedPaperCode]);
+
+
+  const fetchAttendance = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await axios.post('https://e-college-data.onrender.com/v1/students/student-attendance-onedayforteacher', {
+       paper_code:selectedPaperCode
+      });
+      const data = response.data;
+      setStudentAttendanceData(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   // Fetch attendance data based on selected paper code
   const fetchAttendanceData = async () => {
@@ -280,6 +301,98 @@ const Attendance = () => {
             </div>
           </div>
         </div>
+
+        {/* Latest Attendance for student */}
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden my-4">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-8 py-6">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <Users className="w-7 h-7" />
+                  Total Students ({studentAttendanceData.totalStudents})
+                </h2>
+                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <UserCheck className="w-7 h-7" />
+                  Present Students ({studentAttendanceData.presentCount})
+                </h2>
+                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <RefreshCw className="w-7 h-7" />
+                  Attendance ({studentAttendanceData.attendancePercentage})
+                </h2>
+              </div>
+
+              {studentAttendanceData.presentStudents && studentAttendanceData.presentStudents.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Student Details
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          College Roll
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Join Time
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Exit Time
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {studentAttendanceData.presentStudents.map((student, index) => (
+                        <tr key={student._id} className="hover:bg-gray-50 transition-colors duration-200">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-12 w-12">
+                                <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
+                                  <span className="text-white font-bold text-lg">
+                                    {student.name.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">{student.name}</div>
+                                <div className="text-sm text-gray-500">{student.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">{student.c_roll}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center text-sm text-gray-900">
+                              <Clock className="w-4 h-4 mr-2 text-green-500" />
+                              {student.jointime}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center text-sm text-gray-900">
+                              <Clock className="w-4 h-4 mr-2 text-red-500" />
+                              {student.exittime}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              <UserCheck className="w-3 h-3 mr-1" />
+                              Present
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="p-12 text-center">
+                  <UserX className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Students Present</h3>
+                  <p className="text-gray-500">No students have attended the class today.</p>
+                </div>
+              )}
+            </div>
 
         {/* Latest Attendance */}
         {latestAttendance && (

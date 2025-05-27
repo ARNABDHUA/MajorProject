@@ -425,7 +425,7 @@ const DisplaySetup = () => {
                 </ProtectedRoute>
               }
             />
-            {/* <Route path="/test" element={<AdminLogin />} /> */}
+            <Route path="/test" element={<Payment />} />
             {/* <Route
               path="/unauthenticated-user-found"
               element={<UnauthorizedAccessPage />}

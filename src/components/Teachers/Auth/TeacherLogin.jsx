@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import image from "/images/robot.gif";
 import axios from "axios";
-import { useNavigate ,Link} from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 
 export default function TeacherLogin() {
@@ -188,13 +188,13 @@ export default function TeacherLogin() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Register Number */}
+                {/* Teacherid */}
                 <div className="space-y-2">
                   <label
                     htmlFor="registerNumber"
                     className="text-sm font-medium text-gray-700"
                   >
-                    Register Number
+                    Teacher ID
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -208,7 +208,7 @@ export default function TeacherLogin() {
                       onChange={handleChange}
                       autoComplete="off"
                       className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Enter your register number"
+                      placeholder="Enter your Teacher ID"
                       required
                     />
                   </div>
@@ -226,7 +226,7 @@ export default function TeacherLogin() {
                     </label>
                     <Link
                       to="/teacher-forgot-password"
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium" 
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                     >
                       Forgot password?
                     </Link>
@@ -266,19 +266,6 @@ export default function TeacherLogin() {
                   {isLoading ? "Signing in..." : "Sign in"}
                 </button>
               </form>
-
-              {/* Footer */}
-              <div className="text-center mt-8">
-                <p className="text-sm text-gray-500">
-                  Don't have an account?{" "}
-                  <a
-                    href="#"
-                    className="font-medium text-blue-600 hover:text-blue-800"
-                  >
-                    Contact administrator
-                  </a>
-                </p>
-              </div>
             </div>
           </div>
         </div>

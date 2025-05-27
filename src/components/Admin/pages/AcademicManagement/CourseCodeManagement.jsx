@@ -1,838 +1,1120 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  FaGraduationCap,
+  FaUser,
+  FaClock,
+  FaUsers,
+  FaCode,
+  FaSearch,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaBookOpen,
+  FaChevronDown,
+  FaChevronRight,
+  FaBook,
+  FaSpinner,
+  FaSave,
+  FaTimes,
+  FaMinus,
+  FaExclamationTriangle,
+} from "react-icons/fa";
+import Swal from "sweetalert2";
 
-const TeacherCourseManagement = () => {
+const CourseCodeManagement = () => {
   const [courses, setCourses] = useState([]);
-  const [filteredCourses, setFilteredCourses] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [data, setData] = useState({});
-  const [expandedCourses, setExpandedCourses] = useState({});
-  const [expandedSems, setExpandedSems] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [editingPaper, setEditingPaper] = useState(null);
-  const [updateForm, setUpdateForm] = useState({
-    paper_name: '',
-    new_paper_code: ''
-  });
-  const [addingPapers, setAddingPapers] = useState(null);
-  const [bulkPapersForm, setBulkPapersForm] = useState({
-    papers: [{ paper_code: '', paper_name: '' }]
-  });
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [confirmModal, setConfirmModal] = useState({ show: false, message: '', onConfirm: null });
-
-  const [singlePaperForm, setSinglePaperForm] = useState({
-    course_id: '',
-    course_code: '',
-    sem: '',
-    paper_code: '',
-    paper_name: ''
-  });
-  const [showSingleForm, setShowSingleForm] = useState('');
-  const [newPaper, setNewPaper] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [expandedSemesters, setExpandedSemesters] = useState({});
+  const [semesterPapers, setSemesterPapers] = useState({});
+  const [loadingSemesters, setLoadingSemesters] = useState({});
+  const [showCreateForm, setShowCreateForm] = useState({});
   const [showAddForm, setShowAddForm] = useState({});
+  const [showUpdateForm, setShowUpdateForm] = useState({});
+  const [creatingPapers, setCreatingPapers] = useState({});
+  const [deletingAllPapers, setDeletingAllPapers] = useState({});
+  const [deletingIndividualPaper, setDeletingIndividualPaper] = useState({});
+  const [updatingPaper, setUpdatingPaper] = useState({});
 
-
-  // Modal functions - defined after state declarations
-  const showPopup = (message) => {
-    setModalMessage(message);
-    setShowModal(true);
-  };
-
-  const closePopup = () => {
-    setShowModal(false);
-    setModalMessage('');
-  };
-
-  // Confirmation modal functions
-  const showConfirm = (message, onConfirm) => {
-    setConfirmModal({ show: true, message, onConfirm });
-  };
-
-  const handleConfirm = () => {
-    if (confirmModal.onConfirm) {
-      confirmModal.onConfirm();
-    }
-    setConfirmModal({ show: false, message: '', onConfirm: null });
-  };
-
-  const handleCancel = () => {
-    setConfirmModal({ show: false, message: '', onConfirm: null });
-  };
-
-  // Fetch all courses on component mount
   useEffect(() => {
     fetchCourses();
   }, []);
 
-  // Filter courses based on search term
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredCourses(courses);
-    } else {
-      const filtered = courses.filter(course =>
-        course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.course_id.toString().includes(searchTerm)
-      );
-      setFilteredCourses(filtered);
-    }
-  }, [courses, searchTerm]);
-
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://e-college-data.onrender.com/v1/adminroutine/course-all-id');
+      const response = await fetch(
+        "https://e-college-data.onrender.com/v1/adminroutine/course-all-id"
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch courses");
+      }
       const data = await response.json();
+      console.log("data=data=", data);
       setCourses(data);
-      setFilteredCourses(data);
+      setError(null);
     } catch (err) {
-      console.error('Error fetching courses:', err);
-      showPopup('Error fetching courses. Please try again.');
+      setError("Failed to fetch courses. Please try again.");
+      console.error("Error fetching courses:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAddSinglePaper = async (courseCode, sem, key) => {
-    const paper = newPaper[key];
+  const calculateSemesters = (duration) => {
+    if (!duration) return 0;
+    const years = parseInt(duration.split(" ")[0]);
+    return years * 2; // Each year = 2 semesters
+  };
 
-    if (!paper?.paper_code || !paper?.paper_name) {
-      alert("Both fields are required");
-      return;
+  const fetchSemesterPapers = async (courseId, semester) => {
+    const semesterKey = `${courseId}-${semester}`;
+
+    if (semesterPapers[semesterKey]) {
+      return; // Already fetched
     }
 
     try {
-      const response = await fetch('https://e-college-data.onrender.com/v1/paper-code/add-papercode', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paper_code: paper.paper_code,
-          paper_name: paper.paper_name,
-          course_code: courseCode,
-          sem: sem.toString(),
-        }),
-      });
+      setLoadingSemesters((prev) => ({ ...prev, [semesterKey]: true }));
+      console.log("semester os", semester.toString());
+      console.log("course_id is", courseId);
+      const response = await axios.post(
+        "https://e-college-data.onrender.com/v1/paper-code/get-coursecode",
+        {
+          course_code: courseId,
+          sem: semester.toString(),
+        }
+      );
 
-      const result = await response.json();
-
-      if (!response.ok) throw new Error(result.message || "Something went wrong");
-
-      // Optionally refresh the papers for that semester
-      fetchPapers(courseCode, sem);
-
-      // Clear the input
-      setNewPaper((prev) => ({
+      if (response.data && response.data.success && response.data.data) {
+        setSemesterPapers((prev) => ({
+          ...prev,
+          [semesterKey]: response.data.data.papers || [],
+        }));
+      } else {
+        setSemesterPapers((prev) => ({
+          ...prev,
+          [semesterKey]: [],
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching semester papers:", err);
+      setSemesterPapers((prev) => ({
         ...prev,
-        [key]: { paper_code: '', paper_name: '' },
+        [semesterKey]: [],
       }));
-      setShowAddForm((prev) => ({
-        ...prev,
-        [key]: false,
-      }));
-
-    } catch (err) {
-      alert("Error: " + err.message);
+    } finally {
+      setLoadingSemesters((prev) => ({ ...prev, [semesterKey]: false }));
     }
   };
 
+  const deleteIndividualPaper = async (
+    courseId,
+    semester,
+    paperCode,
+    semesterKey
+  ) => {
+    const paperKey = `${semesterKey}-${paperCode}`;
 
-  const toggleCourse = (course_id) => {
-    setExpandedCourses(prev => ({
-      ...prev,
-      [course_id]: !prev[course_id]
-    }));
-  };
-
-  const toggleSemester = (course_id, sem) => {
-    const key = `${course_id}-${sem}`;
-    if (!expandedSems[key]) {
-      fetchPapers(course_id, sem);
-    }
-    setExpandedSems(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
-
-  const fetchPapers = async (course_id, sem) => {
-    try {
-      const response = await fetch(
-        'https://e-college-data.onrender.com/v1/paper-code/get-coursecode',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ course_code: course_id, sem })
-        }
-      );
-      const result = await response.json();
-      if (result.success) {
-        const key = `${course_id}-${sem}`;
-        setData(prev => ({
-          ...prev,
-          [key]: result.data.papers || []
-        }));
-      } else {
-        // Even if not successful, set empty array to show "No papers assigned"
-        const key = `${course_id}-${sem}`;
-        setData(prev => ({
-          ...prev,
-          [key]: []
-        }));
-      }
-    } catch (err) {
-      console.error('Error fetching papers:', err);
-      showPopup('Error fetching papers. Please try again.');
-    }
-  };
-
-  const handleDeleteCourse = async (course_id, sem) => {
-    showConfirm(
-      `Are you sure you want to delete all papers from Course ${course_id}, Semester ${sem}?`,
-      async () => {
-        try {
-          const response = await fetch(
-            'https://e-college-data.onrender.com/v1/paper-code/delete-courseCode',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ course_code: course_id, sem })
-            }
-          );
-          const result = await response.json();
-
-          if (result.success) {
-            showPopup('Course papers deleted successfully!');
-            // Remove from local state
-            const key = `${course_id}-${sem}`;
-            setData(prev => {
-              const newData = { ...prev };
-              delete newData[key];
-              return newData;
-            });
-            setExpandedSems(prev => ({
-              ...prev,
-              [key]: false
-            }));
-          } else {
-            showPopup('Error deleting course papers. Please try again.');
-          }
-        } catch (err) {
-          console.error('Error deleting course papers:', err);
-          showPopup('Error deleting course papers. Please try again.');
-        }
-      }
-    );
-  };
-
-  const handleDeletePaper = async (course_id, sem, paper_code) => {
-    showConfirm(
-      `Are you sure you want to delete paper ${paper_code}?`,
-      async () => {
-        try {
-          const response = await fetch(
-            'https://e-college-data.onrender.com/v1/paper-code/remove-papercode',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ course_code: course_id, sem, paper_code })
-            }
-          );
-          const result = await response.json();
-
-          if (result.success) {
-            showPopup('Paper removed successfully!');
-            // Remove from local state
-            const key = `${course_id}-${sem}`;
-            setData(prev => ({
-              ...prev,
-              [key]: prev[key].filter(paper => paper.paper_code !== paper_code)
-            }));
-          } else {
-            showPopup('Error removing paper. Please try again.');
-          }
-        } catch (err) {
-          console.error('Error removing paper:', err);
-          showPopup('Error removing paper. Please try again.');
-        }
-      }
-    );
-  };
-
-  const handleUpdatePaper = async (course_id, sem, paper_code) => {
-    // Validation
-    if (!updateForm.paper_name.trim() || !updateForm.new_paper_code.trim()) {
-      showPopup('Please fill in both paper name and paper code.');
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        'https://e-college-data.onrender.com/v1/paper-code/update-papercode',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            paper_name: updateForm.paper_name,
-            new_paper_code: updateForm.new_paper_code,
-            course_code: course_id,
-            sem: sem,
-            paper_code: paper_code
-          })
-        }
-      );
-      const result = await response.json();
-
-      if (result.success) {
-        showPopup('Paper updated successfully!');
-        // Update local state
-        const key = `${course_id}-${sem}`;
-        setData(prev => ({
-          ...prev,
-          [key]: prev[key].map(paper =>
-            paper.paper_code === paper_code
-              ? { ...paper, paper_name: updateForm.paper_name, paper_code: updateForm.new_paper_code }
-              : paper
-          )
-        }));
-        setEditingPaper(null);
-        setUpdateForm({ paper_name: '', new_paper_code: '' });
-      } else {
-        showPopup(result.message || 'Error updating paper. Please try again.');
-      }
-    } catch (err) {
-      console.error('Error updating paper:', err);
-      showPopup('Error updating paper. Please check your connection and try again.');
-    }
-  };
-
-  const handleCreateBulkPapers = async (course_id, sem) => {
-    // Validate form
-    const validPapers = bulkPapersForm.papers.filter(paper =>
-      paper.paper_code.trim() && paper.paper_name.trim()
-    );
-
-    if (validPapers.length === 0) {
-      showPopup('Please add at least one paper with both code and name filled.');
-      return;
-    }
-
-    // Check for duplicate paper codes
-    const paperCodes = validPapers.map(p => p.paper_code);
-    const uniqueCodes = new Set(paperCodes);
-    if (paperCodes.length !== uniqueCodes.size) {
-      showPopup('Duplicate paper codes found. Please ensure all paper codes are unique.');
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        'https://e-college-data.onrender.com/v1/paper-code/create-course-code-all',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            course_code: course_id,
-            sem: sem,
-            papers: validPapers
-          })
-        }
-      );
-      const result = await response.json();
-
-      if (result.success) {
-        showPopup('Papers created successfully!');
-        // Refresh the papers for this semester
-        fetchPapers(course_id, sem);
-        setAddingPapers(null);
-        setBulkPapersForm({ papers: [{ paper_code: '', paper_name: '' }] });
-      } else {
-        showPopup(result.message || 'Error creating papers. Please try again.');
-      }
-    } catch (err) {
-      console.error('Error creating papers:', err);
-      showPopup('Error creating papers. Please check your connection and try again.');
-    }
-  };
-
-  const startEdit = (paper) => {
-    setEditingPaper(paper._id);
-    setUpdateForm({
-      paper_name: paper.paper_name,
-      new_paper_code: paper.paper_code
+    const confirmResult = await Swal.fire({
+      title: `Are you sure?`,
+      text: `Do you want to delete the paper "${paperCode}"? This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
     });
-  };
 
-  const startAddBulkPapers = (course_id, sem) => {
-    setAddingPapers(`${course_id}-${sem}`);
-    setBulkPapersForm({ papers: [{ paper_code: '', paper_name: '' }] });
-  };
+    if (!confirmResult.isConfirmed) return;
 
-  const addPaperRow = () => {
-    setBulkPapersForm(prev => ({
-      papers: [...prev.papers, { paper_code: '', paper_name: '' }]
-    }));
-  };
+    try {
+      setDeletingIndividualPaper((prev) => ({ ...prev, [paperKey]: true }));
 
-  const removePaperRow = (index) => {
-    if (bulkPapersForm.papers.length > 1) {
-      setBulkPapersForm(prev => ({
-        papers: prev.papers.filter((_, i) => i !== index)
-      }));
+      const response = await axios.post(
+        "https://e-college-data.onrender.com/v1/paper-code/remove-papercode",
+        {
+          course_code: courseId,
+          sem: semester.toString(),
+          paper_code: paperCode,
+        }
+      );
+
+      if (response.data && response.data.success) {
+        setSemesterPapers((prev) => ({
+          ...prev,
+          [semesterKey]: prev[semesterKey].filter(
+            (paper) => paper.paper_code !== paperCode
+          ),
+        }));
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "Paper deleted successfully.",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } else {
+        throw new Error("Failed to delete paper");
+      }
+    } catch (err) {
+      console.error("Error deleting paper:", err);
+      await Swal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "Failed to delete paper. Please try again.",
+      });
+    } finally {
+      setDeletingIndividualPaper((prev) => ({ ...prev, [paperKey]: false }));
     }
   };
 
-  const updatePaperRow = (index, field, value) => {
-    setBulkPapersForm(prev => ({
-      papers: prev.papers.map((paper, i) =>
-        i === index ? { ...paper, [field]: value } : paper
-      )
+  const deleteAllPapers = async (courseId, semester, semesterKey) => {
+    const confirmResult = await Swal.fire({
+      title: `Are you sure?`,
+      text: `Do you want to delete all papers from Semester ${semester}? This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete all!",
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    try {
+      setDeletingAllPapers((prev) => ({ ...prev, [semesterKey]: true }));
+
+      const response = await axios.post(
+        "https://e-college-data.onrender.com/v1/paper-code/delete-courseCode",
+        {
+          course_code: courseId,
+          sem: semester.toString(),
+        }
+      );
+
+      if (response.data && response.data.success) {
+        setSemesterPapers((prev) => ({
+          ...prev,
+          [semesterKey]: [],
+        }));
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "All papers deleted successfully.",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } else {
+        throw new Error("Failed to delete papers");
+      }
+    } catch (err) {
+      console.error("Error deleting papers:", err);
+      await Swal.fire({
+        icon: "error",
+        title: "Oops!",
+        text: "Failed to delete papers. Please try again.",
+      });
+    } finally {
+      setDeletingAllPapers((prev) => ({ ...prev, [semesterKey]: false }));
+    }
+  };
+
+  const toggleSemester = async (courseId, semester) => {
+    const semesterKey = `${courseId}-${semester}`;
+    const isExpanded = expandedSemesters[semesterKey];
+
+    if (!isExpanded) {
+      await fetchSemesterPapers(courseId, semester);
+    }
+
+    setExpandedSemesters((prev) => ({
+      ...prev,
+      [semesterKey]: !isExpanded,
     }));
   };
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  const UpdatePaperForm = ({ courseId, semester, semesterKey, paper }) => {
+    const [newPaperCode, setNewPaperCode] = useState(paper.paper_code);
+    const [paperName, setPaperName] = useState(paper.paper_name);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const clearSearch = () => {
-    setSearchTerm('');
-  };
+    const handleSubmit = async (e) => {
+      e.preventDefault();
 
-  const cancelEdit = () => {
-    setEditingPaper(null);
-    setUpdateForm({ paper_name: '', new_paper_code: '' });
-  };
+      if (!newPaperCode.trim() || !paperName.trim()) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Incomplete Form",
+          text: "Please fill in both paper code and paper name.",
+        });
+        return;
+      }
 
-  const cancelAddBulkPapers = () => {
-    setAddingPapers(null);
-    setBulkPapersForm({ papers: [{ paper_code: '', paper_name: '' }] });
-  };
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post(
+          "https://e-college-data.onrender.com/v1/paper-code/update-papercode",
+          {
+            paper_name: paperName.trim(),
+            new_paper_code: newPaperCode.trim(),
+            course_code: courseId,
+            sem: semester.toString(),
+            paper_code: paper.paper_code,
+          }
+        );
 
-  // Generate semesters based on duration
-  const getSemesters = (duration) => {
-    if (!duration) return [];
-    const years = parseInt(duration.split(' ')[0]);
-    const totalSems = years * 2;
-    return Array.from({ length: totalSems }, (_, i) => (i + 1).toString());
-  };
+        if (response.data && response.data.success) {
+          setSemesterPapers((prev) => ({
+            ...prev,
+            [semesterKey]: prev[semesterKey].map((p) =>
+              p.paper_code === paper.paper_code
+                ? {
+                    ...p,
+                    paper_code: newPaperCode.trim(),
+                    paper_name: paperName.trim(),
+                  }
+                : p
+            ),
+          }));
 
-  return (
-    <div className="p-6 min-h-screen bg-black text-white">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-purple-400 mb-2">Course Management</h1>
-        <p className="text-gray-400">Manage courses, semesters, and papers</p>
-      </div>
+          const updateKey = `${semesterKey}-${paper.paper_code}`;
+          setShowUpdateForm((prev) => ({
+            ...prev,
+            [updateKey]: false,
+          }));
 
-      {/* Search Bar */}
-      <div className="mb-6">
-        <div className="relative max-w-md">
-          <input
-            type="text"
-            placeholder="Search courses by name, code, or ID..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="w-full p-3 pl-4 pr-10 bg-gray-800 border border-purple-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
-          />
-          {searchTerm && (
-            <button
-              onClick={clearSearch}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-            >
-              ✕
-            </button>
-          )}
-        </div>
-        {searchTerm && (
-          <p className="text-sm text-purple-300 mt-2">
-            Showing {filteredCourses.length} of {courses.length} courses
-          </p>
-        )}
-      </div>
+          await Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Paper updated successfully!",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        } else {
+          throw new Error("Failed to update paper");
+        }
+      } catch (err) {
+        console.error("Error updating paper:", err);
+        await Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to update paper. Please try again.",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
 
-      {loading && (
-        <div className="text-center text-purple-400">Loading courses...</div>
-      )}
+    const handleCancel = () => {
+      const updateKey = `${semesterKey}-${paper.paper_code}`;
+      setShowUpdateForm((prev) => ({
+        ...prev,
+        [updateKey]: false,
+      }));
+      setNewPaperCode(paper.paper_code);
+      setPaperName(paper.paper_name);
+    };
 
-      <div className="space-y-4">
-        {filteredCourses.map((course) => (
-          <div key={course._id} className="border border-purple-600 rounded-md">
-            <div
-              className="p-4 bg-purple-700 cursor-pointer hover:bg-purple-600 flex justify-between items-center"
-              onClick={() => toggleCourse(course.course_id)}
-            >
-              <div>
-                <span className="font-semibold">{course.code} - {course.name}</span>
-                <p className="text-sm text-purple-200">Duration: {course.duration}</p>
-              </div>
-              <span className="text-purple-300">
-                {expandedCourses[course.course_id] ? '▼' : '►'}
-              </span>
-            </div>
-
-            {expandedCourses[course.course_id] && (
-              <div className="space-y-2 p-2">
-                {getSemesters(course.duration).map((sem) => {
-                  const key = `${course.course_id}-${sem}`;
-                  const hasExistingPapers = data[key] && data[key].length > 0;
-                  const papersLoaded = data.hasOwnProperty(key);
-
-                  return (
-                    <div key={sem} className="border border-gray-600 rounded-md ml-4">
-                      <div
-                        className="p-3 bg-gray-800 cursor-pointer hover:bg-gray-700 flex justify-between items-center"
-                        onClick={() => toggleSemester(course.course_id, sem)}
-                      >
-                        <span>Semester: {sem}</span>
-                        <div className="flex space-x-2 items-center">
-                          <button
-                            className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              startAddBulkPapers(course.course_id, sem);
-                            }}
-                          >
-                            Create Papers
-                          </button>
-                          {hasExistingPapers && (
-                            <button
-                              className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteCourse(course.course_id, sem);
-                              }}
-                            >
-                              Delete All Papers
-                            </button>
-                          )}
-                          <span className="text-gray-300">
-                            {expandedSems[key] ? '▼' : '►'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {expandedSems[key] && (
-                        <div className="p-4 bg-gray-900">
-                          {/* Create Papers Form */}
-                          {addingPapers === key && (
-                            <div className="bg-green-900 p-4 rounded-md mb-4 border border-green-600">
-                              <h4 className="text-green-400 font-semibold mb-3">Create Papers for Semester {sem}</h4>
-                              <div className="space-y-4">
-                                {bulkPapersForm.papers.map((paper, index) => (
-                                  <div key={index} className="bg-gray-800 p-3 rounded-md">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <span className="text-green-300 font-medium">Paper {index + 1}</span>
-                                      {bulkPapersForm.papers.length > 1 && (
-                                        <button
-                                          className="text-red-400 hover:text-red-300 text-sm"
-                                          onClick={() => removePaperRow(index)}
-                                        >
-                                          Remove
-                                        </button>
-                                      )}
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                      <div>
-                                        <label className="block text-green-300 mb-1 text-sm">Paper Code:</label>
-                                        <input
-                                          type="text"
-                                          value={paper.paper_code}
-                                          onChange={(e) => updatePaperRow(index, 'paper_code', e.target.value)}
-                                          className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-green-400"
-                                          placeholder="e.g., MCA-401"
-                                        />
-                                      </div>
-                                      <div>
-                                        <label className="block text-green-300 mb-1 text-sm">Paper Name:</label>
-                                        <input
-                                          type="text"
-                                          value={paper.paper_name}
-                                          onChange={(e) => updatePaperRow(index, 'paper_name', e.target.value)}
-                                          className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-green-400"
-                                          placeholder="e.g., Artificial Intelligence"
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-
-                                <button
-                                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm flex items-center"
-                                  onClick={addPaperRow}
-                                >
-                                  + Add Another Paper
-                                </button>
-
-                                <div className="flex space-x-2 pt-2">
-                                  <button
-                                    className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm"
-                                    onClick={() => handleCreateBulkPapers(course.course_id, sem)}
-                                  >
-                                    Create All Papers
-                                  </button>
-                                  <button
-                                    className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-sm"
-                                    onClick={cancelAddBulkPapers}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {data[key] ? (
-                            data[key].length > 0 ? (
-                              <div className="space-y-3">
-                                {data[key].map((paper) => (
-                                  <div
-                                    key={paper._id}
-                                    className="bg-gray-800 p-3 rounded-md hover:bg-gray-700"
-                                  >
-                                    {editingPaper === paper._id ? (
-                                      <div className="space-y-3">
-                                        <div>
-                                          <label className="block text-purple-400 mb-1">Paper Name:</label>
-                                          <input
-                                            type="text"
-                                            value={updateForm.paper_name}
-                                            onChange={(e) => setUpdateForm(prev => ({ ...prev, paper_name: e.target.value }))}
-                                            className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-purple-400"
-                                            placeholder="Enter paper name"
-                                          />
-                                        </div>
-                                        <div>
-                                          <label className="block text-purple-400 mb-1">Paper Code:</label>
-                                          <input
-                                            type="text"
-                                            value={updateForm.new_paper_code}
-                                            onChange={(e) => setUpdateForm(prev => ({ ...prev, new_paper_code: e.target.value }))}
-                                            className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-purple-400"
-                                            placeholder="Enter paper code"
-                                          />
-                                        </div>
-                                        <div className="flex space-x-2">
-                                          <button
-                                            className="bg-green-600 hover:bg-green-700 px-3 py-2 rounded text-sm font-medium"
-                                            onClick={() => handleUpdatePaper(course.course_id, sem, paper.paper_code)}
-                                          >
-                                            Save Changes
-                                          </button>
-                                          <button
-                                            className="bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded text-sm"
-                                            onClick={cancelEdit}
-                                          >
-                                            Cancel
-                                          </button>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div className="flex justify-between items-center">
-                                        <div>
-                                          <p><span className="text-purple-400">Code:</span> {paper.paper_code}</p>
-                                          <p><span className="text-purple-400">Name:</span> {paper.paper_name}</p>
-                                        </div>
-                                        <div className="flex space-x-2">
-                                          <button
-                                            className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded text-sm"
-                                            onClick={() => startEdit(paper)}
-                                          >
-                                            Update
-                                          </button>
-                                          <button
-                                            className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-sm"
-                                            onClick={() => handleDeletePaper(course.course_id, sem, paper.paper_code)}
-                                          >
-                                            Delete
-                                          </button>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-
-                                {/* Show button if form is hidden */}
-                                {!showAddForm[key] && (
-                                  <button
-                                    onClick={() =>
-                                      setShowAddForm((prev) => ({ ...prev, [key]: true }))
-                                    }
-                                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm"
-                                  >
-                                    + Add Paper
-                                  </button>
-                                )}
-
-                                {/* Show form only when state is true */}
-                                {showAddForm[key] && (
-                                  <div className="mt-4 p-4 bg-gray-800 rounded-md border border-purple-600">
-                                    <h4 className="text-purple-400 font-semibold mb-2">Add a New Paper</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                                      <div>
-                                        <label className="block text-sm text-purple-300 mb-1">Paper Code:</label>
-                                        <input
-                                          type="text"
-                                          className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:border-purple-400"
-                                          value={newPaper[key]?.paper_code || ''}
-                                          onChange={(e) =>
-                                            setNewPaper((prev) => ({
-                                              ...prev,
-                                              [key]: {
-                                                ...(prev[key] || {}),
-                                                paper_code: e.target.value,
-                                              },
-                                            }))
-                                          }
-                                          placeholder="e.g., BCA-103"
-                                        />
-                                      </div>
-                                      <div>
-                                        <label className="block text-sm text-purple-300 mb-1">Paper Name:</label>
-                                        <input
-                                          type="text"
-                                          className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:border-purple-400"
-                                          value={newPaper[key]?.paper_name || ''}
-                                          onChange={(e) =>
-                                            setNewPaper((prev) => ({
-                                              ...prev,
-                                              [key]: {
-                                                ...(prev[key] || {}),
-                                                paper_name: e.target.value,
-                                              },
-                                            }))
-                                          }
-                                          placeholder="e.g., Java"
-                                        />
-                                      </div>
-                                    </div>
-                                    <div className="flex gap-2">
-                                      <button
-                                        onClick={() => handleAddSinglePaper(course.code, sem, key)}
-                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm"
-                                      >
-                                        Add Paper
-                                      </button>
-                                      <button
-                                        onClick={() =>
-                                          setShowAddForm((prev) => ({ ...prev, [key]: false }))
-                                        }
-                                        className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm"
-                                      >
-                                        Cancel
-                                      </button>
-                                    </div>
-                                  </div>
-                                )}
-
-
-
-                              </div>
-                            ) : (
-                              <div className="text-center py-4">
-                                <p className="text-gray-400 mb-3">No papers assigned for this semester</p>
-                                <button
-                                  className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm"
-                                  onClick={() => startAddBulkPapers(course.course_id, sem)}
-                                >
-                                  Create Papers
-                                </button>
-                              </div>
-                            )
-                          ) : (
-                            <p className="text-gray-400 text-center py-4">Loading Papers...</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {!loading && filteredCourses.length === 0 && searchTerm && (
-        <div className="text-center text-gray-400 mt-8">
-          <p>No courses found matching "{searchTerm}"</p>
+    return (
+      <div className="mt-4 bg-gray-800 p-6 rounded-lg border border-yellow-600">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-lg font-semibold text-white flex items-center">
+            <FaEdit className="mr-2 text-yellow-400" />
+            Update Paper in Semester {semester}
+          </h4>
           <button
-            onClick={clearSearch}
-            className="mt-2 text-purple-400 hover:text-purple-300 underline"
+            onClick={handleCancel}
+            className="text-gray-400 hover:text-white transition-colors"
           >
-            Clear search
+            <FaTimes />
           </button>
         </div>
-      )}
 
-      {!loading && courses.length === 0 && !searchTerm && (
-        <div className="text-center text-gray-400 mt-8">
-          No courses found
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex items-center space-x-3 bg-gray-700 p-4 rounded-lg">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Paper Code
+              </label>
+              <input
+                type="text"
+                placeholder="Paper Code (e.g., BSCDS-402)"
+                value={newPaperCode}
+                onChange={(e) => setNewPaperCode(e.target.value)}
+                className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Paper Name
+              </label>
+              <input
+                type="text"
+                placeholder="Paper Name (e.g., Data Science)"
+                value={paperName}
+                onChange={(e) => setPaperName(e.target.value)}
+                className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <FaSpinner className="animate-spin" />
+                  <span>Updating...</span>
+                </>
+              ) : (
+                <>
+                  <FaSave />
+                  <span>Update Paper</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  };
+
+  const CreatePaperForm = ({ courseId, semester, semesterKey }) => {
+    const [papers, setPapers] = useState([{ paper_code: "", paper_name: "" }]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const addPaperField = () => {
+      setPapers([...papers, { paper_code: "", paper_name: "" }]);
+    };
+
+    const removePaperField = (index) => {
+      if (papers.length > 1) {
+        setPapers(papers.filter((_, i) => i !== index));
+      }
+    };
+
+    const updatePaper = (index, field, value) => {
+      const updatedPapers = papers.map((paper, i) =>
+        i === index ? { ...paper, [field]: value } : paper
+      );
+      setPapers(updatedPapers);
+    };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+
+      // Validate papers
+      const validPapers = papers.filter(
+        (paper) => paper.paper_code.trim() && paper.paper_name.trim()
+      );
+
+      if (validPapers.length === 0) {
+        await Swal.fire({
+          icon: "warning",
+          title: "No Valid Papers",
+          text: "Please add at least one paper with both code and name.",
+        });
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post(
+          "https://e-college-data.onrender.com/v1/paper-code/create-course-code-all",
+          {
+            course_code: courseId,
+            sem: semester.toString(),
+            papers: validPapers,
+          }
+        );
+
+        if (response.data && response.data.success) {
+          setSemesterPapers((prev) => ({
+            ...prev,
+            [semesterKey]: validPapers,
+          }));
+
+          setShowCreateForm((prev) => ({
+            ...prev,
+            [semesterKey]: false,
+          }));
+
+          await Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Papers created successfully!",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        } else {
+          throw new Error("Failed to create papers");
+        }
+      } catch (err) {
+        console.error("Error creating papers:", err);
+        await Swal.fire({
+          icon: "error",
+          title: "Creation Failed",
+          text: "Failed to create papers. Please try again.",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    const handleCancel = () => {
+      setShowCreateForm((prev) => ({
+        ...prev,
+        [semesterKey]: false,
+      }));
+    };
+
+    return (
+      <div className="mt-4 bg-gray-800 p-6 rounded-lg border border-violet-600">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-lg font-semibold text-white flex items-center">
+            <FaPlus className="mr-2 text-violet-400" />
+            Create Papers for Semester {semester}
+          </h4>
+          <button
+            onClick={handleCancel}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <FaTimes />
+          </button>
         </div>
-      )}
 
-      {/* Enhanced Modal Popup */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 border-2 border-purple-600 rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl transform animate-pulse">
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-purple-600 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {papers.map((paper, index) => (
+            <div
+              key={index}
+              className="flex items-center space-x-3 bg-gray-700 p-4 rounded-lg"
+            >
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder="Paper Code (e.g., BSCDS-401)"
+                  value={paper.paper_code}
+                  onChange={(e) =>
+                    updatePaper(index, "paper_code", e.target.value)
+                  }
+                  className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  required
+                />
               </div>
-              <p className="text-white mb-6 text-lg">{modalMessage}</p>
+              <div className="flex-1">
+                <input
+                  type="text"
+                  placeholder="Paper Name (e.g., Artificial Intelligence)"
+                  value={paper.paper_name}
+                  onChange={(e) =>
+                    updatePaper(index, "paper_name", e.target.value)
+                  }
+                  className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              {papers.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removePaperField(index)}
+                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors"
+                >
+                  <FaMinus />
+                </button>
+              )}
+            </div>
+          ))}
+
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={addPaperField}
+              className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+            >
+              <FaPlus />
+              <span>Add Another Paper</span>
+            </button>
+
+            <div className="flex space-x-3">
               <button
-                onClick={closePopup}
-                className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg text-white font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                type="button"
+                onClick={handleCancel}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+                disabled={isSubmitting}
               >
-                OK
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <>
+                    <FaSpinner className="animate-spin" />
+                    <span>Creating...</span>
+                  </>
+                ) : (
+                  <>
+                    <FaSave />
+                    <span>Create Papers</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
-        </div>
-      )}
+        </form>
+      </div>
+    );
+  };
 
-      {/* Custom Confirmation Modal */}
-      {confirmModal.show && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 border-2 border-red-500 rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-red-600 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                </svg>
-              </div>
-              <p className="text-white mb-6 text-lg">{confirmModal.message}</p>
-              <div className="flex space-x-4 justify-center">
-                <button
-                  onClick={handleCancel}
-                  className="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg text-white font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleConfirm}
-                  className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg text-white font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800"
-                >
-                  Delete
-                </button>
-              </div>
+  const AddPaperForm = ({ courseId, semester, semesterKey }) => {
+    const [paperCode, setPaperCode] = useState("");
+    const [paperName, setPaperName] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+
+      if (!paperCode.trim() || !paperName.trim()) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Incomplete Form",
+          text: "Please fill in both paper code and paper name.",
+        });
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post(
+          "https://e-college-data.onrender.com/v1/paper-code/add-papercode",
+          {
+            paper_code: paperCode.trim(),
+            paper_name: paperName.trim(),
+            course_code: courseId,
+            sem: semester.toString(),
+          }
+        );
+
+        if (response.data && response.data.success) {
+          const newPaper = {
+            paper_code: paperCode.trim(),
+            paper_name: paperName.trim(),
+          };
+
+          setSemesterPapers((prev) => ({
+            ...prev,
+            [semesterKey]: [...(prev[semesterKey] || []), newPaper],
+          }));
+
+          setShowAddForm((prev) => ({
+            ...prev,
+            [semesterKey]: false,
+          }));
+
+          setPaperCode("");
+          setPaperName("");
+
+          await Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Paper added successfully!",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        } else {
+          throw new Error("Failed to add paper");
+        }
+      } catch (err) {
+        console.error("Error adding paper:", err);
+        await Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to add paper. Please try again.",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    const handleCancel = () => {
+      setShowAddForm((prev) => ({
+        ...prev,
+        [semesterKey]: false,
+      }));
+      setPaperCode("");
+      setPaperName("");
+    };
+
+    return (
+      <div className="mt-4 bg-gray-800 p-6 rounded-lg border border-green-600">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-lg font-semibold text-white flex items-center">
+            <FaPlus className="mr-2 text-green-400" />
+            Add Paper to Semester {semester}
+          </h4>
+          <button
+            onClick={handleCancel}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <FaTimes />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex items-center space-x-3 bg-gray-700 p-4 rounded-lg">
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Paper Code (e.g., BSCDS-402)"
+                value={paperCode}
+                onChange={(e) => setPaperCode(e.target.value)}
+                className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Paper Name (e.g., Data Science)"
+                value={paperName}
+                onChange={(e) => setPaperName(e.target.value)}
+                className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                required
+              />
             </div>
           </div>
+
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <FaSpinner className="animate-spin" />
+                  <span>Adding...</span>
+                </>
+              ) : (
+                <>
+                  <FaSave />
+                  <span>Add Paper</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  };
+
+  const filteredCourses = courses.filter(
+    (course) =>
+      course.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.instructor?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getGradientClass = (bgColor) => {
+    return bgColor || "bg-gradient-to-r from-violet-600 to-purple-600";
+  };
+
+  const SemesterView = ({ course }) => {
+    const totalSemesters = calculateSemesters(course.duration);
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-white flex items-center">
+            <FaGraduationCap className="mr-3 text-violet-400" />
+            {course.name} - Semesters
+          </h2>
+          <button
+            onClick={() => setSelectedCourse(null)}
+            className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Back to Courses
+          </button>
         </div>
-      )}
+
+        <div className="grid gap-4">
+          {Array.from({ length: totalSemesters }, (_, index) => {
+            const semester = index + 1;
+            const semesterKey = `${course.course_id}-${semester}`;
+            const isExpanded = expandedSemesters[semesterKey];
+            const papers = semesterPapers[semesterKey] || [];
+            const isLoading = loadingSemesters[semesterKey];
+            const showCreateFormForSemester = showCreateForm[semesterKey];
+            const showAddFormForSemester = showAddForm[semesterKey];
+            const isDeletingAll = deletingAllPapers[semesterKey];
+
+            return (
+              <div
+                key={semester}
+                className="bg-gray-900 rounded-lg border border-violet-800 overflow-hidden"
+              >
+                <div
+                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-800 transition-colors"
+                  onClick={() => toggleSemester(course.course_id, semester)}
+                >
+                  <div className="flex items-center space-x-3">
+                    {isExpanded ? (
+                      <FaChevronDown className="text-violet-400" />
+                    ) : (
+                      <FaChevronRight className="text-violet-400" />
+                    )}
+                    <div className="bg-violet-600 p-2 rounded-full">
+                      <FaBook className="text-white text-sm" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">
+                        Semester {semester}
+                      </h3>
+                      <p className="text-violet-300 text-sm">
+                        Click to view papers
+                      </p>
+                    </div>
+                  </div>
+                  {isLoading && (
+                    <FaSpinner className="text-violet-400 animate-spin" />
+                  )}
+                </div>
+
+                {isExpanded && (
+                  <div className="px-4 pb-4 border-t border-gray-700">
+                    {isLoading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <FaSpinner className="text-violet-400 animate-spin mr-2" />
+                        <span className="text-violet-300">
+                          Loading papers...
+                        </span>
+                      </div>
+                    ) : papers.length > 0 ? (
+                      <div className="space-y-3 mt-4">
+                        {/* Action Buttons */}
+                        <div className="flex justify-between items-center mb-4">
+                          <button
+                            onClick={() =>
+                              deleteAllPapers(
+                                course.course_id,
+                                semester,
+                                semesterKey
+                              )
+                            }
+                            disabled={isDeletingAll}
+                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+                          >
+                            {isDeletingAll ? (
+                              <>
+                                <FaSpinner className="animate-spin" />
+                                <span>Deleting...</span>
+                              </>
+                            ) : (
+                              <>
+                                <FaExclamationTriangle />
+                                <span>Delete All Papers</span>
+                              </>
+                            )}
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              setShowAddForm((prev) => ({
+                                ...prev,
+                                [semesterKey]: true,
+                              }))
+                            }
+                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                          >
+                            <FaPlus />
+                            <span>Add Paper</span>
+                          </button>
+                        </div>
+
+                        {/* Existing Papers */}
+                        {papers.map((paper, index) => {
+                          const paperKey = `${semesterKey}-${paper.paper_code}`;
+                          const isDeletingPaper =
+                            deletingIndividualPaper[paperKey];
+                          const showUpdateFormForPaper =
+                            showUpdateForm[paperKey];
+
+                          return (
+                            <div key={index} className="space-y-2">
+                              <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <h4 className="text-white font-medium">
+                                      {paper.paper_name}
+                                    </h4>
+                                    <p className="text-violet-300 text-sm">
+                                      Code: {paper.paper_code}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center space-x-3">
+                                    <div className="bg-violet-600 px-3 py-1 rounded-full">
+                                      <span className="text-white text-xs font-medium">
+                                        {paper.paper_code}
+                                      </span>
+                                    </div>
+                                    <button
+                                      onClick={() =>
+                                        setShowUpdateForm((prev) => ({
+                                          ...prev,
+                                          [paperKey]: !prev[paperKey],
+                                        }))
+                                      }
+                                      className="bg-yellow-600 hover:bg-yellow-700 text-white p-2 rounded-lg transition-colors flex items-center justify-center"
+                                      title="Update this paper"
+                                    >
+                                      <FaEdit className="text-sm" />
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        deleteIndividualPaper(
+                                          course.course_id,
+                                          semester,
+                                          paper.paper_code,
+                                          semesterKey
+                                        )
+                                      }
+                                      disabled={isDeletingPaper}
+                                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50"
+                                      title="Delete this paper"
+                                    >
+                                      {isDeletingPaper ? (
+                                        <FaSpinner className="animate-spin text-sm" />
+                                      ) : (
+                                        <FaTrash className="text-sm" />
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Update Form */}
+                              {showUpdateFormForPaper && (
+                                <UpdatePaperForm
+                                  courseId={course.course_id}
+                                  semester={semester}
+                                  semesterKey={semesterKey}
+                                  paper={paper}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+
+                        {/* Add Paper Form */}
+                        {showAddFormForSemester && (
+                          <AddPaperForm
+                            courseId={course.course_id}
+                            semester={semester}
+                            semesterKey={semesterKey}
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <FaBookOpen className="text-gray-400 text-4xl mx-auto mb-4" />
+                        <p className="text-gray-400 mb-4">
+                          No papers found for Semester {semester}
+                        </p>
+                        <button
+                          onClick={() =>
+                            setShowCreateForm((prev) => ({
+                              ...prev,
+                              [semesterKey]: true,
+                            }))
+                          }
+                          className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto transition-colors"
+                        >
+                          <FaPlus />
+                          <span>Create Papers</span>
+                        </button>
+
+                        {/* Create Paper Form */}
+                        {showCreateFormForSemester && (
+                          <CreatePaperForm
+                            courseId={course.course_id}
+                            semester={semester}
+                            semesterKey={semesterKey}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <FaSpinner className="text-violet-400 text-4xl animate-spin mx-auto mb-4" />
+          <p className="text-white text-lg">Loading courses...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <FaExclamationTriangle className="text-red-400 text-4xl mx-auto mb-4" />
+          <p className="text-red-400 text-lg mb-4">{error}</p>
+          <button
+            onClick={fetchCourses}
+            className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-950 p-6">
+      <div className="max-w-7xl mx-auto">
+        {selectedCourse ? (
+          <SemesterView course={selectedCourse} />
+        ) : (
+          <>
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-white mb-2 flex items-center">
+                <FaGraduationCap className="mr-3 text-violet-400" />
+                Course Code Management
+              </h1>
+              <p className="text-gray-400">
+                Manage paper codes for all courses and semesters
+              </p>
+            </div>
+
+            {/* Search */}
+            <div className="mb-6">
+              <div className="relative">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search courses by name, code, or instructor..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            {/* Courses Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredCourses.map((course) => (
+                <div
+                  key={course.course_id}
+                  className="bg-gray-900 rounded-lg border border-violet-800 p-6 hover:bg-gray-800 transition-colors cursor-pointer"
+                  onClick={() => setSelectedCourse(course)}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div
+                      className={`${getGradientClass(
+                        course.bgColor
+                      )} p-3 rounded-full`}
+                    >
+                      <FaGraduationCap className="text-white text-xl" />
+                    </div>
+                    <div className="bg-violet-600 px-3 py-1 rounded-full">
+                      <span className="text-white text-xs font-medium">
+                        {course.code}
+                      </span>
+                    </div>
+                  </div>
+
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    {course.name}
+                  </h3>
+                  <p className="text-gray-400 mb-4 text-sm line-clamp-2">
+                    {course.description}
+                  </p>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center text-sm text-gray-300">
+                      <FaUser className="mr-2 text-violet-400" />
+                      <span>{course.instructor}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-300">
+                      <FaClock className="mr-2 text-violet-400" />
+                      <span>{course.duration}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-300">
+                      <FaUsers className="mr-2 text-violet-400" />
+                      <span>
+                        {calculateSemesters(course.duration)} Semesters
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <span className="text-violet-300 text-sm font-medium flex items-center">
+                        <FaCode className="mr-1" />
+                        Manage Papers
+                      </span>
+                      <FaChevronRight className="text-violet-400" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredCourses.length === 0 && (
+              <div className="text-center py-12">
+                <FaSearch className="text-gray-400 text-4xl mx-auto mb-4" />
+                <p className="text-gray-400 text-lg">
+                  No courses found matching your search
+                </p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
-export default TeacherCourseManagement;
+export default CourseCodeManagement;

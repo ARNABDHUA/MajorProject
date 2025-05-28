@@ -848,16 +848,18 @@ const CreateCourseCode = () => {
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Course Management</h1>
-            <p className="text-gray-400">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">
+              Course Management
+            </h1>
+            <p className="text-gray-400 text-sm sm:text-base">
               Create and manage courses for your institution
             </p>
           </div>
           <button
             onClick={() => setShowCreateForm(true)}
-            className="bg-violet-600 hover:bg-violet-700 px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
+            className="bg-violet-600 hover:bg-violet-700 px-6 py-3 rounded-lg flex items-center gap-2 transition-colors w-full sm:w-auto"
           >
             <FiPlus className="w-5 h-5" />
             Create New Course

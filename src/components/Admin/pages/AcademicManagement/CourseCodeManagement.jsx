@@ -488,77 +488,79 @@ const CourseCodeManagement = () => {
     };
 
     return (
-      <div className="mt-4 bg-gray-800 p-6 rounded-lg border border-violet-600">
-        <div className="flex items-center justify-between mb-4">
+      <div className="mt-4 bg-gray-800 p-4 sm:p-6 rounded-lg border border-violet-600">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
           <h4 className="text-lg font-semibold text-white flex items-center">
             <FaPlus className="mr-2 text-violet-400" />
             Create Papers for Semester {semester}
           </h4>
           <button
             onClick={handleCancel}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-white transition-colors self-end sm:self-auto"
           >
             <FaTimes />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 w-full">
           {papers.map((paper, index) => (
             <div
               key={index}
-              className="flex items-center space-x-3 bg-gray-700 p-4 rounded-lg"
+              className="flex flex-col sm:flex-row sm:items-start xl:items-center gap-2 sm:gap-3 bg-gray-700 p-3 sm:p-4 lg:p-5 rounded-lg"
             >
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Paper Code (e.g., BSCDS-401)"
-                  value={paper.paper_code}
-                  onChange={(e) =>
-                    updatePaper(index, "paper_code", e.target.value)
-                  }
-                  className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Paper Name (e.g., Artificial Intelligence)"
-                  value={paper.paper_name}
-                  onChange={(e) =>
-                    updatePaper(index, "paper_name", e.target.value)
-                  }
-                  className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                  required
-                />
+              <div className="flex-1 min-w-0 space-y-2 sm:space-y-0 sm:space-x-3 sm:flex sm:flex-col xl:flex-row xl:space-y-0">
+                <div className="flex-1 min-w-0">
+                  <input
+                    type="text"
+                    placeholder="Paper Code (e.g., BSCDS-401)"
+                    value={paper.paper_code}
+                    onChange={(e) =>
+                      updatePaper(index, "paper_code", e.target.value)
+                    }
+                    className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent text-sm sm:text-base transition-all duration-200"
+                    required
+                  />
+                </div>
+                <div className="flex-1 min-w-0 sm:mt-2 xl:mt-0">
+                  <input
+                    type="text"
+                    placeholder="Paper Name (e.g., Artificial Intelligence)"
+                    value={paper.paper_name}
+                    onChange={(e) =>
+                      updatePaper(index, "paper_name", e.target.value)
+                    }
+                    className="w-full bg-gray-600 border border-gray-500 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent text-sm sm:text-base transition-all duration-200"
+                    required
+                  />
+                </div>
               </div>
               {papers.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removePaperField(index)}
-                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors"
+                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors self-end sm:self-start xl:self-center w-auto sm:w-auto shrink-0"
                 >
-                  <FaMinus />
+                  <FaMinus className="w-4 h-4" />
                 </button>
               )}
             </div>
           ))}
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
             <button
               type="button"
               onClick={addPaperField}
-              className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+              className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm sm:text-base font-medium order-2 sm:order-1"
             >
-              <FaPlus />
-              <span>Add Another Paper</span>
+              <FaPlus className="w-4 h-4" />
+              <span className="whitespace-nowrap">Add Another Paper</span>
             </button>
 
-            <div className="flex space-x-3">
+            <div className="flex flex-col xs:flex-row gap-2 sm:gap-3 order-1 sm:order-2">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg transition-colors text-sm sm:text-base font-medium order-2 xs:order-1"
                 disabled={isSubmitting}
               >
                 Cancel
@@ -566,17 +568,17 @@ const CourseCodeManagement = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base font-medium order-1 xs:order-2"
               >
                 {isSubmitting ? (
                   <>
-                    <FaSpinner className="animate-spin" />
-                    <span>Creating...</span>
+                    <FaSpinner className="animate-spin w-4 h-4" />
+                    <span className="whitespace-nowrap">Creating...</span>
                   </>
                 ) : (
                   <>
-                    <FaSave />
-                    <span>Create Papers</span>
+                    <FaSave className="w-4 h-4" />
+                    <span className="whitespace-nowrap">Create Papers</span>
                   </>
                 )}
               </button>
@@ -667,22 +669,22 @@ const CourseCodeManagement = () => {
     };
 
     return (
-      <div className="mt-4 bg-gray-800 p-6 rounded-lg border border-green-600">
-        <div className="flex items-center justify-between mb-4">
+      <div className="mt-4 bg-gray-800 p-4 sm:p-6 rounded-lg border border-green-600">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
           <h4 className="text-lg font-semibold text-white flex items-center">
             <FaPlus className="mr-2 text-green-400" />
             Add Paper to Semester {semester}
           </h4>
           <button
             onClick={handleCancel}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-white transition-colors self-end sm:self-auto"
           >
             <FaTimes />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center space-x-3 bg-gray-700 p-4 rounded-lg">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-3 space-y-3 lg:space-y-0 bg-gray-700 p-3 sm:p-4 rounded-lg">
             <div className="flex-1">
               <input
                 type="text"
@@ -705,11 +707,11 @@ const CourseCodeManagement = () => {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end space-y-3 space-y-reverse sm:space-y-0 sm:space-x-3">
             <button
               type="button"
               onClick={handleCancel}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto"
               disabled={isSubmitting}
             >
               Cancel
@@ -717,7 +719,7 @@ const CourseCodeManagement = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 w-full sm:w-auto"
             >
               {isSubmitting ? (
                 <>
@@ -752,21 +754,21 @@ const CourseCodeManagement = () => {
     const totalSemesters = calculateSemesters(course.duration);
 
     return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white flex items-center">
-            <FaGraduationCap className="mr-3 text-violet-400" />
-            {course.name} - Semesters
+      <div className="space-y-3 sm:space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center">
+            <FaGraduationCap className="mr-2 sm:mr-3 text-violet-400 text-lg sm:text-xl" />
+            <span className="truncate">{course.name} - Semesters</span>
           </h2>
           <button
             onClick={() => setSelectedCourse(null)}
-            className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+            className="bg-gray-700 hover:bg-gray-600 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base shrink-0"
           >
             Back to Courses
           </button>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-3 sm:gap-4">
           {Array.from({ length: totalSemesters }, (_, index) => {
             const semester = index + 1;
             const semesterKey = `${course.course_id}-${semester}`;
@@ -783,45 +785,45 @@ const CourseCodeManagement = () => {
                 className="bg-gray-900 rounded-lg border border-violet-800 overflow-hidden"
               >
                 <div
-                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-800 transition-colors"
+                  className="flex items-center justify-between p-3 sm:p-4 cursor-pointer hover:bg-gray-800 transition-colors"
                   onClick={() => toggleSemester(course.course_id, semester)}
                 >
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                     {isExpanded ? (
-                      <FaChevronDown className="text-violet-400" />
+                      <FaChevronDown className="text-violet-400 text-sm sm:text-base shrink-0" />
                     ) : (
-                      <FaChevronRight className="text-violet-400" />
+                      <FaChevronRight className="text-violet-400 text-sm sm:text-base shrink-0" />
                     )}
-                    <div className="bg-violet-600 p-2 rounded-full">
-                      <FaBook className="text-white text-sm" />
+                    <div className="bg-violet-600 p-1.5 sm:p-2 rounded-full shrink-0">
+                      <FaBook className="text-white text-xs sm:text-sm" />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-base sm:text-lg font-semibold text-white truncate">
                         Semester {semester}
                       </h3>
-                      <p className="text-violet-300 text-sm">
+                      <p className="text-violet-300 text-xs sm:text-sm">
                         Click to view papers
                       </p>
                     </div>
                   </div>
                   {isLoading && (
-                    <FaSpinner className="text-violet-400 animate-spin" />
+                    <FaSpinner className="text-violet-400 animate-spin text-sm sm:text-base shrink-0" />
                   )}
                 </div>
 
                 {isExpanded && (
-                  <div className="px-4 pb-4 border-t border-gray-700">
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4 border-t border-gray-700">
                     {isLoading ? (
-                      <div className="flex items-center justify-center py-8">
-                        <FaSpinner className="text-violet-400 animate-spin mr-2" />
-                        <span className="text-violet-300">
+                      <div className="flex items-center justify-center py-6 sm:py-8">
+                        <FaSpinner className="text-violet-400 animate-spin mr-2 text-sm sm:text-base" />
+                        <span className="text-violet-300 text-sm sm:text-base">
                           Loading papers...
                         </span>
                       </div>
                     ) : papers.length > 0 ? (
-                      <div className="space-y-3 mt-4">
+                      <div className="space-y-3 mt-3 sm:mt-4">
                         {/* Action Buttons */}
-                        <div className="flex justify-between items-center mb-4">
+                        <div className="flex flex-col xs:flex-row gap-2 sm:gap-3 mb-3 sm:mb-4">
                           <button
                             onClick={() =>
                               deleteAllPapers(
@@ -831,17 +833,21 @@ const CourseCodeManagement = () => {
                               )
                             }
                             disabled={isDeletingAll}
-                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 text-xs sm:text-sm lg:text-base flex-1 xs:flex-initial"
                           >
                             {isDeletingAll ? (
                               <>
-                                <FaSpinner className="animate-spin" />
-                                <span>Deleting...</span>
+                                <FaSpinner className="animate-spin w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="whitespace-nowrap">
+                                  Deleting...
+                                </span>
                               </>
                             ) : (
                               <>
-                                <FaExclamationTriangle />
-                                <span>Delete All Papers</span>
+                                <FaExclamationTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="whitespace-nowrap">
+                                  Delete All Papers
+                                </span>
                               </>
                             )}
                           </button>
@@ -853,10 +859,10 @@ const CourseCodeManagement = () => {
                                 [semesterKey]: true,
                               }))
                             }
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors text-xs sm:text-sm lg:text-base flex-1 xs:flex-initial"
                           >
-                            <FaPlus />
-                            <span>Add Paper</span>
+                            <FaPlus className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="whitespace-nowrap">Add Paper</span>
                           </button>
                         </div>
 
@@ -870,65 +876,69 @@ const CourseCodeManagement = () => {
 
                           return (
                             <div key={index} className="space-y-2">
-                              <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <h4 className="text-white font-medium">
+                              <div className="bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-700">
+                                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="text-white font-medium text-sm sm:text-base break-words">
                                       {paper.paper_name}
                                     </h4>
-                                    <p className="text-violet-300 text-sm">
+                                    <p className="text-violet-300 text-xs sm:text-sm mt-1 break-all">
                                       Code: {paper.paper_code}
                                     </p>
                                   </div>
-                                  <div className="flex items-center space-x-3">
-                                    <div className="bg-violet-600 px-3 py-1 rounded-full">
-                                      <span className="text-white text-xs font-medium">
+                                  <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0">
+                                    <div className="bg-violet-600 px-2 sm:px-3 py-1 rounded-full">
+                                      <span className="text-white text-xs font-medium break-all">
                                         {paper.paper_code}
                                       </span>
                                     </div>
-                                    <button
-                                      onClick={() =>
-                                        setShowUpdateForm((prev) => ({
-                                          ...prev,
-                                          [paperKey]: !prev[paperKey],
-                                        }))
-                                      }
-                                      className="bg-yellow-600 hover:bg-yellow-700 text-white p-2 rounded-lg transition-colors flex items-center justify-center"
-                                      title="Update this paper"
-                                    >
-                                      <FaEdit className="text-sm" />
-                                    </button>
-                                    <button
-                                      onClick={() =>
-                                        deleteIndividualPaper(
-                                          course.course_id,
-                                          semester,
-                                          paper.paper_code,
-                                          semesterKey
-                                        )
-                                      }
-                                      disabled={isDeletingPaper}
-                                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50"
-                                      title="Delete this paper"
-                                    >
-                                      {isDeletingPaper ? (
-                                        <FaSpinner className="animate-spin text-sm" />
-                                      ) : (
-                                        <FaTrash className="text-sm" />
-                                      )}
-                                    </button>
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                      <button
+                                        onClick={() =>
+                                          setShowUpdateForm((prev) => ({
+                                            ...prev,
+                                            [paperKey]: !prev[paperKey],
+                                          }))
+                                        }
+                                        className="bg-yellow-600 hover:bg-yellow-700 text-white p-1.5 sm:p-2 rounded-lg transition-colors flex items-center justify-center min-w-[32px] sm:min-w-[36px] h-8 sm:h-9"
+                                        title="Update this paper"
+                                      >
+                                        <FaEdit className="w-3 h-3 sm:w-4 sm:h-4" />
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          deleteIndividualPaper(
+                                            course.course_id,
+                                            semester,
+                                            paper.paper_code,
+                                            semesterKey
+                                          )
+                                        }
+                                        disabled={isDeletingPaper}
+                                        className="bg-red-600 hover:bg-red-700 text-white p-1.5 sm:p-2 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 min-w-[32px] sm:min-w-[36px] h-8 sm:h-9"
+                                        title="Delete this paper"
+                                      >
+                                        {isDeletingPaper ? (
+                                          <FaSpinner className="animate-spin w-3 h-3 sm:w-4 sm:h-4" />
+                                        ) : (
+                                          <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" />
+                                        )}
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
 
                               {/* Update Form */}
                               {showUpdateFormForPaper && (
-                                <UpdatePaperForm
-                                  courseId={course.course_id}
-                                  semester={semester}
-                                  semesterKey={semesterKey}
-                                  paper={paper}
-                                />
+                                <div className="w-full">
+                                  <UpdatePaperForm
+                                    courseId={course.course_id}
+                                    semester={semester}
+                                    semesterKey={semesterKey}
+                                    paper={paper}
+                                  />
+                                </div>
                               )}
                             </div>
                           );
@@ -936,17 +946,19 @@ const CourseCodeManagement = () => {
 
                         {/* Add Paper Form */}
                         {showAddFormForSemester && (
-                          <AddPaperForm
-                            courseId={course.course_id}
-                            semester={semester}
-                            semesterKey={semesterKey}
-                          />
+                          <div className="w-full">
+                            <AddPaperForm
+                              courseId={course.course_id}
+                              semester={semester}
+                              semesterKey={semesterKey}
+                            />
+                          </div>
                         )}
                       </div>
                     ) : (
-                      <div className="text-center py-8">
-                        <FaBookOpen className="text-gray-400 text-4xl mx-auto mb-4" />
-                        <p className="text-gray-400 mb-4">
+                      <div className="text-center py-6 sm:py-8">
+                        <FaBookOpen className="text-gray-400 text-3xl sm:text-4xl mx-auto mb-3 sm:mb-4" />
+                        <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base px-4">
                           No papers found for Semester {semester}
                         </p>
                         <button
@@ -956,9 +968,9 @@ const CourseCodeManagement = () => {
                               [semesterKey]: true,
                             }))
                           }
-                          className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto transition-colors"
+                          className="bg-violet-600 hover:bg-violet-700 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto transition-colors text-sm sm:text-base"
                         >
-                          <FaPlus />
+                          <FaPlus className="w-3 h-3 sm:w-4 sm:h-4" />
                           <span>Create Papers</span>
                         </button>
 
@@ -1018,12 +1030,12 @@ const CourseCodeManagement = () => {
         ) : (
           <>
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-white mb-2 flex items-center">
-                <FaGraduationCap className="mr-3 text-violet-400" />
-                Course Code Management
+            <div className="mb-8 px-4 sm:px-6 lg:px-8">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 flex items-center flex-wrap">
+                <FaGraduationCap className="mr-2 sm:mr-3 text-violet-400 text-xl sm:text-2xl" />
+                <span>Course Code Management</span>
               </h1>
-              <p className="text-gray-400">
+              <p className="text-gray-400 text-sm sm:text-base">
                 Manage paper codes for all courses and semesters
               </p>
             </div>

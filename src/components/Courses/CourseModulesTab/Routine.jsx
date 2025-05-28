@@ -262,13 +262,6 @@ const Routine = ({ courseId }) => {
                                   {classItem.time}
                                 </p>
                               </div>
-                              <motion.button
-                                className="px-2 py-0.5 text-xs rounded bg-gray-100 text-gray-700 hover:bg-gray-200 flex-shrink-0"
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.97 }}
-                              >
-                                View
-                              </motion.button>
                             </motion.div>
                           ))}
                         </div>

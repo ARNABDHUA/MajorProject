@@ -169,7 +169,7 @@ const SuccessMessage = () => {
               </div>
               <div className="bg-gray-50 rounded-xl p-4">
                 <p className="text-gray-500 text-sm mb-1">Payment Method</p>
-                <p className="font-semibold text-gray-800">Card Payment</p>
+                <p className="font-semibold text-gray-800">UPI</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-4">
                 <p className="text-gray-500 text-sm mb-1">Date</p>

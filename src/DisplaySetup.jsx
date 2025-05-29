@@ -102,6 +102,7 @@ import TeacherForgetpassword from "./components/Teachers/Auth/TeacherForgetpassw
 import AccountNotice from "./components/Admin/pages/AccountingAndFinancial/AccountNotice";
 import RegisterAdmin from "./components/Admin/pages/RegitrationManagement/RegisterAdmin";
 import TeacherNotice from "./components/Teachers/Pages/TeacherNotice";
+import SuccessMessage from "./SuccessMessage";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -425,7 +426,8 @@ const DisplaySetup = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path="/test" element={<Payment />} />
+            {/* <Route path="/test/:orderid" element={<SuccessMessage />} /> */}
+            <Route path="/payment/:orderid" element={<SuccessMessage />} />
             {/* <Route
               path="/unauthenticated-user-found"
               element={<UnauthorizedAccessPage />}

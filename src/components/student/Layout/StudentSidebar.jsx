@@ -117,20 +117,7 @@ const StudentSidebar = ({
         path: "/student-edit-profile",
         requiresPayment: false,
       },
-      {
-        id: 9,
-        title: "Class Assessment",
-        icon: <SiKdenlive className="w-5 h-5" />,
-        path: "/class-assessment",
-        requiresPayment: true,
-      },
-      {
-        id: 10,
-        title: "Marks",
-        icon: <PiExamFill className="w-5 h-5" />,
-        path: "/student-marks",
-        requiresPayment: true,
-      },
+
       {
         id: 11,
         title: "Student assistant",

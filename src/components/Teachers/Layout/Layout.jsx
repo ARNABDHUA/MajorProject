@@ -44,6 +44,8 @@ const Layout = () => {
     if (path === "/salary-slip") return "Salary Slip";
     if (path === "/teacher-delete") return "Teacher Delete";
     if (path === "/teacher-assign") return "Teacher Assign";
+    if (path === "/teacher-notice") return "Teacher Notice";
+    if (path === "/delete-class") return "Delete Class";
     return "Profile";
   };
 

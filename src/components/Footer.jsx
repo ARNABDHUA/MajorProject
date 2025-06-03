@@ -75,6 +75,12 @@ const Footer = () => {
             </li>
             <li
               className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
+              onClick={() => handleNavigation("/credits")}
+            >
+              <span className="mr-2">•</span>Credits
+            </li>
+            <li
+              className="hover:text-blue-500 cursor-pointer transition-colors duration-300 flex items-center"
               onClick={() => handleNavigation("/carrers")}
             >
               <span className="mr-2">•</span>Career
@@ -172,39 +178,9 @@ const Footer = () => {
           <div className="text-black text-sm mb-4 md:mb-0">
             © {new Date().getFullYear()} Ecollege. All rights reserved.
           </div>
-          <div className="flex gap-4 text-black text-sm">
-            <a
-              href="#"
-              className="hover:text-blue-500 transition-colors duration-300"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("/privacy-policy");
-              }}
-            >
-              Privacy Policy
-            </a>
-            <span>|</span>
-            <a
-              href="#"
-              className="hover:text-blue-500 transition-colors duration-300"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("/terms-of-service");
-              }}
-            >
-              Terms of Service
-            </a>
-            <span>|</span>
-            <a
-              href="#"
-              className="hover:text-blue-500 transition-colors duration-300"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("/cookie-settings");
-              }}
-            >
-              Cookie Settings
-            </a>
+          <div className="text-black text-sm text-center">
+            All rights reserved: Arnab Dhua, Shreya Manna, Parbat Nil Bera,
+            Sourin Dhua, Fahran Akhtar
           </div>
         </div>
       </div>

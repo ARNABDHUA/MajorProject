@@ -103,6 +103,7 @@ import AccountNotice from "./components/Admin/pages/AccountingAndFinancial/Accou
 import RegisterAdmin from "./components/Admin/pages/RegitrationManagement/RegisterAdmin";
 import TeacherNotice from "./components/Teachers/Pages/TeacherNotice";
 import SuccessMessage from "./SuccessMessage";
+import Credits from "./components/HeaderandFooterComponents/Footer/Credits";
 
 // Create a layout component with Navbar and Footer
 const MainLayout = () => {
@@ -432,6 +433,7 @@ const DisplaySetup = () => {
               path="/unauthenticated-user-found"
               element={<UnauthorizedAccessPage />}
             /> */}
+
             <Route
               path="/unauthenticated-user-found"
               element={<UnAuthorizedAccessPage />}
@@ -575,6 +577,7 @@ const DisplaySetup = () => {
                 path="/howtobecometeacher"
                 element={<HowToBecomeTeacher />}
               />
+              <Route path="/credits" element={<Credits />} />
               <Route path="/howtoguide" element={<HowtoGuide />} />
               <Route path="/termsandcondion" element={<TermsAndConditions />} />
               <Route path="/notice" element={<NoticeBoard />} />

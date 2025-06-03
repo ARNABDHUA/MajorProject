@@ -58,6 +58,9 @@ const StudentLayout = () => {
     if (path === "/student-chat") return "Chat Room";
     if (path === "/student-edit-profile") return "Edit Profile";
     if (path === "/student-live-class") return "Live Class";
+    if (path === "/class-assistant") return "Student Assistant";
+    if (path === "/student-admit") return "Student Admit Card";
+    if (path === "/student-idcard") return "Student Identity Card";
     return "Student Dashboard";
   };
 

@@ -105,12 +105,7 @@ const Sidebar = ({
         icon: <MdQuiz className="w-5 h-5" />,
         path: "/teacher-quiz",
       },
-      {
-        id: 10,
-        title: "Class Assesment",
-        icon: <SiGoogleclassroom className="w-5 h-5" />,
-        path: "/teacher-assesment",
-      },
+
       {
         id: 14,
         title: "Notice",

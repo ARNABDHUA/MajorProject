@@ -36,54 +36,32 @@ const AdminLayout = () => {
   // Get current page title from path
   const getCurrentPageTitle = () => {
     const path = location.pathname;
-    if (path === "/admin-dashboard") return "Dashboard";
-    if (path === "/admin-user-management") return "User Management";
-    if (path === "/admin-manage-students") return "Manage Students";
-    if (path === "/admin-manage-teachers") return "Manage Teachers";
-    if (path === "/admin-manage-roles") return "Admins & Roles";
-    if (path === "/admin-reset-passwords") return "Reset Passwords";
-    if (path === "/admin-registrations") return "New Registrations";
-    if (path === "/admin-academic") return "Academic Management";
-    if (path === "/course-code-management") return "Course Management";
+    if (path === "/admin") return "Dashboard";
+    //Register Admin
+    if (path === "/student-document-verification")
+      return "Document Verification of student";
+    if (path === "/teacher-document-verification")
+      return "Document Verification of Teacher";
+    if (path === "/students-details") return "Student Details";
+    if (path === "/teachers-details") return "Teacher Details";
+    if (path === "/register-communication") return "My communication";
+    if (path === "/register-management-notice") return "My Notice";
+    //acadmic admin
     if (path === "/teacher-course-management")
       return "Teacher Course Management";
+    if (path === "/academic-Create-Course-Code") return "Create Course";
     if (path === "/student-semester") return "Student Semester Management";
+    if (path === "/course-code-management") return "Course Management";
     if (path === "/academic-management-notice")
       return "Academic Mangement Notice";
-    if (path === "/admin-teacher-assignments") return "Teacher Assignments";
-    if (path === "/admin-enrollments") return "Student Enrollments";
-    if (path === "/admin-study-materials") return "Study Materials";
-    if (path === "/admin-timetables") return "Timetables";
-    if (path === "/admin-course-progress") return "Course Progress";
-    if (path === "/admin-finance") return "Finance & Accounting";
-    if (path === "/admin-fee-structures") return "Fee Structures";
-    if (path === "/admin-collect-fees") return "Collect Fees";
-    if (path === "/admin-payment-history") return "Payment History";
-    if (path === "/admin-receipts") return "Receipts";
-    if (path === "/admin-due-fees") return "Due Fees";
-    if (path === "/admin-financial-reports") return "Financial Reports";
-    if (path === "/admin-salaries-expenses") return "Salaries & Expenses";
-    if (path === "/admin-records") return "Registration & Records";
-    if (path === "/admin-new-registrations") return "New Registrations";
-    if (path === "/admin-application-forms") return "Application Forms";
-    if (path === "/admin-document-verification") return "Document Verification";
-    if (path === "/admin-id-management") return "ID Management";
-    if (path === "/admin-admission-records") return "Admission Records";
-    if (path === "/admin-reports") return "Reports & Analytics";
-    if (path === "/admin-student-performance") return "Student Performance";
-    if (path === "/admin-attendance-reports") return "Attendance Reports";
-    if (path === "/admin-fee-collection-reports") return "Fee Collection";
-    if (path === "/admin-admission-statistics") return "Admission Statistics";
-    if (path === "/admin-export-data") return "Export Data";
-    if (path === "/admin-communication") return "Communication";
-    if (path === "/admin-send-messages") return "Send Messages";
-    if (path === "/admin-reminders") return "Reminders";
-    if (path === "/admin-notices") return "Notices";
-    if (path === "/admin-settings") return "Settings";
-    if (path === "/admin-site-settings") return "Site Settings";
-    if (path === "/admin-backup-restore") return "Backup & Restore";
-    if (path === "/admin-notification-settings") return "Notification Settings";
-    if (path === "/admin-access-control") return "Access Control";
+    if (path === "/academic-communication") return "My communication";
+    //Accounts Admin
+    if (path === "/new-registerStudent") return "New Studebt register";
+    if (path === "/regular-student") return "Regular Students";
+    if (path === "/employees-salary") return "Employees Salary";
+    if (path === "/financial-management-notice") return "My Notice";
+    if (path === "/account-communication") return "My Communication";
+
     return "Admin Dashboard";
   };
 

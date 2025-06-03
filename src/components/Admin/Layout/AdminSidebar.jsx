@@ -234,12 +234,7 @@ const AdminSidebar = ({
             icon: <BsFileEarmarkText className="w-4 h-4" />,
             path: "/register-management-notice",
           },
-          {
-            id: "rr-6",
-            title: "Document Issue",
-            icon: <HiOutlineDocumentAdd className="w-4 h-4" />,
-            path: "/document-issue",
-          },
+
           {
             id: "rr-7",
             title: "Communication",

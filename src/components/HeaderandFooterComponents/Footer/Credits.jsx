@@ -12,9 +12,9 @@ import { HiAcademicCap, HiLightBulb } from "react-icons/hi";
 import { RiTeamFill } from "react-icons/ri";
 
 import ArnabDhua from "../../../US/ArnabDhua.jpg";
-import ShreyaManna from "../../../US/SHREYAMANNA.png";
+import ShreyaManna from "../../../US/SHREYAMANNA.jpg";
 import ParbatNilBera from "../../../US/PHOTOMT.jpg";
-import SourinDhua from "../../../US/SourinDhua.jpg";
+import SourinDhua from "../../../US/SourinDhua.png";
 import FarhanAkhtar from "../../../US/FarhanAkhtar.jpg";
 
 const Credits = () => {

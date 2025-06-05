@@ -7,7 +7,6 @@ import {
   StyleSheet,
   PDFDownloadLink,
   Image,
-  Font,
 } from "@react-pdf/renderer";
 
 // Create styles with consistent and improved layout

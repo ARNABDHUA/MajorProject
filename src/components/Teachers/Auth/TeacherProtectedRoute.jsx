@@ -23,7 +23,7 @@ const TeacherProtectedRoute = ({ children, allowedRoles = [] }) => {
           if (userData) {
             setIsAuthenticated(true);
             // Assuming teacher role since this is TeacherProtectedRoute
-            setUserRole("teacher");
+            setUserRole(userData.role);
           } else {
             setIsAuthenticated(false);
           }

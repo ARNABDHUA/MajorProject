@@ -58,7 +58,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   }
 
   // If not authenticated, redirect to login
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !userRole === "student") {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

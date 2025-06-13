@@ -74,9 +74,15 @@ const TeacherReg = () => {
     const validateEmail = (email) => {
       return /^[a-zA-Z][a-zA-Z0-9.]{5,29}@gmail\.com$/.test(email);
     };
+    const validateName = (name) => {
+      return /^[A-Za-z]{4,}$/.test(name);
+    };
+
     // Name validation
     if (!formData.name.trim()) {
       newErrors.name = "Name is required";
+    } else if (!validateName(formData.name)) {
+      newErrors.name = `Name can only contain alphabates and must be 3 charecter long`;
     }
     //email is required
     if (!formData.email.trim()) {
@@ -147,6 +153,8 @@ const TeacherReg = () => {
     }
 
     // UG start year validation
+    // _______________
+    // UG start year validation
     if (!formData.ug_start) {
       newErrors.ug_start = "UG start year is required";
     } else if (
@@ -154,6 +162,8 @@ const TeacherReg = () => {
       parseInt(formData.ug_start) < parseInt(formData.twelfth_year)
     ) {
       newErrors.ug_start = "UG start year must be after 12th completion";
+    } else if (parseInt(formData.ug_start) <= 2020) {
+      newErrors.ug_start = "UG start year must be after 2020";
     }
 
     // UG end year validation
@@ -163,8 +173,12 @@ const TeacherReg = () => {
       formData.ug_start &&
       parseInt(formData.ug_end) < parseInt(formData.ug_start) + 2
     ) {
-      newErrors.ug_end = "UG end year must be at least 2 years after start";
+      newErrors.ug_end =
+        "UG end year must be at least 2 years after start year";
+    } else if (parseInt(formData.ug_end) > 2025) {
+      newErrors.ug_end = "UG end year must be less than or equal to 2025";
     }
+    // _________________
 
     // CV file validation
     if (!formData.cv_file) {

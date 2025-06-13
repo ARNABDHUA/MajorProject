@@ -442,7 +442,7 @@ const DisplaySetup = () => {
             {/* Student Dashboard Routes */}
             <Route element={<StudentLayout />}>
               <Route
-                path="student-profile"
+                path="/student-profile"
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <StudentProfile />
@@ -450,7 +450,7 @@ const DisplaySetup = () => {
                 }
               />
               <Route
-                path="student-courses"
+                path="/student-courses"
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <MyCourses />
@@ -459,7 +459,7 @@ const DisplaySetup = () => {
               />
 
               <Route
-                path="student-attendance"
+                path="/student-attendance"
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <StudentAttendence />
@@ -467,7 +467,7 @@ const DisplaySetup = () => {
                 }
               />
               <Route
-                path="student-chat"
+                path="/student-chat"
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <Chatpage />
@@ -491,7 +491,7 @@ const DisplaySetup = () => {
                 }
               />
               <Route
-                path="student-quiz"
+                path="/student-quiz"
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <Quiz />
@@ -499,7 +499,7 @@ const DisplaySetup = () => {
                 }
               />
               <Route
-                path="student-edit-profile"
+                path="/student-edit-profile"
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <EditProfile />
@@ -532,7 +532,7 @@ const DisplaySetup = () => {
                 }
               />
               <Route
-                path="student-live-class"
+                path="/student-live-class"
                 element={
                   <ProtectedRoute allowedRoles={["student"]}>
                     <StudentLive />

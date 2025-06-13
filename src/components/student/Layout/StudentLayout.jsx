@@ -14,14 +14,19 @@ const StudentLayout = () => {
   const [approval, setApproval] = useState(null);
   const [rejected, setRejected] = useState(null);
   const [croll, setcroll] = useState();
+  const [acAccess, setasAccess] = useState(false);
   const location = useLocation();
 
   // Get user data from localStorage
   useEffect(() => {
+    console.log("hi");
     const userData = localStorage.getItem("user");
+
     if (userData) {
+      setasAccess(true);
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData);
+      console.log("I love you parbat", parsedUserData);
       console.log(parsedUserData.submit);
       setApproval(parsedUserData.verify);
       setSubmitStatus(parsedUserData.submit);
@@ -75,7 +80,7 @@ const StudentLayout = () => {
     if (submitStatus && !approval) {
       return <VerificationStatus />;
     }
-    if (!submitStatus) {
+    if (!submitStatus && acAccess) {
       return <WelcomePage />;
     }
   }
